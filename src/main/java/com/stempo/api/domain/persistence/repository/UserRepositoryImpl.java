@@ -7,15 +7,23 @@ import com.stempo.api.domain.persistence.mappper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-@RequiredArgsConstructor
+import java.util.Optional;
+
 @Repository
+@RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
 
-    private final UserJpaRepository userJpaRepository;
+    private final UserJpaRepository repository;
 
     @Override
     public User save(User user) {
-        UserEntity entity = userJpaRepository.save(UserMapper.toEntity(user));
+        UserEntity entity = repository.save(UserMapper.toEntity(user));
         return UserMapper.toDomain(entity);
+    }
+
+    @Override
+    public Optional<User> findById(String id) {
+        return repository.findById(id)
+                .map(UserMapper::toDomain);
     }
 }
