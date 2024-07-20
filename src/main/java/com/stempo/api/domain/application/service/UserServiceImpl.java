@@ -34,4 +34,9 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("[User] id: " + id + " not found"));
     }
+
+    @Override
+    public boolean existsById(String id) {
+        return userRepository.existsById(id);
+    }
 }

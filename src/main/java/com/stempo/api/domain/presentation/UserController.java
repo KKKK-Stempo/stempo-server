@@ -9,11 +9,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Tag(name = "User", description = "회원")
 public class UserController {
@@ -21,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "회원 가입", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @PostMapping("")
+    @PostMapping("/api/v1/users")
     public ApiResponse<String> registerUser(
             @Valid @RequestBody UserRegisterRequestDto requestDto
     ) {

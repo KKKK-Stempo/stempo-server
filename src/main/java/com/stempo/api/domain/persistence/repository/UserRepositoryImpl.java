@@ -26,4 +26,9 @@ public class UserRepositoryImpl implements UserRepository {
         return repository.findById(id)
                 .map(UserMapper::toDomain);
     }
+
+    @Override
+    public boolean existsById(String id) {
+        return repository.existsById(id);
+    }
 }

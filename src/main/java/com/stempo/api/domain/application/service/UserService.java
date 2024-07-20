@@ -12,4 +12,6 @@ public interface UserService {
     Optional<User> findById(String id);
 
     User findByIdOrThrow(String id);
+
+    boolean existsById(String id);
 }
