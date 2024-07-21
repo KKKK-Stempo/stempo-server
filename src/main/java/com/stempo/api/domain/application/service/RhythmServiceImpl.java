@@ -1,5 +1,7 @@
 package com.stempo.api.domain.application.service;
 
+import com.stempo.api.domain.application.exception.DirectoryCreationException;
+import com.stempo.api.domain.application.exception.RhythmGenerationException;
 import com.stempo.api.domain.domain.model.UploadedFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,10 +38,8 @@ public class RhythmServiceImpl implements RhythmService {
 
             Path outputFilePath = generateRhythmFile(bpm, outputFilename);
             return saveGeneratedFile(outputFilePath);
-
         } catch (Exception e) {
-            log.error("Error in createRhythm: " + e.getMessage(), e);
-            throw new RuntimeException("Error in createRhythm: " + e.getMessage(), e);
+            throw new RhythmGenerationException("Error generating rhythm: " + e.getMessage(), e);
         }
     }
 
@@ -58,7 +58,7 @@ public class RhythmServiceImpl implements RhythmService {
         if (!outputDir.toFile().exists()) {
             boolean dirCreated = outputDir.toFile().mkdirs();
             if (!dirCreated) {
-                throw new RuntimeException("Failed to create output directory");
+                throw new DirectoryCreationException("Failed to create output directory: " + outputDir.toString());
             }
         }
     }
@@ -69,7 +69,7 @@ public class RhythmServiceImpl implements RhythmService {
         Process process = pb.start();
         int exitCode = process.waitFor();
         if (exitCode != 0) {
-            throw new RuntimeException("Script exited with code: " + exitCode);
+            throw new RhythmGenerationException("Python script exited with code: " + exitCode);
         }
     }
 
@@ -79,10 +79,10 @@ public class RhythmServiceImpl implements RhythmService {
                 return fileService.saveFile(outputFilePath.toFile());
             } catch (Exception e) {
                 log.error("Error saving generated file: " + e.getMessage(), e);
-                throw new RuntimeException("Error saving generated file: " + e.getMessage(), e);
+                throw new RhythmGenerationException("Error saving generated file: " + e.getMessage(), e);
             }
         } else {
-            throw new RuntimeException("Generated rhythm file does not exist");
+            throw new RhythmGenerationException("Generated rhythm file does not exist: " + outputFilePath.toString());
         }
     }
 }
