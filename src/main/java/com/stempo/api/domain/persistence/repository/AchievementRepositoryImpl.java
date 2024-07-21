@@ -20,7 +20,7 @@ public class AchievementRepositoryImpl implements AchievementRepository {
 
     @Override
     public Achievement findByIdOrThrow(Long achievementId) {
-        AchievementEntity entity = repository.findById(achievementId)
+        AchievementEntity entity = repository.findByIdAndNotDeleted(achievementId)
                 .orElseThrow(() -> new NotFoundException("[Achievement] id: " + achievementId + " not found"));
         return mapper.toDomain(entity);
     }
