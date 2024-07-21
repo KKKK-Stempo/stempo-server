@@ -24,10 +24,13 @@ public class LoginController {
     @PostMapping("/api/vi/login")
     public ApiResponse<TokenInfo> login(
             @RequestHeader(value = "Device-Tag", defaultValue = "490154203237518") String deviceTag,
-            @RequestHeader(value = "Password", required = false) String password
+            @RequestHeader(value = "Password", required = false) String password,
+            HttpServletResponse response
     ) {
         TokenInfo token = loginService.loginOrRegister(deviceTag);
-        return ApiResponse.success(token);
+        response.setHeader("Authorization", "Bearer " + token.getAccessToken());
+        response.setHeader("Refresh-Token", token.getRefreshToken());
+        return ApiResponse.success();
     }
 
     @Operation(summary = "[U] 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
@@ -37,7 +40,7 @@ public class LoginController {
             HttpServletResponse response
     ) {
         TokenInfo token = loginService.reissueToken(request);
-        response.setHeader("Authorization", "Bearer" + token.getAccessToken());
+        response.setHeader("Authorization", "Bearer " + token.getAccessToken());
         response.setHeader("Refresh-Token", token.getRefreshToken());
         return ApiResponse.success();
     }
