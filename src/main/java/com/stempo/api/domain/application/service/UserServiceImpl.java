@@ -2,6 +2,7 @@ package com.stempo.api.domain.application.service;
 
 import com.stempo.api.domain.domain.model.User;
 import com.stempo.api.domain.domain.repository.UserRepository;
+import com.stempo.api.global.auth.util.AuthUtil;
 import com.stempo.api.global.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,5 +34,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existsById(String id) {
         return userRepository.existsById(id);
+    }
+
+    @Override
+    public String getCurrentDeviceTag() {
+        return AuthUtil.getAuthenticationInfoDeviceTag();
     }
 }

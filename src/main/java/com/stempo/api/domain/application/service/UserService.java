@@ -11,4 +11,6 @@ public interface UserService {
     Optional<User> findById(String id);
 
     boolean existsById(String id);
+
+    String getCurrentDeviceTag();
 }
