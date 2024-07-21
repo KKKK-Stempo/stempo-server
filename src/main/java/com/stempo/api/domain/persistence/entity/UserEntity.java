@@ -24,7 +24,7 @@ import lombok.Setter;
 public class UserEntity extends BaseEntity {
 
     @Id
-    private String id;
+    private String deviceTag;
 
     @Column(nullable = false)
     private String password;

@@ -7,7 +7,7 @@ public class UserMapper {
 
     public static UserEntity toEntity(User user) {
         return UserEntity.builder()
-                .id(user.getId())
+                .deviceTag(user.getDeviceTag())
                 .password(user.getPassword())
                 .role(user.getRole())
                 .build();
@@ -15,7 +15,7 @@ public class UserMapper {
 
     public static User toDomain(UserEntity entity) {
         return User.builder()
-                .id(entity.getId())
+                .deviceTag(entity.getDeviceTag())
                 .password(entity.getPassword())
                 .role(entity.getRole())
                 .build();

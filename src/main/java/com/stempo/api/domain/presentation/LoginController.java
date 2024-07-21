@@ -19,16 +19,18 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @Operation(summary = "로그인", description = "ROLE_ANONYMOUS 이상의권한이 필요함")
+    @Operation(summary = "로그인", description = "ROLE_ANONYMOUS 이상의권한이 필요함<br>" +
+            "일반 계정일 경우 Device-Tag만 기입하면 됨")
     @PostMapping("/api/vi/login")
     public ApiResponse<TokenInfo> login(
-            @RequestHeader("Device-Tag") String deviceTag
+            @RequestHeader(value = "Device-Tag", defaultValue = "490154203237518") String deviceTag,
+            @RequestHeader(value = "Password", required = false) String password
     ) {
         TokenInfo token = loginService.loginOrRegister(deviceTag);
         return ApiResponse.success(token);
     }
 
-    @Operation(summary = "토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/api/vi/reissue")
     public ApiResponse<TokenInfo> reissueToken(
             HttpServletRequest request,
@@ -37,6 +39,6 @@ public class LoginController {
         TokenInfo token = loginService.reissueToken(request);
         response.setHeader("Authorization", "Bearer" + token.getAccessToken());
         response.setHeader("Refresh-Token", token.getRefreshToken());
-        return ApiResponse.success(token);
+        return ApiResponse.success();
     }
 }

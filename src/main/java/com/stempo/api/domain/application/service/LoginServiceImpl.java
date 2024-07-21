@@ -39,8 +39,8 @@ public class LoginServiceImpl implements LoginService {
     }
 
     private TokenInfo generateAndSaveToken(User loginUser) {
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(loginUser.getId(), loginUser.getRole());
-        redisTokenService.saveToken(loginUser.getId(), loginUser.getRole(), tokenInfo);
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(loginUser.getDeviceTag(), loginUser.getRole());
+        redisTokenService.saveToken(loginUser.getDeviceTag(), loginUser.getRole(), tokenInfo);
         return tokenInfo;
     }
 
