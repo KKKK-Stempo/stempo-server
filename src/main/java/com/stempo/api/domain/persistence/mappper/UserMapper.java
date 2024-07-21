@@ -2,10 +2,12 @@ package com.stempo.api.domain.persistence.mappper;
 
 import com.stempo.api.domain.domain.model.User;
 import com.stempo.api.domain.persistence.entity.UserEntity;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserMapper {
 
-    public static UserEntity toEntity(User user) {
+    public UserEntity toEntity(User user) {
         return UserEntity.builder()
                 .deviceTag(user.getDeviceTag())
                 .password(user.getPassword())
@@ -13,7 +15,7 @@ public class UserMapper {
                 .build();
     }
 
-    public static User toDomain(UserEntity entity) {
+    public User toDomain(UserEntity entity) {
         return User.builder()
                 .deviceTag(entity.getDeviceTag())
                 .password(entity.getPassword())
