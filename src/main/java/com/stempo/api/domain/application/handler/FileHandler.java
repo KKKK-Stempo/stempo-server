@@ -6,10 +6,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Component
@@ -20,18 +21,18 @@ public class FileHandler {
     @Value("${resource.file.path}")
     private String filePath;
 
-    public String saveFile(MultipartFile multipartFile) throws IOException {
-        String originalFilename = multipartFile.getOriginalFilename();
+    public String saveFile(File file) throws IOException {
+        String originalFilename = file.getName();
         String extension = FilenameUtils.getExtension(originalFilename);
 
         String saveFilename = makeFileName(extension);
         String savePath = filePath + File.separator + saveFilename;
 
-        File file = new File(savePath);
-        ensureParentDirectoryExists(file);
+        File destination = new File(savePath);
+        ensureParentDirectoryExists(destination);
 
-        multipartFile.transferTo(file);
-        setFilePermissions(file, savePath, extension);
+        Files.copy(file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        setFilePermissions(destination, savePath, extension);
         return savePath;
     }
 

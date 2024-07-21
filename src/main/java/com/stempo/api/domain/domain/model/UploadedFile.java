@@ -22,7 +22,6 @@ public class UploadedFile {
     private String savedPath;
     private String url;
     private Long fileSize;
-    private String contentType;
     private LocalDateTime createdAt;
 
     public static UploadedFile create(String originalFileName, String saveFileName, String savedPath, String url, Long fileSize, String contentType) {
@@ -32,7 +31,6 @@ public class UploadedFile {
                 .savedPath(savedPath)
                 .url(url)
                 .fileSize(fileSize)
-                .contentType(contentType)
                 .build();
     }
 }

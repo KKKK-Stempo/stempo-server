@@ -15,7 +15,6 @@ public class UploadedFileMapper {
                 .savedPath(uploadedFile.getSavedPath())
                 .url(uploadedFile.getUrl())
                 .fileSize(uploadedFile.getFileSize())
-                .contentType(uploadedFile.getContentType())
                 .build();
     }
 
@@ -27,7 +26,6 @@ public class UploadedFileMapper {
                 .savedPath(entity.getSavedPath())
                 .url(entity.getUrl())
                 .fileSize(entity.getFileSize())
-                .contentType(entity.getContentType())
                 .createdAt(entity.getCreatedAt())
                 .build();
     }

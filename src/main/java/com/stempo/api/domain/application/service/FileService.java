@@ -6,7 +6,6 @@ import com.stempo.api.domain.domain.model.UploadedFile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,14 +20,14 @@ public class FileService {
     @Value("${resource.file.url}")
     private String fileURL;
 
-    public String saveFile(MultipartFile multipartFile) throws IOException {
-        String savedFilePath = fileHandler.saveFile(multipartFile);
+    public String saveFile(File file) throws IOException {
+        String savedFilePath = fileHandler.saveFile(file);
         String fileName = new File(savedFilePath).getName();
         String url = fileURL + "/" + fileName;
 
-        UploadedFile uploadedFile = UploadedFile.create(multipartFile.getOriginalFilename(), fileName, savedFilePath, url, multipartFile.getSize(), multipartFile.getContentType());
+        UploadedFile uploadedFile = UploadedFile.create(file.getName(), fileName, savedFilePath, url, file.length(), null);
         uploadedFileService.saveUploadedFile(uploadedFile);
-        return savedFilePath;
+        return url;
     }
 }
 
