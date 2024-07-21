@@ -25,12 +25,28 @@ public class UserAchievementRepositoryImpl implements UserAchievementRepository 
     }
 
     @Override
+    public void saveAll(List<UserAchievement> achievements) {
+        List<UserAchievementEntity> jpaEntities = achievements.stream()
+                .map(mapper::toEntity)
+                .toList();
+        repository.saveAll(jpaEntities);
+    }
+
+    @Override
     public List<UserAchievementEntity> findByDeviceTag(String deviceTag) {
-        return repository.findByDeviceTagOrderByCreatedAtDesc(deviceTag);
+        return repository.findByDeviceTag(deviceTag);
     }
 
     @Override
     public Optional<UserAchievementEntity> findByDeviceTagAndAchievementId(String deviceTag, Long achievementId) {
         return repository.findByDeviceTagAndAchievementId(deviceTag, achievementId);
+    }
+
+    @Override
+    public List<UserAchievement> findByAchievementId(Long achievementId) {
+        List<UserAchievementEntity> jpaEntities = repository.findByAchievementId(achievementId);
+        return jpaEntities.stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }

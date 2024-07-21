@@ -12,6 +12,7 @@ public class UserAchievementMapper {
                 .id(userAchievement.getId())
                 .deviceTag(userAchievement.getDeviceTag())
                 .achievementId(userAchievement.getAchievementId())
+                .deleted(userAchievement.isDeleted())
                 .build();
     }
 
@@ -21,6 +22,7 @@ public class UserAchievementMapper {
                 .deviceTag(userAchievementEntity.getDeviceTag())
                 .achievementId(userAchievementEntity.getAchievementId())
                 .createdAt(userAchievementEntity.getCreatedAt())
+                .deleted(userAchievementEntity.isDeleted())
                 .build();
     }
 }

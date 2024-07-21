@@ -1,11 +1,14 @@
 package com.stempo.api.domain.application.service;
 
+import com.stempo.api.domain.application.event.AchievementDeletedEvent;
+import com.stempo.api.domain.application.event.AchievementUpdatedEvent;
 import com.stempo.api.domain.domain.model.Achievement;
 import com.stempo.api.domain.domain.repository.AchievementRepository;
 import com.stempo.api.domain.presentation.dto.request.AchievementRequestDto;
 import com.stempo.api.domain.presentation.dto.request.AchievementUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.AchievementResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +18,7 @@ import java.util.List;
 public class AchievementServiceImpl implements AchievementService {
 
     private final AchievementRepository repository;
-
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public Long registerAchievement(AchievementRequestDto requestDto) {
@@ -35,13 +38,17 @@ public class AchievementServiceImpl implements AchievementService {
     public Long updateAchievement(Long achievementId, AchievementUpdateRequestDto requestDto) {
         Achievement achievement = repository.findByIdOrThrow(achievementId);
         achievement.update(requestDto);
-        return repository.save(achievement).getId();
+        repository.save(achievement);
+        eventPublisher.publishEvent(new AchievementUpdatedEvent(this, achievement.getId()));
+        return achievement.getId();
     }
 
     @Override
     public Long deleteAchievement(Long achievementId) {
         Achievement achievement = repository.findByIdOrThrow(achievementId);
         achievement.delete();
-        return repository.save(achievement).getId();
+        repository.save(achievement);
+        eventPublisher.publishEvent(new AchievementDeletedEvent(this, achievement.getId()));
+        return achievement.getId();
     }
 }

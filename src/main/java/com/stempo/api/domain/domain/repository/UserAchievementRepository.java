@@ -10,7 +10,11 @@ public interface UserAchievementRepository {
 
     UserAchievement save(UserAchievement userAchievement);
 
+    void saveAll(List<UserAchievement> achievements);
+
     List<UserAchievementEntity> findByDeviceTag(String deviceTag);
 
     Optional<UserAchievementEntity> findByDeviceTagAndAchievementId(String deviceTag, Long achievementId);
+
+    List<UserAchievement> findByAchievementId(Long achievementId);
 }

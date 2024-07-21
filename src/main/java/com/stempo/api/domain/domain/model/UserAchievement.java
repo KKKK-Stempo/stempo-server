@@ -20,11 +20,16 @@ public class UserAchievement {
     private String deviceTag;
     private Long achievementId;
     private LocalDateTime createdAt;
+    private boolean deleted;
 
     public static UserAchievement create(Long achievementId, String deviceTag) {
         return UserAchievement.builder()
                 .achievementId(achievementId)
                 .deviceTag(deviceTag)
                 .build();
+    }
+
+    public void delete() {
+        setDeleted(true);
     }
 }

@@ -35,4 +35,7 @@ public class UserAchievementEntity extends BaseEntity {
 
     @Column(nullable = false)
     private Long achievementId;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 }
