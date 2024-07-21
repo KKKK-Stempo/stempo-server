@@ -7,6 +7,8 @@ import com.stempo.api.domain.persistence.mappper.UploadedFileMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class UploadedFileRepositoryImpl implements UploadedFileRepository {
@@ -19,5 +21,11 @@ public class UploadedFileRepositoryImpl implements UploadedFileRepository {
         UploadedFileEntity jpaEntity = uploadedFileMapper.toEntity(uploadedFile);
         UploadedFileEntity savedEntity = repository.save(jpaEntity);
         return uploadedFileMapper.toDomain(savedEntity);
+    }
+
+    @Override
+    public Optional<UploadedFile> findByOriginalFileName(String fileName) {
+        return repository.findByOriginalFileName(fileName)
+                .map(uploadedFileMapper::toDomain);
     }
 }

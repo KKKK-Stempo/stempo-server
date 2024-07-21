@@ -1,5 +1,6 @@
 package com.stempo.api.domain.application.service;
 
+import com.stempo.api.domain.domain.model.UploadedFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,12 +8,14 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class RhythmServiceImpl implements RhythmService {
 
+    private final UploadedFileService uploadedFileService;
     private final FileService fileService;
 
     @Value("${python.venv.path}")
@@ -27,6 +30,12 @@ public class RhythmServiceImpl implements RhythmService {
             Path venvPythonPath = projectRoot.resolve(venvPath);
             Path scriptAbsolutePath = projectRoot.resolve(scriptPath);
             Path outputDir = projectRoot.resolve("generated");
+            String outputFilename = "rhythm_" + bpm + "_bpm.wav";
+
+            Optional<UploadedFile> uploadedFile = uploadedFileService.getUploadedFileByOriginalFileName(outputFilename);
+            if (uploadedFile.isPresent()) {
+                return uploadedFile.get().getUrl();
+            }
 
             if (!outputDir.toFile().exists()) {
                 boolean dirCreated = outputDir.toFile().mkdirs();
@@ -44,7 +53,6 @@ public class RhythmServiceImpl implements RhythmService {
                 throw new RuntimeException("Script exited with code: " + exitCode);
             }
 
-            String outputFilename = "rhythm_" + bpm + "_bpm.wav";
             Path outputFilePath = outputDir.resolve(outputFilename);
 
             if (outputFilePath.toFile().exists()) {
