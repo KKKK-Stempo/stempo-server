@@ -25,12 +25,13 @@ dependencies {
 
 	// Security
 	implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // JWT 라이브러리
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // JWT 구현체
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JWT Jackson 모듈
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.6' // JWT 라이브러리
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6' // JWT 구현체
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6' // JWT Jackson 모듈
 
 	// DB
 	implementation 'org.mariadb.jdbc:mariadb-java-client:3.4.1' // MariaDB JDBC Driver
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis' // Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
 	implementation 'org.springframework.boot:spring-boot-starter-validation' // Hibernate Validator
 	implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final' // Bean Validation
