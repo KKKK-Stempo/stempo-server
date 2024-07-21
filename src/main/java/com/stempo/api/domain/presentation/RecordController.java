@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +26,7 @@ public class RecordController {
     private final RecordService recordService;
 
     @Operation(summary = "[U] 재활 운동 기록", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @PostMapping("/api/v1/records")
     public ApiResponse<String> record(
             @Valid @RequestBody RecordRequestDto requestDto
@@ -34,6 +36,7 @@ public class RecordController {
     }
 
     @Operation(summary = "[U] 내 재활 운동 기록 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @GetMapping("/api/v1/records")
     public ApiResponse<List<RecordResponseDto>> getRecords(
             @RequestParam(name = "startDate") LocalDate startDate,
