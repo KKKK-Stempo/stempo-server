@@ -40,4 +40,7 @@ public class ArticleEntity extends BaseEntity {
     @Column(nullable = false)
     @URL(message = "Invalid URL")
     private String articleUrl;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 }

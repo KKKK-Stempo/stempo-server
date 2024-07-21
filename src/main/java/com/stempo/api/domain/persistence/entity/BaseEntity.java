@@ -24,9 +24,6 @@ public class BaseEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
-    private boolean deleted = false;
-
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

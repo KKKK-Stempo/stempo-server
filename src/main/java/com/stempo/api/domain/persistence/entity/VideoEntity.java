@@ -40,4 +40,7 @@ public class VideoEntity extends BaseEntity {
     @Column(nullable = false)
     @URL(message = "Invalid URL")
     private String videoUrl;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 }

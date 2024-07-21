@@ -36,4 +36,7 @@ public class AchievementEntity extends BaseEntity {
 
     @Column(nullable = false)
     private String imageUrl;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 }

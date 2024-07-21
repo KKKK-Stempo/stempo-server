@@ -17,14 +17,14 @@ public class RecordMapper {
                 .build();
     }
 
-    public Record toDomain(RecordEntity recordEntity) {
+    public Record toDomain(RecordEntity entity) {
         return Record.builder()
-                .id(recordEntity.getId())
-                .deviceTag(recordEntity.getDeviceTag())
-                .accuracy(recordEntity.getAccuracy())
-                .duration(recordEntity.getDuration())
-                .steps(recordEntity.getSteps())
-                .createdAt(recordEntity.getCreatedAt())
+                .id(entity.getId())
+                .deviceTag(entity.getDeviceTag())
+                .accuracy(entity.getAccuracy())
+                .duration(entity.getDuration())
+                .steps(entity.getSteps())
+                .createdAt(entity.getCreatedAt())
                 .build();
     }
 }
