@@ -28,6 +28,10 @@ public class User implements UserDetails {
         return new User(user.getId(), user.getPassword(), user.getRole());
     }
 
+    public static User create(String deviceTag) {
+        return new User(deviceTag, "", Role.USER);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(getRole().getKey()));

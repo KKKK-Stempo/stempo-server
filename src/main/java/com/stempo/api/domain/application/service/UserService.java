@@ -9,6 +9,8 @@ public interface UserService {
 
     String registerUser(UserRegisterRequestDto request);
 
+    User registerUser(String deviceTag);
+
     Optional<User> findById(String id);
 
     User findByIdOrThrow(String id);

@@ -25,6 +25,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User registerUser(String deviceTag) {
+        User user = User.create(deviceTag);
+        String encodedPassword = passwordService.encodePassword(user.getPassword());
+        user.updatePassword(encodedPassword);
+        return userRepository.save(user);
+    }
+
+    @Override
     public Optional<User> findById(String id) {
         return userRepository.findById(id);
     }

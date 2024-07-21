@@ -2,14 +2,11 @@ package com.stempo.api.domain.application.service;
 
 import com.stempo.api.domain.domain.model.RedisToken;
 import com.stempo.api.domain.domain.model.User;
-import com.stempo.api.domain.presentation.dto.request.LoginRequestDto;
 import com.stempo.api.domain.presentation.dto.response.TokenInfo;
 import com.stempo.api.global.auth.exception.TokenForgeryException;
 import com.stempo.api.global.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -19,16 +16,13 @@ public class LoginServiceImpl implements LoginService {
 
     private final UserService userService;
     private final RedisTokenService redisTokenService;
-    private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public TokenInfo login(LoginRequestDto requestDto) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(requestDto.getId(), requestDto.getPassword());
-        authenticationManager.authenticate(authenticationToken);
-        User loginUser = userService.findByIdOrThrow(requestDto.getId());
-        return generateAndSaveToken(loginUser);
+    public TokenInfo loginOrRegister(String deviceTag) {
+        User user = userService.findById(deviceTag)
+                .orElseGet(() -> userService.registerUser(deviceTag));
+        return generateAndSaveToken(user);
     }
 
     @Override
