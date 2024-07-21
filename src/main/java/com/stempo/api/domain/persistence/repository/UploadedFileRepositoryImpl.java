@@ -14,18 +14,18 @@ import java.util.Optional;
 public class UploadedFileRepositoryImpl implements UploadedFileRepository {
 
     private final UploadedFileJpaRepository repository;
-    private final UploadedFileMapper uploadedFileMapper;
+    private final UploadedFileMapper mapper;
 
     @Override
     public UploadedFile save(UploadedFile uploadedFile) {
-        UploadedFileEntity jpaEntity = uploadedFileMapper.toEntity(uploadedFile);
+        UploadedFileEntity jpaEntity = mapper.toEntity(uploadedFile);
         UploadedFileEntity savedEntity = repository.save(jpaEntity);
-        return uploadedFileMapper.toDomain(savedEntity);
+        return mapper.toDomain(savedEntity);
     }
 
     @Override
     public Optional<UploadedFile> findByOriginalFileName(String fileName) {
         return repository.findByOriginalFileName(fileName)
-                .map(uploadedFileMapper::toDomain);
+                .map(mapper::toDomain);
     }
 }

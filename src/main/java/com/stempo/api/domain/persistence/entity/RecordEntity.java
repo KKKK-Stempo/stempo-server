@@ -27,14 +27,11 @@ public class RecordEntity extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String userId;
+    private String deviceTag;
 
     @Column(nullable = false)
     private Double accuracy;
 
-    @Column(nullable = false)
     private Integer duration;
-
-    @Column(nullable = false)
     private Integer steps;
 }
