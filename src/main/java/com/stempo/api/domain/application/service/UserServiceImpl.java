@@ -16,8 +16,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordService passwordService;
 
     @Override
-    public User registerUser(String deviceTag) {
-        String rawPassword = UUID.randomUUID().toString();
+    public User registerUser(String deviceTag, String password) {
+        String rawPassword = password != null ? password : UUID.randomUUID().toString();
         User user = User.create(deviceTag, rawPassword);
         String encodedPassword = passwordService.encodePassword(user.getPassword());
         user.updatePassword(encodedPassword);

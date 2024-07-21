@@ -27,7 +27,7 @@ public class LoginController {
             @RequestHeader(value = "Password", required = false) String password,
             HttpServletResponse response
     ) {
-        TokenInfo token = loginService.loginOrRegister(deviceTag);
+        TokenInfo token = loginService.loginOrRegister(deviceTag, password);
         response.setHeader("Authorization", "Bearer " + token.getAccessToken());
         response.setHeader("Refresh-Token", token.getRefreshToken());
         return ApiResponse.success();

@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface LoginService {
 
-    TokenInfo loginOrRegister(String deviceTag);
+    TokenInfo loginOrRegister(String deviceTag, String password);
 
     TokenInfo reissueToken(HttpServletRequest request);
 }

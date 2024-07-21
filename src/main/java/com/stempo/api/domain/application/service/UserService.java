@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface UserService {
 
-    User registerUser(String deviceTag);
+    User registerUser(String deviceTag, String password);
 
     Optional<User> findById(String id);
 

@@ -19,9 +19,9 @@ public class LoginServiceImpl implements LoginService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public TokenInfo loginOrRegister(String deviceTag) {
+    public TokenInfo loginOrRegister(String deviceTag, String password) {
         User user = userService.findById(deviceTag)
-                .orElseGet(() -> userService.registerUser(deviceTag));
+                .orElseGet(() -> userService.registerUser(deviceTag, password));
         return generateAndSaveToken(user);
     }
 
