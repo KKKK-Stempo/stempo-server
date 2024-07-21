@@ -19,16 +19,25 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "file")
-public class FileEntity extends BaseEntity {
+@Table(name = "uploaded_file")
+public class UploadedFileEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String fileName;
+    private String originalFileName;
+
+    @Column(nullable = false, unique = true)
+    private String saveFileName;
+
+    @Column(nullable = false, unique = true)
+    private String savedPath;
+
+    @Column(nullable = false, unique = true)
+    private String url;
 
     @Column(nullable = false)
-    private String fileUrl;
+    private Long fileSize;
 }

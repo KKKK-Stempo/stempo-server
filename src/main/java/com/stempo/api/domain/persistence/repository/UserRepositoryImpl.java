@@ -14,17 +14,19 @@ import java.util.Optional;
 public class UserRepositoryImpl implements UserRepository {
 
     private final UserJpaRepository repository;
+    private final UserMapper userMapper;
 
     @Override
     public User save(User user) {
-        UserEntity entity = repository.save(UserMapper.toEntity(user));
-        return UserMapper.toDomain(entity);
+        UserEntity jpaEntity = userMapper.toEntity(user);
+        UserEntity savedEntity = repository.save(jpaEntity);
+        return userMapper.toDomain(savedEntity);
     }
 
     @Override
     public Optional<User> findById(String id) {
         return repository.findById(id)
-                .map(UserMapper::toDomain);
+                .map(userMapper::toDomain);
     }
 
     @Override
