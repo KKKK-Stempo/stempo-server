@@ -18,4 +18,13 @@ public interface RecordJpaRepository extends JpaRepository<RecordEntity, Long> {
             @Param("startDateTime") LocalDateTime startDateTime,
             @Param("endDateTime") LocalDateTime endDateTime
     );
+
+    @Query("SELECT r " +
+            "FROM RecordEntity r " +
+            "WHERE r.createdAt < :startDateTime " +
+            "ORDER BY r.createdAt DESC " +
+            "LIMIT 1")
+    RecordEntity findLatestBeforeStartDate(
+            @Param("startDateTime") LocalDateTime startDateTime
+    );
 }

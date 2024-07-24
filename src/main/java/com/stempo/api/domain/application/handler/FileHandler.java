@@ -6,6 +6,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +21,25 @@ public class FileHandler {
 
     @Value("${resource.file.path}")
     private String filePath;
+
+    public void init() {
+        filePath = filePath.replace("/", File.separator).replace("\\", File.separator);
+    }
+
+    public String saveFile(MultipartFile multipartFile, String category) throws IOException {
+        init();
+        String originalFilename = multipartFile.getOriginalFilename();
+        String extension = FilenameUtils.getExtension(originalFilename);
+
+        String saveFilename = makeFileName(extension);
+        String savePath = filePath + File.separator + category + File.separator + saveFilename;
+
+        File file = new File(savePath);
+        ensureParentDirectoryExists(file);
+        multipartFile.transferTo(file);
+        setFilePermissions(file, savePath, extension);
+        return savePath;
+    }
 
     public String saveFile(File file) throws IOException {
         String originalFilename = file.getName();

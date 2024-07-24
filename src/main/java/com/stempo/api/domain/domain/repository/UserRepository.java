@@ -10,5 +10,7 @@ public interface UserRepository {
 
     Optional<User> findById(String id);
 
+    User findByIdOrThrow(String deviceTag);
+
     boolean existsById(String id);
 }

@@ -13,4 +13,6 @@ public interface UserService {
     boolean existsById(String id);
 
     String getCurrentDeviceTag();
+
+    User getCurrentUser();
 }

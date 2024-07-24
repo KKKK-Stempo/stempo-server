@@ -1,7 +1,9 @@
 package com.stempo.api.domain.persistence.entity;
 
 import com.stempo.api.domain.domain.model.BoardCategory;
+import com.stempo.api.global.util.StringJsonConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,6 +19,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -31,7 +35,7 @@ public class BoardEntity extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String userId;
+    private String deviceTag;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -44,6 +48,10 @@ public class BoardEntity extends BaseEntity {
     @Column(nullable = false)
     @Size(min = 1, max = 10000, message = "Content must be between 1 and 10000 characters")
     private String content;
+
+    @Column(columnDefinition = "TEXT")
+    @Convert(converter = StringJsonConverter.class)
+    private List<String> fileUrls;
 
     @Column(nullable = false)
     private boolean deleted = false;

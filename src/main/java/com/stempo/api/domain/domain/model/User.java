@@ -25,4 +25,8 @@ public class User {
     public void updatePassword(String encodedPassword) {
         setPassword(encodedPassword);
     }
+
+    public boolean isAdmin() {
+        return role.equals(Role.ADMIN);
+    }
 }

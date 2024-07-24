@@ -31,4 +31,10 @@ public class RecordRepositoryImpl implements RecordRepository {
                 .map(mapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public Record findLatestBeforeStartDate(LocalDateTime startDateTime) {
+        RecordEntity jpaEntity = repository.findLatestBeforeStartDate(startDateTime);
+        return mapper.toDomain(jpaEntity);
+    }
 }

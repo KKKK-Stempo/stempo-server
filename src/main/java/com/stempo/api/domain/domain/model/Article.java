@@ -24,7 +24,7 @@ public class Article {
     private String thumbnailUrl;
     private String articleUrl;
     private LocalDateTime createdAt;
-    private boolean deleted = false;
+    private boolean deleted;
 
     public void update(ArticleUpdateRequestDto requestDto) {
         Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);

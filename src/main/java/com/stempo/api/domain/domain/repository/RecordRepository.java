@@ -10,4 +10,6 @@ public interface RecordRepository {
     Record save(Record record);
 
     List<Record> findByDateBetween(LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    Record findLatestBeforeStartDate(LocalDateTime startDateTime);
 }
