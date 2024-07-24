@@ -29,6 +29,7 @@ public class RhythmServiceImpl implements RhythmService {
     @Override
     public String createRhythm(int bpm) {
         try {
+            validateBpmRange(bpm);
             String outputFilename = "rhythm_" + bpm + "_bpm.wav";
 
             Optional<UploadedFile> uploadedFile = uploadedFileService.getUploadedFileByOriginalFileName(outputFilename);
@@ -40,6 +41,14 @@ public class RhythmServiceImpl implements RhythmService {
             return saveGeneratedFile(outputFilePath);
         } catch (Exception e) {
             throw new RhythmGenerationException("Error generating rhythm: " + e.getMessage(), e);
+        }
+    }
+
+    private void validateBpmRange(int bpm) {
+        int minBpm = 10;
+        int maxBpm = 200;
+        if (bpm < minBpm || bpm > maxBpm) {
+            throw new RhythmGenerationException("BPM must be between " + minBpm + " and " + maxBpm);
         }
     }
 

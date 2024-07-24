@@ -50,7 +50,7 @@ public class BoardController {
         List<BoardResponseDto> boards = boardService.getBoardsByCategory(category);
         return ApiResponse.success(boards);
     }
-
+    
     @Operation(summary = "[U] 게시글 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "ADMIN은 모든 게시글 수정 가능")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })

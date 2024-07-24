@@ -17,7 +17,8 @@ public class RhythmController {
 
     private final RhythmService rhythmService;
 
-    @Operation(summary = "[U] 리듬 생성", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 리듬 생성", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "BPM은 10 이상 200 이하의 값이어야 함")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @PostMapping("/api/v1/rhythm/{bpm}")
     public ApiResponse<String> generateRhythm(
