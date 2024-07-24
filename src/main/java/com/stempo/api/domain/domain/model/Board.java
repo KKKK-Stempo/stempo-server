@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Getter
@@ -23,6 +24,7 @@ public class Board {
     private BoardCategory category;
     private String title;
     private String content;
+    private List<String> fileUrls;
     private LocalDateTime createdAt;
     private boolean deleted;
 

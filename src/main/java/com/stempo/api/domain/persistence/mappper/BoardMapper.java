@@ -14,6 +14,7 @@ public class BoardMapper {
                 .category(board.getCategory())
                 .title(board.getTitle())
                 .content(board.getContent())
+                .fileUrls(board.getFileUrls())
                 .deleted(board.isDeleted())
                 .build();
     }
@@ -25,6 +26,7 @@ public class BoardMapper {
                 .category(entity.getCategory())
                 .title(entity.getTitle())
                 .content(entity.getContent())
+                .fileUrls(entity.getFileUrls())
                 .createdAt(entity.getCreatedAt())
                 .deleted(entity.isDeleted())
                 .build();
