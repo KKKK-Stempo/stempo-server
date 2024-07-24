@@ -34,7 +34,7 @@ public class VideoRepositoryImpl implements VideoRepository {
 
     @Override
     public Video findByIdOrThrow(Long videoId) {
-        return repository.findById(videoId)
+        return repository.findByIdAndNotDeleted(videoId)
                 .map(mapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Video] id: " + videoId + " not found"));
     }

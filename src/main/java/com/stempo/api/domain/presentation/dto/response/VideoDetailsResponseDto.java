@@ -6,20 +6,22 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class VideoResponseDto {
+public class VideoDetailsResponseDto {
 
     private final Long id;
     private final String title;
     private final String content;
     private final String thumbnailUrl;
+    private final String videoUrl;
     private final String createdAt;
 
-    public static VideoResponseDto toDto(Video video) {
-        return VideoResponseDto.builder()
+    public static VideoDetailsResponseDto toDto(Video video) {
+        return VideoDetailsResponseDto.builder()
                 .id(video.getId())
                 .title(video.getTitle())
                 .content(video.getContent())
                 .thumbnailUrl(video.getThumbnailUrl())
+                .videoUrl(video.getVideoUrl())
                 .createdAt(video.getCreatedAt().toString())
                 .build();
     }
