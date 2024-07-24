@@ -7,6 +7,16 @@ plugins {
 group = 'com.stempo'
 version = '0.0.1-SNAPSHOT'
 
+jar {
+	enabled = false
+}
+
+bootJar {
+	archivesBaseName = "stempo"
+	archiveFileName = "stempo.jar"
+	archiveVersion = "0.0.1"
+}
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
