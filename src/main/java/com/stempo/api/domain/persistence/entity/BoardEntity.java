@@ -31,7 +31,7 @@ public class BoardEntity extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String userId;
+    private String deviceTag;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
