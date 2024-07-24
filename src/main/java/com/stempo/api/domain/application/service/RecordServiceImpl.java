@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,9 +30,26 @@ public class RecordServiceImpl implements RecordService {
     public List<RecordResponseDto> getRecordsByDateRange(LocalDate startDate, LocalDate endDate) {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atStartOfDay().plusDays(1);
+
+        // startDateTime 이전의 가장 최신 데이터 가져오기
+        Record latestBeforeStartDate = recordRepository.findLatestBeforeStartDate(startDateTime);
+
+        // startDateTime과 endDateTime 사이의 데이터 가져오기
         List<Record> records = recordRepository.findByDateBetween(startDateTime, endDateTime);
-        return records.stream()
+
+        // 결과 합치기
+        List<RecordResponseDto> combinedRecords = new ArrayList<>();
+        if (latestBeforeStartDate != null) {
+            combinedRecords.add(RecordResponseDto.toDto(latestBeforeStartDate));
+        }
+        combinedRecords.addAll(records.stream()
                 .map(RecordResponseDto::toDto)
-                .toList();
+                .toList());
+
+        // 데이터가 없을 경우 오늘 날짜로 값을 0으로 설정하여 반환
+        if (combinedRecords.isEmpty()) {
+            combinedRecords.add(RecordResponseDto.createDefault());
+        }
+        return combinedRecords;
     }
 }

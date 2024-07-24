@@ -23,4 +23,13 @@ public class RecordResponseDto {
                 .date(record.getCreatedAt().toLocalDate())
                 .build();
     }
+
+    public static RecordResponseDto createDefault() {
+        return RecordResponseDto.builder()
+                .accuracy(0.0)
+                .duration(0)
+                .steps(0)
+                .date(LocalDate.now())
+                .build();
+    }
 }
