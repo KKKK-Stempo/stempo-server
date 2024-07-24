@@ -3,6 +3,7 @@ package com.stempo.api.domain.presentation;
 import com.stempo.api.domain.application.service.VideoService;
 import com.stempo.api.domain.presentation.dto.request.VideoRequestDto;
 import com.stempo.api.domain.presentation.dto.request.VideoUpdateRequestDto;
+import com.stempo.api.domain.presentation.dto.response.VideoDetailsResponseDto;
 import com.stempo.api.domain.presentation.dto.response.VideoResponseDto;
 import com.stempo.api.global.common.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,6 +44,16 @@ public class VideoController {
     public ApiResponse<List<VideoResponseDto>> getVideos() {
         List<VideoResponseDto> videoResponseDtos = videoService.getVideos();
         return ApiResponse.success(videoResponseDtos);
+    }
+
+    @Operation(summary = "[U] 재활운동 영상 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
+    @GetMapping("/api/v1/videos/{videoId}")
+    public ApiResponse<VideoDetailsResponseDto> getVideo(
+            @PathVariable(name = "videoId") Long videoId
+    ) {
+        VideoDetailsResponseDto videoResponseDto = videoService.getVideo(videoId);
+        return ApiResponse.success(videoResponseDto);
     }
 
     @Operation(summary = "[A] 재활운동 영상 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")

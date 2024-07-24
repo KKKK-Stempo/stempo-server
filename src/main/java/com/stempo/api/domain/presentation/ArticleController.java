@@ -3,6 +3,7 @@ package com.stempo.api.domain.presentation;
 import com.stempo.api.domain.application.service.ArticleService;
 import com.stempo.api.domain.presentation.dto.request.ArticleRequestDto;
 import com.stempo.api.domain.presentation.dto.request.ArticleUpdateRequestDto;
+import com.stempo.api.domain.presentation.dto.response.ArticleDetailsResponseDto;
 import com.stempo.api.domain.presentation.dto.response.ArticleResponseDto;
 import com.stempo.api.global.common.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,6 +44,16 @@ public class ArticleController {
     public ApiResponse<List<ArticleResponseDto>> getArticles() {
         List<ArticleResponseDto> articleResponseDtos = articleService.getArticles();
         return ApiResponse.success(articleResponseDtos);
+    }
+
+    @Operation(summary = "[U] 재활 관련 정보 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
+    @GetMapping("/api/v1/articles/{articleId}")
+    public ApiResponse<ArticleDetailsResponseDto> getArticle(
+            @PathVariable(name = "articleId") Long articleId
+    ) {
+        ArticleDetailsResponseDto articleResponseDto = articleService.getArticle(articleId);
+        return ApiResponse.success(articleResponseDto);
     }
 
     @Operation(summary = "[A] 재활 관련 정보 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")

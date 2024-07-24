@@ -4,6 +4,7 @@ import com.stempo.api.domain.domain.model.Article;
 import com.stempo.api.domain.domain.repository.ArticleRepository;
 import com.stempo.api.domain.presentation.dto.request.ArticleRequestDto;
 import com.stempo.api.domain.presentation.dto.request.ArticleUpdateRequestDto;
+import com.stempo.api.domain.presentation.dto.response.ArticleDetailsResponseDto;
 import com.stempo.api.domain.presentation.dto.response.ArticleResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,12 @@ public class ArticleServiceImpl implements ArticleService {
         return articles.stream()
                 .map(ArticleResponseDto::toDto)
                 .toList();
+    }
+
+    @Override
+    public ArticleDetailsResponseDto getArticle(Long articleId) {
+        Article article = repository.findByIdOrThrow(articleId);
+        return ArticleDetailsResponseDto.toDto(article);
     }
 
     @Override

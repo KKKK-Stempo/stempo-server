@@ -4,6 +4,7 @@ import com.stempo.api.domain.domain.model.Video;
 import com.stempo.api.domain.domain.repository.VideoRepository;
 import com.stempo.api.domain.presentation.dto.request.VideoRequestDto;
 import com.stempo.api.domain.presentation.dto.request.VideoUpdateRequestDto;
+import com.stempo.api.domain.presentation.dto.response.VideoDetailsResponseDto;
 import com.stempo.api.domain.presentation.dto.response.VideoResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,12 @@ public class VideoServiceImpl implements VideoService {
         return videos.stream()
                 .map(VideoResponseDto::toDto)
                 .toList();
+    }
+
+    @Override
+    public VideoDetailsResponseDto getVideo(Long videoId) {
+        Video video = repository.findByIdOrThrow(videoId);
+        return VideoDetailsResponseDto.toDto(video);
     }
 
     @Override
