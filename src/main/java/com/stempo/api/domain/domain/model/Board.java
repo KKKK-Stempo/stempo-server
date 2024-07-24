@@ -1,6 +1,7 @@
 package com.stempo.api.domain.domain.model;
 
 import com.stempo.api.domain.presentation.dto.request.BoardUpdateRequestDto;
+import com.stempo.api.global.exception.PermissionDeniedException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,5 +37,25 @@ public class Board {
 
     public void delete() {
         setDeleted(true);
+    }
+
+    public boolean isOwner(User user) {
+        return this.deviceTag.equals(user.getDeviceTag());
+    }
+
+    public void validateAccessPermission(User user) {
+        if (!(isOwner(user) || user.isAdmin())) {
+            throw new PermissionDeniedException("게시글을 수정/삭제할 권한이 없습니다.");
+        }
+    }
+
+    public void validateAccessPermissionForNotice(User user) {
+        if (isNotice() && !user.isAdmin()) {
+            throw new PermissionDeniedException("공지사항 관리 권한이 없습니다.");
+        }
+    }
+
+    public boolean isNotice() {
+        return category.equals(BoardCategory.NOTICE);
     }
 }

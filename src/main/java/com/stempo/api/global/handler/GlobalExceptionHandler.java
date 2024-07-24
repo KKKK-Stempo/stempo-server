@@ -11,6 +11,7 @@ import com.stempo.api.global.auth.exception.TokenValidateException;
 import com.stempo.api.global.common.dto.ApiResponse;
 import com.stempo.api.global.common.dto.ErrorResponse;
 import com.stempo.api.global.exception.NotFoundException;
+import com.stempo.api.global.exception.PermissionDeniedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
@@ -61,7 +62,7 @@ public class GlobalExceptionHandler {
             BadCredentialsException.class,
             TokenValidateException.class,
             TokenNotFoundException.class,
-            TokenForgeryException.class,
+            TokenForgeryException.class
     })
     public ApiResponse<Void> unAuthorizeException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -69,10 +70,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
+            PermissionDeniedException.class
+    })
+    public ApiResponse<Void> deniedException(HttpServletResponse response, Exception e) {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        return ApiResponse.failure();
+    }
+
+    @ExceptionHandler({
             NullPointerException.class,
             NotFoundException.class,
             NoSuchElementException.class,
-            FileNotFoundException.class,
+            FileNotFoundException.class
     })
     public ErrorResponse<Exception> notFoundException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);

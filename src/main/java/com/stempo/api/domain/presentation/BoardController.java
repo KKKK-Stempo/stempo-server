@@ -41,7 +41,7 @@ public class BoardController {
     }
 
     @Operation(summary = "[U] 카테고리별 게시글 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "건의하기는 본인의 글이 아닌 경우 ROLE_ADMIN 이상의 권한이 필요함")
+            "건의하기는 ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @GetMapping("/api/v1/boards")
     public ApiResponse<List<BoardResponseDto>> getBoardsByCategory(
@@ -52,7 +52,6 @@ public class BoardController {
     }
 
     @Operation(summary = "[U] 게시글 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "공지사항은 ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "ADMIN은 모든 게시글 수정 가능")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @PatchMapping("/api/v1/boards/{boardId}")
@@ -65,7 +64,6 @@ public class BoardController {
     }
 
     @Operation(summary = "[U] 게시글 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "공지사항은 ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "ADMIN은 모든 게시글 삭제 가능")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @DeleteMapping("/api/v1/boards/{boardId}")
