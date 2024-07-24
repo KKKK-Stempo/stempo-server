@@ -24,7 +24,7 @@ public class UploadedFile {
     private Long fileSize;
     private LocalDateTime createdAt;
 
-    public static UploadedFile create(String originalFileName, String saveFileName, String savedPath, String url, Long fileSize, String contentType) {
+    public static UploadedFile create(String originalFileName, String saveFileName, String savedPath, String url, Long fileSize) {
         return UploadedFile.builder()
                 .originalFileName(originalFileName)
                 .saveFileName(saveFileName)
