@@ -11,8 +11,6 @@ public interface UserAchievementRepository {
 
     void saveAll(List<UserAchievement> achievements);
 
-    List<UserAchievement> findByDeviceTag(String deviceTag);
-
     Optional<UserAchievement> findByDeviceTagAndAchievementId(String deviceTag, Long achievementId);
 
     List<UserAchievement> findByAchievementId(Long achievementId);
