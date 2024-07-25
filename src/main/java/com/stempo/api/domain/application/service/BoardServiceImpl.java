@@ -7,11 +7,12 @@ import com.stempo.api.domain.domain.repository.BoardRepository;
 import com.stempo.api.domain.presentation.dto.request.BoardRequestDto;
 import com.stempo.api.domain.presentation.dto.request.BoardUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.BoardResponseDto;
+import com.stempo.api.global.common.dto.PagedResponseDto;
 import com.stempo.api.global.exception.PermissionDeniedException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,12 +30,10 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<BoardResponseDto> getBoardsByCategory(BoardCategory category) {
+    public PagedResponseDto<BoardResponseDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
         validateAccessPermissionForSuggestion(category);
-        List<Board> boards = repository.findByCategory(category);
-        return boards.stream()
-                .map(BoardResponseDto::toDto)
-                .toList();
+        Page<Board> boards = repository.findByCategory(category, pageable);
+        return new PagedResponseDto<>(boards.map(BoardResponseDto::toDto));
     }
 
     @Override

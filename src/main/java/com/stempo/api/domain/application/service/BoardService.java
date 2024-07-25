@@ -4,14 +4,14 @@ import com.stempo.api.domain.domain.model.BoardCategory;
 import com.stempo.api.domain.presentation.dto.request.BoardRequestDto;
 import com.stempo.api.domain.presentation.dto.request.BoardUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.BoardResponseDto;
-
-import java.util.List;
+import com.stempo.api.global.common.dto.PagedResponseDto;
+import org.springframework.data.domain.Pageable;
 
 public interface BoardService {
-    
+
     Long registerBoard(BoardRequestDto requestDto);
 
-    List<BoardResponseDto> getBoardsByCategory(BoardCategory category);
+    PagedResponseDto<BoardResponseDto> getBoardsByCategory(BoardCategory category, Pageable pageable);
 
     Long updateBoard(Long boardId, BoardUpdateRequestDto requestDto);
 

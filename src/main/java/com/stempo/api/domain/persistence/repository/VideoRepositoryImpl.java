@@ -6,9 +6,9 @@ import com.stempo.api.domain.persistence.entity.VideoEntity;
 import com.stempo.api.domain.persistence.mappper.VideoMapper;
 import com.stempo.api.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,11 +25,9 @@ public class VideoRepositoryImpl implements VideoRepository {
     }
 
     @Override
-    public List<Video> findAll() {
-        List<VideoEntity> videos = repository.findAllVideos();
-        return videos.stream()
-                .map(mapper::toDomain)
-                .toList();
+    public Page<Video> findAll(Pageable pageable) {
+        Page<VideoEntity> videos = repository.findAllVideos(pageable);
+        return videos.map(mapper::toDomain);
     }
 
     @Override

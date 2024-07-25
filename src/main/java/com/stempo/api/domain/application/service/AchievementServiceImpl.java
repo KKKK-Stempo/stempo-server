@@ -7,11 +7,12 @@ import com.stempo.api.domain.domain.repository.AchievementRepository;
 import com.stempo.api.domain.presentation.dto.request.AchievementRequestDto;
 import com.stempo.api.domain.presentation.dto.request.AchievementUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.AchievementResponseDto;
+import com.stempo.api.global.common.dto.PagedResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +28,9 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override
-    public List<AchievementResponseDto> getAchievements() {
-        List<Achievement> achievements = repository.findAll();
-        return achievements.stream()
-                .map(AchievementResponseDto::toDto)
-                .toList();
+    public PagedResponseDto<AchievementResponseDto> getAchievements(Pageable pageable) {
+        Page<Achievement> achievements = repository.findAll(pageable);
+        return new PagedResponseDto<>(achievements.map(AchievementResponseDto::toDto));
     }
 
     @Override

@@ -6,10 +6,15 @@ import com.stempo.api.domain.presentation.dto.request.BoardRequestDto;
 import com.stempo.api.domain.presentation.dto.request.BoardUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.BoardResponseDto;
 import com.stempo.api.global.common.dto.ApiResponse;
+import com.stempo.api.global.common.dto.PagedResponseDto;
+import com.stempo.api.global.exception.InvalidColumnException;
+import com.stempo.api.global.exception.SortingArgumentException;
+import com.stempo.api.global.util.PageableUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +33,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final PageableUtil pageableUtil;
 
     @Operation(summary = "[U] 게시글 작성", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "공지사항은 ROLE_ADMIN 이상의 권한이 필요함")
@@ -41,13 +47,19 @@ public class BoardController {
     }
 
     @Operation(summary = "[U] 카테고리별 게시글 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "건의하기는 ROLE_ADMIN 이상의 권한이 필요함")
+            "건의하기는 ROLE_ADMIN 이상의 권한이 필요함<br>" +
+            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @GetMapping("/api/v1/boards")
-    public ApiResponse<List<BoardResponseDto>> getBoardsByCategory(
-            @RequestParam(name = "category") BoardCategory category
-    ) {
-        List<BoardResponseDto> boards = boardService.getBoardsByCategory(category);
+    public ApiResponse<PagedResponseDto<BoardResponseDto>> getBoardsByCategory(
+            @RequestParam(name = "category") BoardCategory category,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
+    ) throws InvalidColumnException, SortingArgumentException {
+        Pageable pageable = pageableUtil.createPageable(page, size, sortBy, sortDirection, BoardResponseDto.class);
+        PagedResponseDto<BoardResponseDto> boards = boardService.getBoardsByCategory(category, pageable);
         return ApiResponse.success(boards);
     }
     

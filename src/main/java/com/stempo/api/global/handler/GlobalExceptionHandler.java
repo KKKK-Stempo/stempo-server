@@ -10,8 +10,10 @@ import com.stempo.api.global.auth.exception.TokenNotFoundException;
 import com.stempo.api.global.auth.exception.TokenValidateException;
 import com.stempo.api.global.common.dto.ApiResponse;
 import com.stempo.api.global.common.dto.ErrorResponse;
+import com.stempo.api.global.exception.InvalidColumnException;
 import com.stempo.api.global.exception.NotFoundException;
 import com.stempo.api.global.exception.PermissionDeniedException;
+import com.stempo.api.global.exception.SortingArgumentException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
@@ -49,7 +51,9 @@ public class GlobalExceptionHandler {
             MethodArgumentTypeMismatchException.class,
             IllegalAccessException.class,
             NumberFormatException.class,
-            UnknownPathException.class
+            UnknownPathException.class,
+            InvalidColumnException.class,
+            SortingArgumentException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

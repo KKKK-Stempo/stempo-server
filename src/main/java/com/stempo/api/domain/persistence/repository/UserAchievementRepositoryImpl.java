@@ -33,13 +33,9 @@ public class UserAchievementRepositoryImpl implements UserAchievementRepository 
     }
 
     @Override
-    public List<UserAchievementEntity> findByDeviceTag(String deviceTag) {
-        return repository.findByDeviceTag(deviceTag);
-    }
-
-    @Override
-    public Optional<UserAchievementEntity> findByDeviceTagAndAchievementId(String deviceTag, Long achievementId) {
-        return repository.findByDeviceTagAndAchievementId(deviceTag, achievementId);
+    public Optional<UserAchievement> findByDeviceTagAndAchievementId(String deviceTag, Long achievementId) {
+        return repository.findByDeviceTagAndAchievementId(deviceTag, achievementId)
+                .map(mapper::toDomain);
     }
 
     @Override

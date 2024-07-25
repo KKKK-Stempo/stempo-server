@@ -4,12 +4,16 @@ import com.stempo.api.domain.domain.model.Achievement;
 import com.stempo.api.domain.domain.model.UserAchievement;
 import com.stempo.api.domain.domain.repository.AchievementRepository;
 import com.stempo.api.domain.domain.repository.UserAchievementRepository;
-import com.stempo.api.domain.persistence.entity.UserAchievementEntity;
 import com.stempo.api.domain.presentation.dto.response.UserAchievementResponseDto;
+import com.stempo.api.global.common.dto.PagedResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -23,7 +27,8 @@ public class UserAchievementServiceImpl implements UserAchievementService {
     @Override
     public Long registerUserAchievement(Long achievementId) {
         String deviceTag = userService.getCurrentDeviceTag();
-        Optional<UserAchievementEntity> existingUserAchievement = userAchievementRepository.findByDeviceTagAndAchievementId(deviceTag, achievementId);
+        Optional<UserAchievement> existingUserAchievement =
+                userAchievementRepository.findByDeviceTagAndAchievementId(deviceTag, achievementId);
 
         if (existingUserAchievement.isPresent()) {
             return existingUserAchievement.get().getId();
@@ -34,16 +39,20 @@ public class UserAchievementServiceImpl implements UserAchievementService {
     }
 
     @Override
-    public List<UserAchievementResponseDto> getUserAchievements() {
+    public PagedResponseDto<UserAchievementResponseDto> getUserAchievements(Pageable pageable) {
         String deviceTag = userService.getCurrentDeviceTag();
-        List<UserAchievementEntity> userAchievements = userAchievementRepository.findByDeviceTag(deviceTag);
-        return userAchievements.stream()
-                .map(this::getUserAchievementResponseDto)
-                .toList();
+        Page<Achievement> achievements = achievementRepository.findAll(pageable);
+        List<UserAchievementResponseDto> userAchievementDtos = getUserAchievementResponseDtos(achievements, deviceTag);
+        return new PagedResponseDto<>(new PageImpl<>(userAchievementDtos, pageable, userAchievementDtos.size()));
     }
 
-    private UserAchievementResponseDto getUserAchievementResponseDto(UserAchievementEntity ua) {
-        Achievement achievement = achievementRepository.findByIdOrThrow(ua.getAchievementId());
-        return UserAchievementResponseDto.toDto(achievement);
+    private List<UserAchievementResponseDto> getUserAchievementResponseDtos(Page<Achievement> achievements, String deviceTag) {
+        return achievements.stream()
+                .map(achievement -> userAchievementRepository.findByDeviceTagAndAchievementId(deviceTag, achievement.getId())
+                            .map(userAchievement -> UserAchievementResponseDto.toDto(achievement, userAchievement.getCreatedAt()))
+                            .orElse(null)
+                )
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

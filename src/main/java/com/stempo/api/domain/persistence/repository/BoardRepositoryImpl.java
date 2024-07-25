@@ -7,9 +7,9 @@ import com.stempo.api.domain.persistence.entity.BoardEntity;
 import com.stempo.api.domain.persistence.mappper.BoardMapper;
 import com.stempo.api.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,11 +27,9 @@ public class BoardRepositoryImpl implements BoardRepository {
     }
 
     @Override
-    public List<Board> findByCategory(BoardCategory category) {
-        List<BoardEntity> boards = repository.findByCategory(category);
-        return boards.stream()
-                .map(mapper::toDomain)
-                .toList();
+    public Page<Board> findByCategory(BoardCategory category, Pageable pageable) {
+        Page<BoardEntity> boards = repository.findByCategory(category, pageable);
+        return boards.map(mapper::toDomain);
     }
 
     @Override

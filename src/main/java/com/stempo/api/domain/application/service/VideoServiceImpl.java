@@ -6,10 +6,11 @@ import com.stempo.api.domain.presentation.dto.request.VideoRequestDto;
 import com.stempo.api.domain.presentation.dto.request.VideoUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.VideoDetailsResponseDto;
 import com.stempo.api.domain.presentation.dto.response.VideoResponseDto;
+import com.stempo.api.global.common.dto.PagedResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +25,9 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public List<VideoResponseDto> getVideos() {
-        List<Video> videos = repository.findAll();
-        return videos.stream()
-                .map(VideoResponseDto::toDto)
-                .toList();
+    public PagedResponseDto<VideoResponseDto> getVideos(Pageable pageable) {
+        Page<Video> videos = repository.findAll(pageable);
+        return new PagedResponseDto<>(videos.map(VideoResponseDto::toDto));
     }
 
     @Override
