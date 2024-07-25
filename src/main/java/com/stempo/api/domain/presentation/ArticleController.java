@@ -51,7 +51,7 @@ public class ArticleController {
     @GetMapping("/api/v1/articles")
     public ApiResponse<PagedResponseDto<ArticleResponseDto>> getArticles(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "size", defaultValue = "3") int size,
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws InvalidColumnException, SortingArgumentException {
