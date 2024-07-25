@@ -6,9 +6,9 @@ import com.stempo.api.domain.persistence.entity.AchievementEntity;
 import com.stempo.api.domain.persistence.mappper.AchievementMapper;
 import com.stempo.api.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,11 +26,9 @@ public class AchievementRepositoryImpl implements AchievementRepository {
     }
 
     @Override
-    public List<Achievement> findAll() {
-        List<AchievementEntity> entities = repository.findAllActiveAchievements();
-        return entities.stream()
-                .map(mapper::toDomain)
-                .toList();
+    public Page<Achievement> findAll(Pageable pageable) {
+        Page<AchievementEntity> entities = repository.findAllActiveAchievements(pageable);
+        return entities.map(mapper::toDomain);
     }
 
     @Override

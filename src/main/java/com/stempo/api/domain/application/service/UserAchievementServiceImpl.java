@@ -4,7 +4,6 @@ import com.stempo.api.domain.domain.model.Achievement;
 import com.stempo.api.domain.domain.model.UserAchievement;
 import com.stempo.api.domain.domain.repository.AchievementRepository;
 import com.stempo.api.domain.domain.repository.UserAchievementRepository;
-import com.stempo.api.domain.persistence.entity.UserAchievementEntity;
 import com.stempo.api.domain.presentation.dto.response.UserAchievementResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,8 @@ public class UserAchievementServiceImpl implements UserAchievementService {
     @Override
     public Long registerUserAchievement(Long achievementId) {
         String deviceTag = userService.getCurrentDeviceTag();
-        Optional<UserAchievementEntity> existingUserAchievement = userAchievementRepository.findByDeviceTagAndAchievementId(deviceTag, achievementId);
+        Optional<UserAchievement> existingUserAchievement =
+                userAchievementRepository.findByDeviceTagAndAchievementId(deviceTag, achievementId);
 
         if (existingUserAchievement.isPresent()) {
             return existingUserAchievement.get().getId();
@@ -36,14 +36,14 @@ public class UserAchievementServiceImpl implements UserAchievementService {
     @Override
     public List<UserAchievementResponseDto> getUserAchievements() {
         String deviceTag = userService.getCurrentDeviceTag();
-        List<UserAchievementEntity> userAchievements = userAchievementRepository.findByDeviceTag(deviceTag);
+        List<UserAchievement> userAchievements = userAchievementRepository.findByDeviceTag(deviceTag);
         return userAchievements.stream()
                 .map(this::getUserAchievementResponseDto)
                 .toList();
     }
 
-    private UserAchievementResponseDto getUserAchievementResponseDto(UserAchievementEntity ua) {
-        Achievement achievement = achievementRepository.findByIdOrThrow(ua.getAchievementId());
-        return UserAchievementResponseDto.toDto(achievement);
+    private UserAchievementResponseDto getUserAchievementResponseDto(UserAchievement userAchievement) {
+        Achievement achievement = achievementRepository.findByIdOrThrow(userAchievement.getAchievementId());
+        return UserAchievementResponseDto.toDto(achievement, userAchievement.getCreatedAt());
     }
 }

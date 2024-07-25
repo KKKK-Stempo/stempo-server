@@ -6,9 +6,9 @@ import com.stempo.api.domain.persistence.entity.ArticleEntity;
 import com.stempo.api.domain.persistence.mappper.ArticleMapper;
 import com.stempo.api.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,11 +26,9 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     @Override
-    public List<Article> findAll() {
-        List<ArticleEntity> articles = repository.findAllArticles();
-        return articles.stream()
-                .map(mapper::toDomain)
-                .toList();
+    public Page<Article> findAll(Pageable pageable) {
+        Page<ArticleEntity> articles = repository.findAllArticles(pageable);
+        return articles.map(mapper::toDomain);
     }
 
     @Override

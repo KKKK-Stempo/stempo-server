@@ -1,14 +1,14 @@
 package com.stempo.api.domain.domain.repository;
 
 import com.stempo.api.domain.domain.model.Article;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ArticleRepository {
 
     Article save(Article article);
 
-    List<Article> findAll();
+    Page<Article> findAll(Pageable pageable);
 
     Article findByIdOrThrow(Long articleId);
 }

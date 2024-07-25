@@ -6,10 +6,11 @@ import com.stempo.api.domain.presentation.dto.request.ArticleRequestDto;
 import com.stempo.api.domain.presentation.dto.request.ArticleUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.ArticleDetailsResponseDto;
 import com.stempo.api.domain.presentation.dto.response.ArticleResponseDto;
+import com.stempo.api.global.common.dto.PagedResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +25,9 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public List<ArticleResponseDto> getArticles() {
-        List<Article> articles = repository.findAll();
-        return articles.stream()
-                .map(ArticleResponseDto::toDto)
-                .toList();
+    public PagedResponseDto<ArticleResponseDto> getArticles(Pageable pageable) {
+        Page<Article> articles = repository.findAll(pageable);
+        return new PagedResponseDto<>(articles.map(ArticleResponseDto::toDto));
     }
 
     @Override

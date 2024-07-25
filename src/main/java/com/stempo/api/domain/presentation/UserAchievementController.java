@@ -34,7 +34,8 @@ public class UserAchievementController {
     @Operation(summary = "[U] 내 업적 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @GetMapping("/api/v1/achievements/user")
-    public ApiResponse<List<UserAchievementResponseDto>> getUserAchievements() {
+    public ApiResponse<List<UserAchievementResponseDto>> getUserAchievements(
+    ) {
         List<UserAchievementResponseDto> myAchievements = userAchievementService.getUserAchievements();
         return ApiResponse.success(myAchievements);
     }
