@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface RecordJpaRepository extends JpaRepository<RecordEntity, Long> {
 
@@ -24,7 +25,7 @@ public interface RecordJpaRepository extends JpaRepository<RecordEntity, Long> {
             "WHERE r.createdAt < :startDateTime " +
             "ORDER BY r.createdAt DESC " +
             "LIMIT 1")
-    RecordEntity findLatestBeforeStartDate(
+    Optional<RecordEntity> findLatestBeforeStartDate(
             @Param("startDateTime") LocalDateTime startDateTime
     );
 }

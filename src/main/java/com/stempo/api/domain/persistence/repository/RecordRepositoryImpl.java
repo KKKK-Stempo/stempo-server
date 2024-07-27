@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -34,7 +35,8 @@ public class RecordRepositoryImpl implements RecordRepository {
 
     @Override
     public Record findLatestBeforeStartDate(LocalDateTime startDateTime) {
-        RecordEntity jpaEntity = repository.findLatestBeforeStartDate(startDateTime);
-        return mapper.toDomain(jpaEntity);
+        Optional<RecordEntity> jpaEntity = repository.findLatestBeforeStartDate(startDateTime);
+        return jpaEntity.map(mapper::toDomain)
+                .orElse(null);
     }
 }
