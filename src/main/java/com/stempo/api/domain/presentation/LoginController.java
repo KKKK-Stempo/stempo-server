@@ -19,7 +19,7 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @Operation(summary = "로그인", description = "ROLE_ANONYMOUS 이상의권한이 필요함<br>" +
+    @Operation(summary = "로그인", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
             "일반 계정일 경우 Device-Tag만 기입하면 됨")
     @PostMapping("/api/v1/login")
     public ApiResponse<TokenInfo> login(
