@@ -21,7 +21,7 @@ public class LoginController {
 
     @Operation(summary = "로그인", description = "ROLE_ANONYMOUS 이상의권한이 필요함<br>" +
             "일반 계정일 경우 Device-Tag만 기입하면 됨")
-    @PostMapping("/api/vi/login")
+    @PostMapping("/api/v1/login")
     public ApiResponse<TokenInfo> login(
             @RequestHeader(value = "Device-Tag", defaultValue = "490154203237518") String deviceTag,
             @RequestHeader(value = "Password", required = false) String password
@@ -32,7 +32,7 @@ public class LoginController {
 
     @Operation(summary = "[U] 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
-    @PostMapping("/api/vi/reissue")
+    @PostMapping("/api/v1/reissue")
     public ApiResponse<TokenInfo> reissueToken(
             HttpServletRequest request
     ) {
