@@ -6,7 +6,6 @@ import com.stempo.api.global.common.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,25 +24,19 @@ public class LoginController {
     @PostMapping("/api/vi/login")
     public ApiResponse<TokenInfo> login(
             @RequestHeader(value = "Device-Tag", defaultValue = "490154203237518") String deviceTag,
-            @RequestHeader(value = "Password", required = false) String password,
-            HttpServletResponse response
+            @RequestHeader(value = "Password", required = false) String password
     ) {
         TokenInfo token = loginService.loginOrRegister(deviceTag, password);
-        response.setHeader("Authorization", "Bearer " + token.getAccessToken());
-        response.setHeader("Refresh-Token", token.getRefreshToken());
-        return ApiResponse.success();
+        return ApiResponse.success(token);
     }
 
     @Operation(summary = "[U] 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @PostMapping("/api/vi/reissue")
     public ApiResponse<TokenInfo> reissueToken(
-            HttpServletRequest request,
-            HttpServletResponse response
+            HttpServletRequest request
     ) {
         TokenInfo token = loginService.reissueToken(request);
-        response.setHeader("Authorization", "Bearer " + token.getAccessToken());
-        response.setHeader("Refresh-Token", token.getRefreshToken());
-        return ApiResponse.success();
+        return ApiResponse.success(token);
     }
 }
