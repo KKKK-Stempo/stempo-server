@@ -14,6 +14,9 @@ import com.stempo.api.global.exception.InvalidColumnException;
 import com.stempo.api.global.exception.NotFoundException;
 import com.stempo.api.global.exception.PermissionDeniedException;
 import com.stempo.api.global.exception.SortingArgumentException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
@@ -53,7 +56,8 @@ public class GlobalExceptionHandler {
             NumberFormatException.class,
             UnknownPathException.class,
             InvalidColumnException.class,
-            SortingArgumentException.class
+            SortingArgumentException.class,
+            IllegalArgumentException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -66,7 +70,11 @@ public class GlobalExceptionHandler {
             BadCredentialsException.class,
             TokenValidateException.class,
             TokenNotFoundException.class,
-            TokenForgeryException.class
+            TokenForgeryException.class,
+            io.jsonwebtoken.security.SecurityException.class,
+            MalformedJwtException.class,
+            ExpiredJwtException.class,
+            UnsupportedJwtException.class,
     })
     public ApiResponse<Void> unAuthorizeException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
