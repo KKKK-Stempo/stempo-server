@@ -129,6 +129,18 @@ public class JwtTokenProvider {
         return false;
     }
 
+    public boolean validateTokenSilently(String token) {
+        try {
+            Jwts.parser()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public Claims parseClaims(String accessToken) {
         try {
             return Jwts.parser()

@@ -1,6 +1,5 @@
 package com.stempo.api.global.config;
 
-import com.stempo.api.domain.application.service.RedisTokenService;
 import com.stempo.api.global.auth.filter.JwtAuthenticationFilter;
 import com.stempo.api.global.auth.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    private final RedisTokenService redisTokenService;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
@@ -34,7 +32,7 @@ public class SecurityConfig {
                         authorizeRequests.anyRequest().permitAll()
                 )
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(redisTokenService, jwtTokenProvider),
+                        new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class
                 );
         return http.build();

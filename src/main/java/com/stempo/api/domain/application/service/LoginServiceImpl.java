@@ -1,6 +1,5 @@
 package com.stempo.api.domain.application.service;
 
-import com.stempo.api.domain.domain.model.RedisToken;
 import com.stempo.api.domain.domain.model.User;
 import com.stempo.api.domain.presentation.dto.response.TokenInfo;
 import com.stempo.api.global.auth.exception.TokenForgeryException;
@@ -15,39 +14,41 @@ import org.springframework.stereotype.Service;
 public class LoginServiceImpl implements LoginService {
 
     private final UserService userService;
-    private final RedisTokenService redisTokenService;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public TokenInfo loginOrRegister(String deviceTag, String password) {
         User user = userService.findById(deviceTag)
                 .orElseGet(() -> userService.registerUser(deviceTag, password));
-        return generateAndSaveToken(user);
+        return generateToken(user);
     }
 
     @Override
     public TokenInfo reissueToken(HttpServletRequest request) {
         String refreshToken = jwtTokenProvider.resolveToken(request);
-        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-        RedisToken redisToken = redisTokenService.findByRefreshToken(refreshToken);
-
-        validateUserExistence(authentication);
-
-        TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
-        redisTokenService.saveToken(redisToken.getId(), redisToken.getRole(), newTokenInfo);
-        return newTokenInfo;
+        validateRefreshToken(refreshToken);
+        return reissueToken(refreshToken);
     }
 
-    private TokenInfo generateAndSaveToken(User loginUser) {
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(loginUser.getDeviceTag(), loginUser.getRole());
-        redisTokenService.saveToken(loginUser.getDeviceTag(), loginUser.getRole(), tokenInfo);
-        return tokenInfo;
+    private TokenInfo generateToken(User loginUser) {
+        return jwtTokenProvider.generateToken(loginUser.getDeviceTag(), loginUser.getRole());
     }
 
-    private void validateUserExistence(Authentication authentication) {
-        String id = authentication.getName();
-        if (!userService.existsById(id)) {
-            throw new TokenForgeryException("Non-existent user token.");
+    private void validateRefreshToken(String refreshToken) {
+        if (!jwtTokenProvider.isRefreshToken(refreshToken)) {
+            throw new TokenForgeryException("Invalid refresh token.");
         }
+    }
+
+    private TokenInfo reissueToken(String refreshToken) {
+        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+        User user = getTokenUserInfo(authentication);
+        return jwtTokenProvider.generateToken(user.getDeviceTag(), user.getRole());
+    }
+
+    private User getTokenUserInfo(Authentication authentication) {
+        String id = authentication.getName();
+        return userService.findById(id)
+                .orElseThrow(() -> new TokenForgeryException("Non-existent user token."));
     }
 }
