@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -75,12 +77,23 @@ public class RhythmServiceImpl implements RhythmService {
     private void runPythonScript(int bpm, Path venvPythonPath, Path scriptAbsolutePath, Path projectRoot) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(venvPythonPath.toString(), scriptAbsolutePath.toString(), String.valueOf(bpm));
         pb.directory(projectRoot.toFile());
+        pb.redirectErrorStream(true); // 표준 오류를 표준 출력으로 병합
         Process process = pb.start();
+
+        // 프로세스의 출력 로그 확인
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                log.error(line);
+            }
+        }
+
         int exitCode = process.waitFor();
         if (exitCode != 0) {
             throw new RhythmGenerationException("Python script exited with code: " + exitCode);
         }
     }
+
 
     private String saveGeneratedFile(Path outputFilePath) {
         if (outputFilePath.toFile().exists()) {
