@@ -27,14 +27,6 @@ public class User implements UserDetails {
         return new User(deviceTag, password, Role.USER);
     }
 
-    public static User createUserDetails(User user) {
-        return User.builder()
-                .deviceTag(user.getDeviceTag())
-                .password(user.getPassword())
-                .role(user.getRole())
-                .build();
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(() -> role.name());

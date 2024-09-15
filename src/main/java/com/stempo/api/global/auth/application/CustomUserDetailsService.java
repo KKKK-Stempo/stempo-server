@@ -1,6 +1,5 @@
 package com.stempo.api.global.auth.application;
 
-import com.stempo.api.domain.domain.model.User;
 import com.stempo.api.domain.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,11 +16,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findById(username)
-                .map(this::createUserDetails)
+                .map(user -> (UserDetails) user)
                 .orElseThrow(() -> new UsernameNotFoundException("[User] id: " + username + " not found"));
-    }
-
-    private User createUserDetails(User user) {
-        return User.createUserDetails(user);
     }
 }

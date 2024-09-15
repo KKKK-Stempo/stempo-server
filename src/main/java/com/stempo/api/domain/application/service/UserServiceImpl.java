@@ -5,8 +5,8 @@ import com.stempo.api.domain.domain.model.User;
 import com.stempo.api.domain.domain.repository.UserRepository;
 import com.stempo.api.domain.presentation.dto.request.UserRequestDto;
 import com.stempo.api.global.auth.util.AuthUtil;
-import com.stempo.api.global.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
-    private final PasswordUtil passwordUtil;
 
     @Override
     public String registerUser(UserRequestDto requestDto) {
@@ -29,11 +28,11 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistsException("User already exists.");
         }
 
-        String rawPassword = password != null ? password : passwordUtil.generateStrongPassword();
-        String encodedPassword = passwordEncoder.encode(rawPassword);
-        User user = User.create(deviceTag, encodedPassword);
+        String finalPassword = StringUtils.isEmpty(password) ? null : passwordEncoder.encode(password);
+        User user = User.create(deviceTag, finalPassword);
         return repository.save(user).getDeviceTag();
     }
+
 
     @Override
     public Optional<User> findById(String id) {
