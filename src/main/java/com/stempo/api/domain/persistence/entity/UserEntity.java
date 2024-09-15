@@ -26,7 +26,6 @@ public class UserEntity extends BaseEntity {
     @Id
     private String deviceTag;
 
-    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
