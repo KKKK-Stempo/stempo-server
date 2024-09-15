@@ -1,13 +1,15 @@
 package com.stempo.api.domain.presentation;
 
 import com.stempo.api.domain.application.service.RhythmService;
+import com.stempo.api.domain.presentation.dto.request.RhythmRequestDto;
 import com.stempo.api.global.common.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -20,11 +22,11 @@ public class RhythmController {
     @Operation(summary = "[U] 리듬 생성", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "BPM은 10 이상 200 이하의 값이어야 함")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
-    @PostMapping("/api/v1/rhythm/{bpm}")
+    @PostMapping("/api/v1/rhythm")
     public ApiResponse<String> generateRhythm(
-            @PathVariable(name = "bpm") int bpm
+            @Valid @RequestBody RhythmRequestDto requestDto
     ) {
-        String filePath = rhythmService.createRhythm(bpm);
+        String filePath = rhythmService.createRhythm(requestDto);
         return ApiResponse.success(filePath);
     }
 }
