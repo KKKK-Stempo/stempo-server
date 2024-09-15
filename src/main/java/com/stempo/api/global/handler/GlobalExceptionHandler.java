@@ -104,9 +104,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             UserAlreadyExistsException.class
     })
-    public ApiResponse<Void> conflictException(HttpServletResponse response, Exception e) {
+    public ErrorResponse<Exception> conflictException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_CONFLICT);
-        return ApiResponse.failure();
+        return ErrorResponse.failure(e);
     }
 
     @ExceptionHandler({
