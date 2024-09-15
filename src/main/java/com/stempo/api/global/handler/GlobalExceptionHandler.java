@@ -4,6 +4,7 @@ import com.google.gson.stream.MalformedJsonException;
 import com.stempo.api.domain.application.exception.DirectoryCreationException;
 import com.stempo.api.domain.application.exception.FileUploadFailException;
 import com.stempo.api.domain.application.exception.RhythmGenerationException;
+import com.stempo.api.domain.application.exception.UserAlreadyExistsException;
 import com.stempo.api.global.auth.exception.AuthenticationInfoNotFoundException;
 import com.stempo.api.global.auth.exception.TokenForgeryException;
 import com.stempo.api.global.auth.exception.TokenNotFoundException;
@@ -98,6 +99,14 @@ public class GlobalExceptionHandler {
     public ErrorResponse<Exception> notFoundException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         return ErrorResponse.failure(e);
+    }
+
+    @ExceptionHandler({
+            UserAlreadyExistsException.class
+    })
+    public ApiResponse<Void> conflictException(HttpServletResponse response, Exception e) {
+        response.setStatus(HttpServletResponse.SC_CONFLICT);
+        return ApiResponse.failure();
     }
 
     @ExceptionHandler({

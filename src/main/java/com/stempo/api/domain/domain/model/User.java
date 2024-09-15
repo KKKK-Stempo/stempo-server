@@ -22,10 +22,6 @@ public class User {
         return new User(deviceTag, password, Role.USER);
     }
 
-    public void updatePassword(String encodedPassword) {
-        setPassword(encodedPassword);
-    }
-
     public boolean isAdmin() {
         return role.equals(Role.ADMIN);
     }

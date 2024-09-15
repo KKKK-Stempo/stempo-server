@@ -1,15 +1,17 @@
 package com.stempo.api.domain.presentation;
 
 import com.stempo.api.domain.application.service.LoginService;
+import com.stempo.api.domain.presentation.dto.request.LoginRequestDto;
 import com.stempo.api.domain.presentation.dto.response.TokenInfo;
 import com.stempo.api.global.common.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,10 +25,9 @@ public class LoginController {
             "일반 계정일 경우 Device-Tag만 기입하면 됨")
     @PostMapping("/api/v1/login")
     public ApiResponse<TokenInfo> login(
-            @RequestHeader(value = "Device-Tag", defaultValue = "490154203237518") String deviceTag,
-            @RequestHeader(value = "Password", required = false) String password
-    ) {
-        TokenInfo token = loginService.loginOrRegister(deviceTag, password);
+            @Valid @RequestBody LoginRequestDto requestDto
+            ) {
+        TokenInfo token = loginService.login(requestDto);
         return ApiResponse.success(token);
     }
 

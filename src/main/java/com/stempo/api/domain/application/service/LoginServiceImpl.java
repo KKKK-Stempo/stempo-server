@@ -1,11 +1,13 @@
 package com.stempo.api.domain.application.service;
 
 import com.stempo.api.domain.domain.model.User;
+import com.stempo.api.domain.presentation.dto.request.LoginRequestDto;
 import com.stempo.api.domain.presentation.dto.response.TokenInfo;
 import com.stempo.api.global.auth.exception.TokenForgeryException;
 import com.stempo.api.global.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +19,10 @@ public class LoginServiceImpl implements LoginService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public TokenInfo loginOrRegister(String deviceTag, String password) {
+    public TokenInfo login(LoginRequestDto requestDto) {
+        String deviceTag = requestDto.getDeviceTag();
         User user = userService.findById(deviceTag)
-                .orElseGet(() -> userService.registerUser(deviceTag, password));
+                .orElseThrow(() -> new BadCredentialsException("Invalid device tag."));
         return generateToken(user);
     }
 
