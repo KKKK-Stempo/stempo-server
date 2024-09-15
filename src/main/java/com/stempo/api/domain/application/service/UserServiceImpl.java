@@ -7,6 +7,7 @@ import com.stempo.api.domain.presentation.dto.request.UserRequestDto;
 import com.stempo.api.global.auth.util.AuthUtil;
 import com.stempo.api.global.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,7 +17,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
-    private final PasswordService passwordService;
+    private final PasswordEncoder passwordEncoder;
     private final PasswordUtil passwordUtil;
 
     @Override
@@ -29,7 +30,7 @@ public class UserServiceImpl implements UserService {
         }
 
         String rawPassword = password != null ? password : passwordUtil.generateStrongPassword();
-        String encodedPassword = passwordService.encodePassword(rawPassword);
+        String encodedPassword = passwordEncoder.encode(rawPassword);
         User user = User.create(deviceTag, encodedPassword);
         return repository.save(user).getDeviceTag();
     }

@@ -7,7 +7,8 @@ import com.stempo.api.global.auth.exception.TokenForgeryException;
 import com.stempo.api.global.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +18,16 @@ public class LoginServiceImpl implements LoginService {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     public TokenInfo login(LoginRequestDto requestDto) {
         String deviceTag = requestDto.getDeviceTag();
-        User user = userService.findById(deviceTag)
-                .orElseThrow(() -> new BadCredentialsException("Invalid device tag."));
-        return generateToken(user);
+        String password = requestDto.getPassword();
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(deviceTag, password);
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        return jwtTokenProvider.generateToken(authentication);
     }
 
     @Override
@@ -31,10 +35,6 @@ public class LoginServiceImpl implements LoginService {
         String refreshToken = jwtTokenProvider.resolveToken(request);
         validateRefreshToken(refreshToken);
         return reissueToken(refreshToken);
-    }
-
-    private TokenInfo generateToken(User loginUser) {
-        return jwtTokenProvider.generateToken(loginUser.getDeviceTag(), loginUser.getRole());
     }
 
     private void validateRefreshToken(String refreshToken) {
