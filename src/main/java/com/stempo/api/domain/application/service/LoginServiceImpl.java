@@ -1,26 +1,35 @@
 package com.stempo.api.domain.application.service;
 
 import com.stempo.api.domain.domain.model.User;
+import com.stempo.api.domain.presentation.dto.request.LoginRequestDto;
 import com.stempo.api.domain.presentation.dto.response.TokenInfo;
 import com.stempo.api.global.auth.exception.TokenForgeryException;
 import com.stempo.api.global.auth.jwt.JwtTokenProvider;
+import com.stempo.api.global.config.CustomAuthenticationProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LoginServiceImpl implements LoginService {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CustomAuthenticationProvider authenticationManager;
 
     @Override
-    public TokenInfo loginOrRegister(String deviceTag, String password) {
-        User user = userService.findById(deviceTag)
-                .orElseGet(() -> userService.registerUser(deviceTag, password));
-        return generateToken(user);
+    public TokenInfo login(LoginRequestDto requestDto) {
+        String deviceTag = requestDto.getDeviceTag();
+        String password = requestDto.getPassword();
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(deviceTag, password);
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        return jwtTokenProvider.generateToken(authentication);
     }
 
     @Override
@@ -28,10 +37,6 @@ public class LoginServiceImpl implements LoginService {
         String refreshToken = jwtTokenProvider.resolveToken(request);
         validateRefreshToken(refreshToken);
         return reissueToken(refreshToken);
-    }
-
-    private TokenInfo generateToken(User loginUser) {
-        return jwtTokenProvider.generateToken(loginUser.getDeviceTag(), loginUser.getRole());
     }
 
     private void validateRefreshToken(String refreshToken) {

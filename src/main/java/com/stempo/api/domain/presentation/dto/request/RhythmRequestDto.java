@@ -12,11 +12,11 @@ public class RhythmRequestDto {
 
     @NotNull(message = "BPM is required")
     @Range(min = 10, max = 200, message = "BPM must be between 10 and 200")
-    @Schema(description = "BPM", example = "60", minimum = "10", maximum = "200")
+    @Schema(description = "BPM", example = "60", minimum = "10", maximum = "200", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer bpm;
 
     @NotNull(message = "Bit is required")
     @Range(min = 1, max = 8, message = "Bit must be between 1 and 8")
-    @Schema(description = "Bit", example = "4", minimum = "1", maximum = "8")
+    @Schema(description = "Bit", example = "4", minimum = "1", maximum = "8", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer bit;
 }

@@ -6,13 +6,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class User {
+public class User implements UserDetails {
 
     private String deviceTag;
     private String password;
@@ -22,8 +27,14 @@ public class User {
         return new User(deviceTag, password, Role.USER);
     }
 
-    public void updatePassword(String encodedPassword) {
-        setPassword(encodedPassword);
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(() -> role.name());
+    }
+
+    @Override
+    public String getUsername() {
+        return deviceTag;
     }
 
     public boolean isAdmin() {

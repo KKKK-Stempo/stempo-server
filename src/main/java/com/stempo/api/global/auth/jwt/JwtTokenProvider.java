@@ -7,10 +7,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,24 +45,33 @@ public class JwtTokenProvider {
         this.refreshTokenDuration = refreshTokenDuration;
     }
 
+    public TokenInfo generateToken(Authentication authentication) {
+        UserDetails principal = (UserDetails) authentication.getPrincipal();
+        Collection<? extends GrantedAuthority> authorities = principal.getAuthorities();
+
+        String id = principal.getUsername();
+        Role role = Role.valueOf(authorities.stream().findFirst().isPresent() ? authorities.stream().findFirst().get().getAuthority() : "ROLE_USER");
+        return generateToken(id, role);
+    }
+
     public TokenInfo generateToken(String id, Role role) {
         Date expiry = new Date();
         Date accessTokenExpiry = new Date(expiry.getTime() + (accessTokenDuration));
         String accessToken = Jwts.builder()
-                .setSubject(id)
+                .subject(id)
                 .claim("role", role)
-                .setIssuedAt(expiry)
-                .setExpiration(accessTokenExpiry)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .issuedAt(expiry)
+                .expiration(accessTokenExpiry)
+                .signWith(key)
                 .compact();
 
         Date refreshTokenExpiry = new Date(expiry.getTime() + (refreshTokenDuration));
         String refreshToken = Jwts.builder()
-                .setSubject(id)
+                .subject(id)
                 .claim("role", role)
-                .setIssuedAt(expiry)
-                .setExpiration(refreshTokenExpiry)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .issuedAt(expiry)
+                .expiration(refreshTokenExpiry)
+                .signWith(key)
                 .compact();
 
         return TokenInfo.create(accessToken, refreshToken);
@@ -83,10 +92,8 @@ public class JwtTokenProvider {
         return false;
     }
 
-    public Authentication getAuthentication(String accessToken) {
-        Claims claims = parseClaims(accessToken);
-        log.debug("claims : {}", claims);
-        log.debug("accessToken : {}", accessToken);
+    public Authentication getAuthentication(String token) {
+        Claims claims = parseClaims(token);
 
         if (claims.get("role") == null) {
             throw new TokenValidateException("권한 정보가 없는 토큰입니다.");
@@ -94,7 +101,7 @@ public class JwtTokenProvider {
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("role").toString().split(","))
-                        .map(this::formatRoleString)
+                        .map(r -> Role.valueOf(r).getKey())
                         .map(SimpleGrantedAuthority::new)
                         .toList();
 
@@ -113,9 +120,9 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                    .setSigningKey(key)
+                    .verifyWith((SecretKey) key)
                     .build()
-                    .parseClaimsJws(token);
+                    .parseSignedClaims(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT Token");
@@ -132,31 +139,24 @@ public class JwtTokenProvider {
     public boolean validateTokenSilently(String token) {
         try {
             Jwts.parser()
-                    .setSigningKey(key)
+                    .verifyWith((SecretKey) key)
                     .build()
-                    .parseClaimsJws(token);
+                    .parseSignedClaims(token);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public Claims parseClaims(String accessToken) {
+    public Claims parseClaims(String token) {
         try {
             return Jwts.parser()
-                    .setSigningKey(key)
+                    .verifyWith((SecretKey) key)
                     .build()
-                    .parseClaimsJws(accessToken)
-                    .getBody();
+                    .parseSignedClaims(token)
+                    .getPayload();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
-    }
-
-    private String formatRoleString(String role) {
-        if (!role.startsWith("ROLE_")) {
-            return "ROLE_" + role;
-        }
-        return role;
     }
 }

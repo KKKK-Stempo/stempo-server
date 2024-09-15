@@ -30,7 +30,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         chain.doFilter(request, response);
     }
 
-    private boolean authenticateToken(HttpServletRequest request) throws IOException {
+    private boolean authenticateToken(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         if (Objects.nonNull(token) && jwtTokenProvider.validateTokenSilently(token)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
