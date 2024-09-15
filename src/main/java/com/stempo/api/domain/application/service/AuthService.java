@@ -1,12 +1,14 @@
 package com.stempo.api.domain.application.service;
 
-import com.stempo.api.domain.presentation.dto.request.LoginRequestDto;
+import com.stempo.api.domain.presentation.dto.request.AuthRequestDto;
 import com.stempo.api.domain.presentation.dto.response.TokenInfo;
 import jakarta.servlet.http.HttpServletRequest;
 
-public interface LoginService {
+public interface AuthService {
 
-    TokenInfo login(LoginRequestDto requestDto);
+    String registerUser(AuthRequestDto requestDto);
+
+    TokenInfo login(AuthRequestDto requestDto);
 
     TokenInfo reissueToken(HttpServletRequest request);
 }

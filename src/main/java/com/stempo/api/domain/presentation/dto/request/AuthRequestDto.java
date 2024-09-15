@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LoginRequestDto {
+public class AuthRequestDto {
 
     @NotBlank(message = "deviceTag is required")
     @Schema(description = "디바이스 식별자" , example = "490154203237518", requiredMode = Schema.RequiredMode.REQUIRED)

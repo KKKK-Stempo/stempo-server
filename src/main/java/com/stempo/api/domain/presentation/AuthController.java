@@ -1,7 +1,7 @@
 package com.stempo.api.domain.presentation;
 
-import com.stempo.api.domain.application.service.LoginService;
-import com.stempo.api.domain.presentation.dto.request.LoginRequestDto;
+import com.stempo.api.domain.application.service.AuthService;
+import com.stempo.api.domain.presentation.dto.request.AuthRequestDto;
 import com.stempo.api.domain.presentation.dto.response.TokenInfo;
 import com.stempo.api.global.common.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,28 +16,37 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Login", description = "로그인")
-public class LoginController {
+@Tag(name = "Auth", description = "가입/인증")
+public class AuthController {
 
-    private final LoginService loginService;
+    private final AuthService authService;
+
+    @Operation(summary = "회원 가입", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @PostMapping("/api/v1/auth/register")
+    public ApiResponse<String> registerUser(
+            @Valid @RequestBody AuthRequestDto requestDto
+    ) {
+        String deviceTag = authService.registerUser(requestDto);
+        return ApiResponse.success(deviceTag);
+    }
 
     @Operation(summary = "로그인", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
             "일반 계정일 경우 Device-Tag만 기입하면 됨")
-    @PostMapping("/api/v1/login")
+    @PostMapping("/api/v1/auth/login")
     public ApiResponse<TokenInfo> login(
-            @Valid @RequestBody LoginRequestDto requestDto
-            ) {
-        TokenInfo token = loginService.login(requestDto);
+            @Valid @RequestBody AuthRequestDto requestDto
+    ) {
+        TokenInfo token = authService.login(requestDto);
         return ApiResponse.success(token);
     }
 
     @Operation(summary = "[U] 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
-    @PostMapping("/api/v1/reissue")
+    @PostMapping("/api/v1/auth/reissue")
     public ApiResponse<TokenInfo> reissueToken(
             HttpServletRequest request
     ) {
-        TokenInfo token = loginService.reissueToken(request);
+        TokenInfo token = authService.reissueToken(request);
         return ApiResponse.success(token);
     }
 }
