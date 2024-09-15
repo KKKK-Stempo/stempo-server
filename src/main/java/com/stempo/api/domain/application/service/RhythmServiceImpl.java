@@ -3,6 +3,7 @@ package com.stempo.api.domain.application.service;
 import com.stempo.api.domain.application.exception.DirectoryCreationException;
 import com.stempo.api.domain.application.exception.RhythmGenerationException;
 import com.stempo.api.domain.domain.model.UploadedFile;
+import com.stempo.api.domain.presentation.dto.request.RhythmRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,39 +30,33 @@ public class RhythmServiceImpl implements RhythmService {
     private String scriptPath;
 
     @Override
-    public String createRhythm(int bpm) {
+    public String createRhythm(RhythmRequestDto requestDto) {
+        int bpm = requestDto.getBpm();
+        int bit = requestDto.getBit();
+
         try {
-            validateBpmRange(bpm);
-            String outputFilename = "rhythm_" + bpm + "_bpm.wav";
+            String outputFilename = "rhythm_" + bpm + "_" + bit + "_bpm.wav";
 
             Optional<UploadedFile> uploadedFile = uploadedFileService.getUploadedFileByOriginalFileName(outputFilename);
             if (uploadedFile.isPresent()) {
                 return uploadedFile.get().getUrl();
             }
 
-            Path outputFilePath = generateRhythmFile(bpm, outputFilename);
+            Path outputFilePath = generateRhythmFile(bpm, bit, outputFilename);
             return saveGeneratedFile(outputFilePath);
         } catch (Exception e) {
             throw new RhythmGenerationException("Error generating rhythm: " + e.getMessage(), e);
         }
     }
 
-    private void validateBpmRange(int bpm) {
-        int minBpm = 10;
-        int maxBpm = 200;
-        if (bpm < minBpm || bpm > maxBpm) {
-            throw new RhythmGenerationException("BPM must be between " + minBpm + " and " + maxBpm);
-        }
-    }
-
-    private Path generateRhythmFile(int bpm, String outputFilename) throws Exception {
+    private Path generateRhythmFile(int bpm, int bit, String outputFilename) throws Exception {
         Path projectRoot = Paths.get("").toAbsolutePath();
         Path venvPythonPath = projectRoot.resolve(venvPath);
         Path scriptAbsolutePath = projectRoot.resolve(scriptPath);
         Path outputDir = projectRoot.resolve("generated");
 
         createOutputDirectoryIfNotExists(outputDir);
-        runPythonScript(bpm, venvPythonPath, scriptAbsolutePath, projectRoot);
+        runPythonScript(bpm, bit, venvPythonPath, scriptAbsolutePath, projectRoot);
         return outputDir.resolve(outputFilename);
     }
 
@@ -74,8 +69,8 @@ public class RhythmServiceImpl implements RhythmService {
         }
     }
 
-    private void runPythonScript(int bpm, Path venvPythonPath, Path scriptAbsolutePath, Path projectRoot) throws Exception {
-        ProcessBuilder pb = new ProcessBuilder(venvPythonPath.toString(), scriptAbsolutePath.toString(), String.valueOf(bpm));
+    private void runPythonScript(int bpm, int bit, Path venvPythonPath, Path scriptAbsolutePath, Path projectRoot) throws Exception {
+        ProcessBuilder pb = new ProcessBuilder(venvPythonPath.toString(), scriptAbsolutePath.toString(), String.valueOf(bpm), String.valueOf(bit));
         pb.directory(projectRoot.toFile());
         pb.redirectErrorStream(true); // 표준 오류를 표준 출력으로 병합
         Process process = pb.start();
