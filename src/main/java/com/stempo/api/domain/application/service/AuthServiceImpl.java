@@ -27,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public String registerUser(AuthRequestDto requestDto) {
+    public TokenInfo registerUser(AuthRequestDto requestDto) {
         String deviceTag = requestDto.getDeviceTag();
         String password = requestDto.getPassword();
 
@@ -37,7 +37,8 @@ public class AuthServiceImpl implements AuthService {
 
         String finalPassword = StringUtils.isEmpty(password) ? null : passwordEncoder.encode(password);
         User user = User.create(deviceTag, finalPassword);
-        return userService.save(user).getDeviceTag();
+        userService.save(user);
+        return jwtTokenProvider.generateToken(user.getDeviceTag(), user.getRole());
     }
 
     @Override

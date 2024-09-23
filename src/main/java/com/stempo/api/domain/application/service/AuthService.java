@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface AuthService {
 
-    String registerUser(AuthRequestDto requestDto);
+    TokenInfo registerUser(AuthRequestDto requestDto);
 
     TokenInfo login(AuthRequestDto requestDto);
 
