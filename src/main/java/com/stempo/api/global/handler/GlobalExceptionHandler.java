@@ -30,6 +30,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -76,6 +77,7 @@ public class GlobalExceptionHandler {
             MalformedJwtException.class,
             ExpiredJwtException.class,
             UnsupportedJwtException.class,
+            UsernameNotFoundException.class
     })
     public ApiResponse<Void> unAuthorizeException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

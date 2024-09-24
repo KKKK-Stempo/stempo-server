@@ -23,11 +23,11 @@ public class AuthController {
 
     @Operation(summary = "회원 가입", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/api/v1/auth/register")
-    public ApiResponse<String> registerUser(
+    public ApiResponse<TokenInfo> registerUser(
             @Valid @RequestBody AuthRequestDto requestDto
     ) {
-        String deviceTag = authService.registerUser(requestDto);
-        return ApiResponse.success(deviceTag);
+        TokenInfo token = authService.registerUser(requestDto);
+        return ApiResponse.success(token);
     }
 
     @Operation(summary = "로그인", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
