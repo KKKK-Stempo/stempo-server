@@ -54,5 +54,5 @@ public class BoardEntity extends BaseEntity {
     private List<String> fileUrls;
 
     @Column(nullable = false)
-    private boolean deleted = false;
+    private boolean deleted;
 }

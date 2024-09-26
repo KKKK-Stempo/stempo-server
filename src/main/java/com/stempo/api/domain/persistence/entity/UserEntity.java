@@ -32,5 +32,5 @@ public class UserEntity extends BaseEntity {
     private Role role;
 
     @Column(nullable = false)
-    private boolean deleted = false;
+    private boolean deleted;
 }

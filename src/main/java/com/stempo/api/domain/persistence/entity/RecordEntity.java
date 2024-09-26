@@ -36,5 +36,5 @@ public class RecordEntity extends BaseEntity {
     private Integer steps;
 
     @Column(nullable = false)
-    private boolean deleted = false;
+    private boolean deleted;
 }
