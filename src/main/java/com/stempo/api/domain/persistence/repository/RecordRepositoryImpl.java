@@ -26,16 +26,16 @@ public class RecordRepositoryImpl implements RecordRepository {
     }
 
     @Override
-    public List<Record> findByDateBetween(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        List<RecordEntity> jpaEntities = repository.findByDateBetween(startDateTime, endDateTime);
+    public List<Record> findByDateBetween(String deviceTag, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<RecordEntity> jpaEntities = repository.findByDateBetween(deviceTag, startDateTime, endDateTime);
         return jpaEntities.stream()
                 .map(mapper::toDomain)
                 .toList();
     }
 
     @Override
-    public Record findLatestBeforeStartDate(LocalDateTime startDateTime) {
-        Optional<RecordEntity> jpaEntity = repository.findLatestBeforeStartDate(startDateTime);
+    public Record findLatestBeforeStartDate(String deviceTag, LocalDateTime startDateTime) {
+        Optional<RecordEntity> jpaEntity = repository.findLatestBeforeStartDate(deviceTag, startDateTime);
         return jpaEntity.map(mapper::toDomain)
                 .orElse(null);
     }
