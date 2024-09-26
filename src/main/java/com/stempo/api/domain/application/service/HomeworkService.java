@@ -3,7 +3,7 @@ package com.stempo.api.domain.application.service;
 import com.stempo.api.domain.presentation.dto.request.HomeworkRequestDto;
 import com.stempo.api.domain.presentation.dto.request.HomeworkUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.HomeworkResponseDto;
-import com.stempo.api.global.common.dto.PagedResponseDto;
+import com.stempo.api.global.dto.PagedResponseDto;
 import org.springframework.data.domain.Pageable;
 
 public interface HomeworkService {

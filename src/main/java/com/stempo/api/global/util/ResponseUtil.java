@@ -1,6 +1,6 @@
 package com.stempo.api.global.util;
 
-import com.stempo.api.global.common.dto.ApiResponse;
+import com.stempo.api.global.dto.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;

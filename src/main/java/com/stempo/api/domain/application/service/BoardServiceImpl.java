@@ -7,7 +7,7 @@ import com.stempo.api.domain.domain.repository.BoardRepository;
 import com.stempo.api.domain.presentation.dto.request.BoardRequestDto;
 import com.stempo.api.domain.presentation.dto.request.BoardUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.BoardResponseDto;
-import com.stempo.api.global.common.dto.PagedResponseDto;
+import com.stempo.api.global.dto.PagedResponseDto;
 import com.stempo.api.global.exception.PermissionDeniedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

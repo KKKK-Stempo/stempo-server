@@ -1,7 +1,7 @@
 package com.stempo.api.domain.presentation;
 
 import com.stempo.api.domain.application.service.FileService;
-import com.stempo.api.global.common.dto.ApiResponse;
+import com.stempo.api.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
