@@ -3,6 +3,7 @@ package com.stempo.api.domain.presentation;
 import com.stempo.api.domain.application.service.RecordService;
 import com.stempo.api.domain.presentation.dto.request.RecordRequestDto;
 import com.stempo.api.domain.presentation.dto.response.RecordResponseDto;
+import com.stempo.api.domain.presentation.dto.response.RecordStatisticsResponseDto;
 import com.stempo.api.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,5 +48,13 @@ public class RecordController {
     ) {
         List<RecordResponseDto> records = recordService.getRecordsByDateRange(startDate, endDate);
         return ApiResponse.success(records);
+    }
+
+    @Operation(summary = "[U] 내 재활 운동 기록 통계" , description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
+    @GetMapping("/api/v1/records/statistics")
+    public ApiResponse<RecordStatisticsResponseDto> getRecordStatistics() {
+        RecordStatisticsResponseDto statistics = recordService.getRecordStatistics();
+        return ApiResponse.success(statistics);
     }
 }

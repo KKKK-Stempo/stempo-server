@@ -55,4 +55,14 @@ public class RecordRepositoryImpl implements RecordRepository {
                 .map(mapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<LocalDateTime> findCreatedAtByDeviceTagOrderByCreatedAtDesc(String deviceTag) {
+        return repository.findCreatedAtByDeviceTagOrderByCreatedAtDesc(deviceTag);
+    }
+
+    @Override
+    public int countByDeviceTagAndCreatedAtBetween(String deviceTag, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return repository.countByDeviceTagAndCreatedAtBetween(deviceTag, startDateTime, endDateTime);
+    }
 }

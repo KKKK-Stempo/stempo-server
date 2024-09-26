@@ -4,12 +4,15 @@ import com.stempo.api.domain.domain.model.Record;
 import com.stempo.api.domain.domain.repository.RecordRepository;
 import com.stempo.api.domain.presentation.dto.request.RecordRequestDto;
 import com.stempo.api.domain.presentation.dto.response.RecordResponseDto;
+import com.stempo.api.domain.presentation.dto.response.RecordStatisticsResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,4 +59,50 @@ public class RecordServiceImpl implements RecordService {
         }
         return combinedRecords;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RecordStatisticsResponseDto getRecordStatistics() {
+        String deviceTag = userService.getCurrentDeviceTag();
+
+        LocalDateTime todayStartDateTime = LocalDate.now().atStartOfDay();
+        LocalDateTime todayEndDateTime = todayStartDateTime.plusDays(1);
+        LocalDateTime weekStartDateTime = LocalDate.now()
+                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                .atStartOfDay();
+
+        // 오늘의 훈련 횟수 계산
+        int todayWalkTrainingCount = recordRepository.countByDeviceTagAndCreatedAtBetween(
+                deviceTag, todayStartDateTime, todayEndDateTime);
+
+        // 이번 주 훈련 횟수 계산 (월요일부터 오늘까지)
+        int weeklyWalkTrainingCount = recordRepository.countByDeviceTagAndCreatedAtBetween(
+                deviceTag, weekStartDateTime, todayEndDateTime);
+
+        // 연속된 훈련 일수 계산
+        int consecutiveWalkTrainingDays = calculateConsecutiveTrainingDays(deviceTag);
+
+        return RecordStatisticsResponseDto.of(todayWalkTrainingCount, weeklyWalkTrainingCount, consecutiveWalkTrainingDays);
+    }
+
+    private int calculateConsecutiveTrainingDays(String deviceTag) {
+        List<LocalDateTime> createdDates = recordRepository.findCreatedAtByDeviceTagOrderByCreatedAtDesc(deviceTag);
+        int consecutiveDays = 0;
+        LocalDate previousDate = null;
+
+        for (LocalDateTime createdAt : createdDates) {
+            LocalDate recordDate = createdAt.toLocalDate();
+
+            // 첫 기록이거나, 이전 기록이 하루 전날이면 연속으로 카운트
+            if (previousDate == null || previousDate.minusDays(1).isEqual(recordDate)) {
+                consecutiveDays++;
+                previousDate = recordDate;
+            } else {
+                // 연속된 날짜가 아니면 중단
+                break;
+            }
+        }
+        return consecutiveDays;
+    }
+
 }

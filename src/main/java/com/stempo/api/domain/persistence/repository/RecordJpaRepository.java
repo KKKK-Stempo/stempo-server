@@ -34,4 +34,14 @@ public interface RecordJpaRepository extends JpaRepository<RecordEntity, Long> {
     );
 
     List<RecordEntity> findByDeviceTag(String deviceTag);
+
+    @Query("SELECT r.createdAt " +
+            "FROM RecordEntity r " +
+            "WHERE r.deviceTag = :deviceTag " +
+            "ORDER BY r.createdAt DESC")
+    List<LocalDateTime> findCreatedAtByDeviceTagOrderByCreatedAtDesc(
+            @Param("deviceTag") String deviceTag
+    );
+
+    int countByDeviceTagAndCreatedAtBetween(String deviceTag, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }
