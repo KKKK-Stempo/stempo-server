@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -30,6 +31,7 @@ public class RhythmServiceImpl implements RhythmService {
     private String scriptPath;
 
     @Override
+    @Transactional
     public String createRhythm(RhythmRequestDto requestDto) {
         int bpm = requestDto.getBpm();
         int bit = requestDto.getBit();

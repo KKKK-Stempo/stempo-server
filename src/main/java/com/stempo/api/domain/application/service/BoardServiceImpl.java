@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository repository;
 
     @Override
+    @Transactional
     public Long registerBoard(BoardRequestDto requestDto) {
         User user = userService.getCurrentUser();
         Board board = BoardRequestDto.toDomain(requestDto, user.getDeviceTag());
@@ -30,6 +32,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PagedResponseDto<BoardResponseDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
         validateAccessPermissionForSuggestion(category);
         Page<Board> boards = repository.findByCategory(category, pageable);
@@ -37,6 +40,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public Long updateBoard(Long boardId, BoardUpdateRequestDto requestDto) {
         User user = userService.getCurrentUser();
         Board board = repository.findByIdOrThrow(boardId);
@@ -46,6 +50,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public Long deleteBoard(Long boardId) {
         User user = userService.getCurrentUser();
         Board board = repository.findByIdOrThrow(boardId);

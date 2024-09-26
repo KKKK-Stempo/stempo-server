@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,18 +23,21 @@ public class AchievementServiceImpl implements AchievementService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
+    @Transactional
     public Long registerAchievement(AchievementRequestDto requestDto) {
         Achievement achievement = AchievementRequestDto.toDomain(requestDto);
         return repository.save(achievement).getId();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PagedResponseDto<AchievementResponseDto> getAchievements(Pageable pageable) {
         Page<Achievement> achievements = repository.findAll(pageable);
         return new PagedResponseDto<>(achievements.map(AchievementResponseDto::toDto));
     }
 
     @Override
+    @Transactional
     public Long updateAchievement(Long achievementId, AchievementUpdateRequestDto requestDto) {
         Achievement achievement = repository.findByIdOrThrow(achievementId);
         achievement.update(requestDto);
@@ -43,6 +47,7 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override
+    @Transactional
     public Long deleteAchievement(Long achievementId) {
         Achievement achievement = repository.findByIdOrThrow(achievementId);
         achievement.delete();

@@ -6,6 +6,7 @@ import com.stempo.api.domain.presentation.dto.request.RecordRequestDto;
 import com.stempo.api.domain.presentation.dto.response.RecordResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class RecordServiceImpl implements RecordService {
     private final RecordRepository recordRepository;
 
     @Override
+    @Transactional
     public String record(RecordRequestDto requestDto) {
         String deviceTag = userService.getCurrentDeviceTag();
         Record record = RecordRequestDto.toDomain(requestDto, deviceTag);
@@ -27,6 +29,7 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<RecordResponseDto> getRecordsByDateRange(LocalDate startDate, LocalDate endDate) {
         String deviceTag = userService.getCurrentDeviceTag();
         LocalDateTime startDateTime = startDate.atStartOfDay();

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +26,7 @@ public class UserAchievementServiceImpl implements UserAchievementService {
     private final AchievementRepository achievementRepository;
 
     @Override
+    @Transactional
     public Long registerUserAchievement(Long achievementId) {
         String deviceTag = userService.getCurrentDeviceTag();
         Optional<UserAchievement> existingUserAchievement =
@@ -39,6 +41,7 @@ public class UserAchievementServiceImpl implements UserAchievementService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PagedResponseDto<UserAchievementResponseDto> getUserAchievements(Pageable pageable) {
         String deviceTag = userService.getCurrentDeviceTag();
         Page<Achievement> achievements = achievementRepository.findAll(pageable);
