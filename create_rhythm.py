@@ -1,12 +1,11 @@
 import os
-
 import sys
 from pydub import AudioSegment
 from pydub.generators import Sine
 
 
 # 메트로놈 비트 생성
-def create_metronome_bpm(bpm, bit, tone_duration=100):
+def create_metronome_bpm(bpm, bit, tone_duration=100, volume_factor=1.5):  # 볼륨 배수 기본값 1.5
     frequency = 440.0  # 메트로놈 주파수
     sine_wave_strong = Sine(frequency)  # 강한 첫 박자
     sine_wave_weak = Sine(frequency * 0.6)  # 약한 박자
@@ -18,6 +17,13 @@ def create_metronome_bpm(bpm, bit, tone_duration=100):
     weak_tone = sine_wave_weak.to_audio_segment(duration=tone_duration)  # 나머지 박자
 
     silence = AudioSegment.silent(duration=interval_ms - tone_duration)  # 비트 간의 정적
+
+    # 볼륨을 데시벨로 변환 (10 * log10(volume_factor))
+    volume_increase_db = 10 * (volume_factor ** 0.5)
+
+    # 볼륨 조절 (데시벨 단위로 증폭)
+    strong_tone = strong_tone + volume_increase_db
+    weak_tone = weak_tone + volume_increase_db
 
     # 비트 패턴 생성
     rhythm = strong_tone + silence
