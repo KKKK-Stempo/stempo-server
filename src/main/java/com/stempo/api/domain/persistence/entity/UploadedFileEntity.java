@@ -40,7 +40,4 @@ public class UploadedFileEntity extends BaseEntity {
 
     @Column(nullable = false)
     private Long fileSize;
-
-    @Column(nullable = false)
-    private boolean deleted = false;
 }

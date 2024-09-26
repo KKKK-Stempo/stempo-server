@@ -1,4 +1,4 @@
-package com.stempo.api.global.common.dto;
+package com.stempo.api.global.dto;
 
 import lombok.Getter;
 import org.springframework.data.domain.Page;

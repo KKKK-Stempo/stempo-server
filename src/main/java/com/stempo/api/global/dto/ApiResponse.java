@@ -1,4 +1,4 @@
-package com.stempo.api.global.common.dto;
+package com.stempo.api.global.dto;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

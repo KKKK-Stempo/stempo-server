@@ -16,4 +16,8 @@ public interface RecordRepository {
     Record findLatestBeforeStartDate(String deviceTag, LocalDateTime startDateTime);
 
     List<Record> findByDeviceTag(String deviceTag);
+
+    List<LocalDateTime> findCreatedAtByDeviceTagOrderByCreatedAtDesc(String deviceTag);
+
+    int countByDeviceTagAndCreatedAtBetween(String deviceTag, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

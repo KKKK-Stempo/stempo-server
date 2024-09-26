@@ -15,7 +15,6 @@ public class BoardMapper {
                 .title(board.getTitle())
                 .content(board.getContent())
                 .fileUrls(board.getFileUrls())
-                .deleted(board.isDeleted())
                 .build();
     }
 
@@ -28,7 +27,6 @@ public class BoardMapper {
                 .content(entity.getContent())
                 .fileUrls(entity.getFileUrls())
                 .createdAt(entity.getCreatedAt())
-                .deleted(entity.isDeleted())
                 .build();
     }
 }

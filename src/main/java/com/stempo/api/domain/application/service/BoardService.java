@@ -4,7 +4,7 @@ import com.stempo.api.domain.domain.model.BoardCategory;
 import com.stempo.api.domain.presentation.dto.request.BoardRequestDto;
 import com.stempo.api.domain.presentation.dto.request.BoardUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.BoardResponseDto;
-import com.stempo.api.global.common.dto.PagedResponseDto;
+import com.stempo.api.global.dto.PagedResponseDto;
 import org.springframework.data.domain.Pageable;
 
 public interface BoardService {
