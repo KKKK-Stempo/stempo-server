@@ -22,7 +22,7 @@ public class FileController {
     private final FileService fileService;
 
     @Operation(summary = "[U] 게시판 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @PostMapping(value = "/api/v1/boards/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/api/v1/files/boards", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<String>> boardFileUpload(
             @RequestParam(name = "multipartFile", required = false) List<MultipartFile> multipartFiles
     ) throws IOException {
