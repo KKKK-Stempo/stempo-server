@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,24 +20,28 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleRepository repository;
 
     @Override
+    @Transactional
     public Long registerArticle(ArticleRequestDto requestDto) {
         Article article = ArticleRequestDto.toDomain(requestDto);
         return repository.save(article).getId();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PagedResponseDto<ArticleResponseDto> getArticles(Pageable pageable) {
         Page<Article> articles = repository.findAll(pageable);
         return new PagedResponseDto<>(articles.map(ArticleResponseDto::toDto));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ArticleDetailsResponseDto getArticle(Long articleId) {
         Article article = repository.findByIdOrThrow(articleId);
         return ArticleDetailsResponseDto.toDto(article);
     }
 
     @Override
+    @Transactional
     public Long updateArticle(Long articleId, ArticleUpdateRequestDto requestDto) {
         Article article = repository.findByIdOrThrow(articleId);
         article.update(requestDto);
@@ -44,6 +49,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @Transactional
     public Long deleteArticle(Long articleId) {
         Article article = repository.findByIdOrThrow(articleId);
         article.delete();

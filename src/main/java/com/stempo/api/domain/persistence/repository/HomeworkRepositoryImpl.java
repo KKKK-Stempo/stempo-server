@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,6 +25,20 @@ public class HomeworkRepositoryImpl implements HomeworkRepository {
         HomeworkEntity entity = mapper.toEntity(homework);
         HomeworkEntity savedEntity = repository.save(entity);
         return mapper.toDomain(savedEntity);
+    }
+
+    @Override
+    public void delete(Homework homework) {
+        HomeworkEntity entity = mapper.toEntity(homework);
+        repository.delete(entity);
+    }
+
+    @Override
+    public void deleteAll(List<Homework> homeworks) {
+        List<HomeworkEntity> entities = homeworks.stream()
+                .map(mapper::toEntity)
+                .toList();
+        repository.deleteAll(entities);
     }
 
     @Override
@@ -43,8 +58,10 @@ public class HomeworkRepositoryImpl implements HomeworkRepository {
     }
 
     @Override
-    public void delete(Homework homework) {
-        HomeworkEntity entity = mapper.toEntity(homework);
-        repository.delete(entity);
+    public List<Homework> findByDeviceTag(String deviceTag) {
+        List<HomeworkEntity> entities = repository.findByDeviceTag(deviceTag);
+        return entities.stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }

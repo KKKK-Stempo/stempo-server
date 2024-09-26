@@ -19,31 +19,31 @@ public class HomeworkServiceImpl implements HomeworkService {
     private final UserService userService;
     private final HomeworkRepository repository;
 
-    @Transactional
     @Override
+    @Transactional
     public Long addHomework(HomeworkRequestDto requestDto) {
         String deviceTag = userService.getCurrentDeviceTag();
         Homework homework = HomeworkRequestDto.toDomain(requestDto, deviceTag);
         return repository.save(homework).getId();
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public PagedResponseDto<HomeworkResponseDto> getHomeworks(Boolean completed, Pageable pageable) {
         Page<Homework> homeworks = repository.findByCompleted(completed, pageable);
         return new PagedResponseDto<>(homeworks.map(HomeworkResponseDto::toDto));
     }
 
-    @Transactional
     @Override
+    @Transactional
     public Long updateHomework(Long homeworkId, HomeworkUpdateRequestDto requestDto) {
         Homework homework = repository.findByIdOrThrow(homeworkId);
         homework.update(requestDto);
         return repository.save(homework).getId();
     }
 
-    @Transactional
     @Override
+    @Transactional
     public Long deleteHomework(Long homeworkId) {
         Homework homework = repository.findByIdOrThrow(homeworkId);
         repository.delete(homework);

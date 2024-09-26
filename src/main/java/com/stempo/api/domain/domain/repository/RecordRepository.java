@@ -9,7 +9,11 @@ public interface RecordRepository {
 
     Record save(Record record);
 
+    void deleteAll(List<Record> records);
+
     List<Record> findByDateBetween(String deviceTag, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
     Record findLatestBeforeStartDate(String deviceTag, LocalDateTime startDateTime);
+
+    List<Record> findByDeviceTag(String deviceTag);
 }

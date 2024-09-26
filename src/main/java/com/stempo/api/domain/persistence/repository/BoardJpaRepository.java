@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BoardJpaRepository extends JpaRepository<BoardEntity, Long> {
@@ -22,4 +23,6 @@ public interface BoardJpaRepository extends JpaRepository<BoardEntity, Long> {
             "WHERE b.id = :boardId " +
             "AND b.deleted = false")
     Optional<BoardEntity> findByIdAndNotDeleted(Long boardId);
+
+    List<BoardEntity> findByDeviceTag(String deviceTag);
 }

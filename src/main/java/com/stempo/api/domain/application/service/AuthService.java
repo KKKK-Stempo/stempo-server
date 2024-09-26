@@ -8,6 +8,8 @@ public interface AuthService {
 
     TokenInfo registerUser(AuthRequestDto requestDto);
 
+    String unregisterUser();
+
     TokenInfo login(AuthRequestDto requestDto);
 
     TokenInfo reissueToken(HttpServletRequest request);

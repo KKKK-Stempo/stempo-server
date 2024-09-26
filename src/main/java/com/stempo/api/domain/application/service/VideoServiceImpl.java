@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,24 +20,28 @@ public class VideoServiceImpl implements VideoService {
     private final VideoRepository repository;
 
     @Override
+    @Transactional
     public Long registerVideo(VideoRequestDto requestDto) {
         Video video = VideoRequestDto.toDomain(requestDto);
         return repository.save(video).getId();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PagedResponseDto<VideoResponseDto> getVideos(Pageable pageable) {
         Page<Video> videos = repository.findAll(pageable);
         return new PagedResponseDto<>(videos.map(VideoResponseDto::toDto));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public VideoDetailsResponseDto getVideo(Long videoId) {
         Video video = repository.findByIdOrThrow(videoId);
         return VideoDetailsResponseDto.toDto(video);
     }
 
     @Override
+    @Transactional
     public Long updateVideo(Long videoId, VideoUpdateRequestDto requestDto) {
         Video video = repository.findByIdOrThrow(videoId);
         video.update(requestDto);
@@ -44,6 +49,7 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
+    @Transactional
     public Long deleteVideo(Long id) {
         Video video = repository.findByIdOrThrow(id);
         video.delete();
