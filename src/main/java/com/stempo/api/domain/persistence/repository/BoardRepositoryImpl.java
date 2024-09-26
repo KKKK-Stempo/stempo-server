@@ -29,6 +29,12 @@ public class BoardRepositoryImpl implements BoardRepository {
     }
 
     @Override
+    public void delete(Board board) {
+        BoardEntity entity = mapper.toEntity(board);
+        repository.delete(entity);
+    }
+
+    @Override
     public void deleteAll(List<Board> boards) {
         List<BoardEntity> entities = boards.stream()
                 .map(mapper::toEntity)
@@ -44,7 +50,7 @@ public class BoardRepositoryImpl implements BoardRepository {
 
     @Override
     public Board findByIdOrThrow(Long boardId) {
-        return repository.findByIdAndNotDeleted(boardId)
+        return repository.findById(boardId)
                 .map(mapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Board] id: " + boardId + " not found"));
     }

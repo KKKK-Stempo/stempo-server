@@ -11,6 +11,8 @@ public interface BoardRepository {
 
     Board save(Board board);
 
+    void delete(Board board);
+
     void deleteAll(List<Board> boards);
 
     Page<Board> findByCategory(BoardCategory category, Pageable pageable);

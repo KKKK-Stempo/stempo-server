@@ -27,16 +27,11 @@ public class Board {
     private String content;
     private List<String> fileUrls;
     private LocalDateTime createdAt;
-    private boolean deleted;
 
     public void update(BoardUpdateRequestDto requestDto) {
         Optional.ofNullable(requestDto.getCategory()).ifPresent(category -> this.category = category);
         Optional.ofNullable(requestDto.getTitle()).ifPresent(title -> this.title = title);
         Optional.ofNullable(requestDto.getContent()).ifPresent(content -> this.content = content);
-    }
-
-    public void delete() {
-        setDeleted(true);
     }
 
     public boolean isOwner(User user) {

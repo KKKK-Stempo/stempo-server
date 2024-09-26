@@ -1,7 +1,6 @@
 package com.stempo.api.domain.persistence.entity;
 
 import com.stempo.api.domain.domain.model.Role;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -30,7 +29,4 @@ public class UserEntity extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    @Column(nullable = false)
-    private boolean deleted;
 }

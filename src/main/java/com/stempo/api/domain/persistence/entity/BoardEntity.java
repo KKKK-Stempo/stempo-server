@@ -52,7 +52,4 @@ public class BoardEntity extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     @Convert(converter = StringJsonConverter.class)
     private List<String> fileUrls;
-
-    @Column(nullable = false)
-    private boolean deleted;
 }

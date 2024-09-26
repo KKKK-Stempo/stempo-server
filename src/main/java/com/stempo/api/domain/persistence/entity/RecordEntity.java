@@ -33,8 +33,6 @@ public class RecordEntity extends BaseEntity {
     private Double accuracy;
 
     private Integer duration;
-    private Integer steps;
 
-    @Column(nullable = false)
-    private boolean deleted;
+    private Integer steps;
 }

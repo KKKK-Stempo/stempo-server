@@ -55,8 +55,8 @@ public class BoardServiceImpl implements BoardService {
         User user = userService.getCurrentUser();
         Board board = repository.findByIdOrThrow(boardId);
         board.validateAccessPermission(user);
-        board.delete();
-        return repository.save(board).getId();
+        repository.delete(board);
+        return board.getId();
     }
 
     private void validateAccessPermissionForSuggestion(BoardCategory category) {
