@@ -28,14 +28,15 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     public List<RecordResponseDto> getRecordsByDateRange(LocalDate startDate, LocalDate endDate) {
+        String deviceTag = userService.getCurrentDeviceTag();
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atStartOfDay().plusDays(1);
 
         // startDateTime 이전의 가장 최신 데이터 가져오기
-        Record latestBeforeStartDate = recordRepository.findLatestBeforeStartDate(startDateTime);
+        Record latestBeforeStartDate = recordRepository.findLatestBeforeStartDate(deviceTag, startDateTime);
 
         // startDateTime과 endDateTime 사이의 데이터 가져오기
-        List<Record> records = recordRepository.findByDateBetween(startDateTime, endDateTime);
+        List<Record> records = recordRepository.findByDateBetween(deviceTag, startDateTime, endDateTime);
 
         // 결과 합치기
         List<RecordResponseDto> combinedRecords = new ArrayList<>();

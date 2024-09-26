@@ -9,7 +9,7 @@ public interface RecordRepository {
 
     Record save(Record record);
 
-    List<Record> findByDateBetween(LocalDateTime startDateTime, LocalDateTime endDateTime);
+    List<Record> findByDateBetween(String deviceTag, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
-    Record findLatestBeforeStartDate(LocalDateTime startDateTime);
+    Record findLatestBeforeStartDate(String deviceTag, LocalDateTime startDateTime);
 }
