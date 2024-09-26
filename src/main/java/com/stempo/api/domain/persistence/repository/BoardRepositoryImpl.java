@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class BoardRepositoryImpl implements BoardRepository {
@@ -27,6 +29,14 @@ public class BoardRepositoryImpl implements BoardRepository {
     }
 
     @Override
+    public void deleteAll(List<Board> boards) {
+        List<BoardEntity> entities = boards.stream()
+                .map(mapper::toEntity)
+                .toList();
+        repository.deleteAll(entities);
+    }
+
+    @Override
     public Page<Board> findByCategory(BoardCategory category, Pageable pageable) {
         Page<BoardEntity> boards = repository.findByCategory(category, pageable);
         return boards.map(mapper::toDomain);
@@ -37,5 +47,13 @@ public class BoardRepositoryImpl implements BoardRepository {
         return repository.findByIdAndNotDeleted(boardId)
                 .map(mapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Board] id: " + boardId + " not found"));
+    }
+
+    @Override
+    public List<Board> findByDeviceTag(String deviceTag) {
+        List<BoardEntity> entities = repository.findByDeviceTag(deviceTag);
+        return entities.stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }

@@ -32,4 +32,6 @@ public interface RecordJpaRepository extends JpaRepository<RecordEntity, Long> {
             @Param("deviceTag") String deviceTag,
             @Param("startDateTime") LocalDateTime startDateTime
     );
+
+    List<RecordEntity> findByDeviceTag(String deviceTag);
 }

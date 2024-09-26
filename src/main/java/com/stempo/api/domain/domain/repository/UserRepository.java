@@ -13,4 +13,6 @@ public interface UserRepository {
     User findByIdOrThrow(String deviceTag);
 
     boolean existsById(String id);
+
+    void delete(User user);
 }

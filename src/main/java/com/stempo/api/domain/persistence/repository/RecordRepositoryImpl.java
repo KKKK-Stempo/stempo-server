@@ -26,6 +26,14 @@ public class RecordRepositoryImpl implements RecordRepository {
     }
 
     @Override
+    public void deleteAll(List<Record> records) {
+        List<RecordEntity> jpaEntities = records.stream()
+                .map(mapper::toEntity)
+                .toList();
+        repository.deleteAll(jpaEntities);
+    }
+
+    @Override
     public List<Record> findByDateBetween(String deviceTag, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         List<RecordEntity> jpaEntities = repository.findByDateBetween(deviceTag, startDateTime, endDateTime);
         return jpaEntities.stream()
@@ -38,5 +46,13 @@ public class RecordRepositoryImpl implements RecordRepository {
         Optional<RecordEntity> jpaEntity = repository.findLatestBeforeStartDate(deviceTag, startDateTime);
         return jpaEntity.map(mapper::toDomain)
                 .orElse(null);
+    }
+
+    @Override
+    public List<Record> findByDeviceTag(String deviceTag) {
+        List<RecordEntity> jpaEntities = repository.findByDeviceTag(deviceTag);
+        return jpaEntities.stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }
