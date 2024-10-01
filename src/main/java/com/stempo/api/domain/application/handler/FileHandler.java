@@ -1,6 +1,6 @@
 package com.stempo.api.domain.application.handler;
 
-import com.stempo.api.domain.application.exception.FileUploadFailException;
+import com.stempo.api.global.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,15 +12,25 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.UUID;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 @Configuration
 @Slf4j
 public class FileHandler {
 
-    @Value("${resource.file.path}")
     private String filePath;
+    private final Set<String> disallowExtensions = new HashSet<>();
+
+    public FileHandler(
+            @Value("${resource.file.disallow-extension}") String[] disallowExtensions,
+            @Value("${resource.file.path}") String filePath
+    ) {
+        this.filePath = filePath;
+        this.disallowExtensions.addAll(Arrays.asList(disallowExtensions));
+    }
 
     public void init() {
         filePath = filePath.replace("/", File.separator).replace("\\", File.separator);
@@ -30,67 +40,31 @@ public class FileHandler {
         init();
         String originalFilename = multipartFile.getOriginalFilename();
         String extension = FilenameUtils.getExtension(originalFilename);
+        FileUtil.validateFileAttributes(originalFilename, disallowExtensions);
 
-        String saveFilename = makeFileName(extension);
+        String saveFilename = FileUtil.makeFileName(extension);
         String savePath = filePath + File.separator + category + File.separator + saveFilename;
 
         File file = new File(savePath);
-        ensureParentDirectoryExists(file);
+        FileUtil.ensureParentDirectoryExists(file, filePath);
         multipartFile.transferTo(file);
-        setFilePermissions(file, savePath, extension);
+        FileUtil.setFilePermissions(file, savePath, filePath);
         return savePath;
     }
 
     public String saveFile(File file) throws IOException {
         String originalFilename = file.getName();
         String extension = FilenameUtils.getExtension(originalFilename);
+        FileUtil.validateFileAttributes(originalFilename, disallowExtensions);
 
-        String saveFilename = makeFileName(extension);
+        String saveFilename = FileUtil.makeFileName(extension);
         String savePath = filePath + File.separator + saveFilename;
 
         File destination = new File(savePath);
-        ensureParentDirectoryExists(destination);
+        FileUtil.ensureParentDirectoryExists(destination, filePath);
 
         Files.copy(file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        setFilePermissions(destination, savePath, extension);
+        FileUtil.setFilePermissions(destination, savePath, filePath);
         return savePath;
-    }
-
-    public String makeFileName(String extension) {
-        return (System.nanoTime() + "_" + UUID.randomUUID() + "." + extension);
-    }
-
-    private void ensureParentDirectoryExists(File file) {
-        if (!file.getParentFile().exists()) {
-            boolean isCreated = file.getParentFile().mkdirs();
-            if (!isCreated) {
-                log.error("Failed to create directory: {}", file.getParentFile().getAbsolutePath());
-            }
-        }
-    }
-
-    private void setFilePermissions(File file, String savePath, String extension) throws FileUploadFailException {
-        try {
-            String os = System.getProperty("os.name").toLowerCase();
-            if (os.contains("win")) {
-                boolean readOnly = file.setReadOnly();
-                if (!readOnly) {
-                    log.error("Failed to set file read-only: {}", savePath);
-                }
-            } else {
-                setFilePermissionsUnix(savePath);
-            }
-        } catch (Exception e) {
-            throw new FileUploadFailException("Failed to upload file: " + savePath, e);
-        }
-    }
-
-    private void setFilePermissionsUnix(String filePath) throws IOException, InterruptedException {
-        ProcessBuilder processBuilder = new ProcessBuilder("chmod", "400", filePath);
-        Process process = processBuilder.start();
-        int exitCode = process.waitFor();
-        if (exitCode != 0) {
-            log.error("Failed to set file permissions for: {}", filePath);
-        }
     }
 }

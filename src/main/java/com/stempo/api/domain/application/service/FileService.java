@@ -17,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FileService {
 
-    private final BoardService boardService;
     private final UploadedFileService uploadedFileService;
     private final FileHandler fileHandler;
 
