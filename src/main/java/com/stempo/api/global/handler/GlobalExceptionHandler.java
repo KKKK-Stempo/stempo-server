@@ -2,7 +2,9 @@ package com.stempo.api.global.handler;
 
 import com.google.gson.stream.MalformedJsonException;
 import com.stempo.api.domain.application.exception.DirectoryCreationException;
+import com.stempo.api.domain.application.exception.FilePermissionException;
 import com.stempo.api.domain.application.exception.FileUploadFailException;
+import com.stempo.api.domain.application.exception.InvalidFileAttributeException;
 import com.stempo.api.domain.application.exception.RhythmGenerationException;
 import com.stempo.api.domain.application.exception.UserAlreadyExistsException;
 import com.stempo.api.global.auth.exception.AuthenticationInfoNotFoundException;
@@ -122,8 +124,10 @@ public class GlobalExceptionHandler {
             SecurityException.class,
             CompletionException.class,
             InvalidDataAccessApiUsageException.class,
-            DirectoryCreationException.class,
             RhythmGenerationException.class,
+            DirectoryCreationException.class,
+            FilePermissionException.class,
+            InvalidFileAttributeException.class,
             Exception.class
     })
     public ApiResponse<Void> serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {
