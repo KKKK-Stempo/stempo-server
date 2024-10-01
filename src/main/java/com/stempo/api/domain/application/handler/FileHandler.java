@@ -48,7 +48,7 @@ public class FileHandler {
         File file = new File(savePath);
         FileUtil.ensureParentDirectoryExists(file, filePath);
         multipartFile.transferTo(file);
-        FileUtil.setFilePermissions(file, savePath, extension);
+        FileUtil.setFilePermissions(file, savePath, filePath);
         return savePath;
     }
 
@@ -64,7 +64,7 @@ public class FileHandler {
         FileUtil.ensureParentDirectoryExists(destination, filePath);
 
         Files.copy(file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        FileUtil.setFilePermissions(destination, savePath, extension);
+        FileUtil.setFilePermissions(destination, savePath, filePath);
         return savePath;
     }
 }
