@@ -129,7 +129,7 @@ public class FileUtil {
             if (os.contains("win")) {
                 setReadOnlyPermissionsWindows(file, savePath, baseDirectory);
             } else {
-                FileUtil.setReadOnlyPermissionsUnix(savePath, baseDirectory);
+                setReadOnlyPermissionsUnix(savePath, baseDirectory);
             }
         } catch (Exception e) {
             throw new FilePermissionException("Failed to set file permissions: " + LogSanitizerUtil.sanitizeForLog(savePath));
@@ -144,7 +144,7 @@ public class FileUtil {
      * @throws FilePermissionException 파일 권한 설정에 실패한 경우 발생
      */
     public static void setReadOnlyPermissionsWindows(File file, String savePath, String baseDirectory) {
-        FileUtil.validateFilePath(file.getPath(), baseDirectory);
+        validateFilePath(file.getPath(), baseDirectory);
         if (!file.setReadOnly()) {
             throw new FilePermissionException("Failed to set file read-only: " + LogSanitizerUtil.sanitizeForLog(savePath));
         }
@@ -157,7 +157,7 @@ public class FileUtil {
      * @throws IOException 권한 설정 실패 시 발생
      */
     public static void setReadOnlyPermissionsUnix(String filePath, String baseDirectory) throws IOException {
-        FileUtil.validateFilePath(filePath, baseDirectory);
+        validateFilePath(filePath, baseDirectory);
         Path path = Paths.get(filePath);
 
         // POSIX 파일 권한을 소유자에게만 읽기 권한을 부여하도록 설정
