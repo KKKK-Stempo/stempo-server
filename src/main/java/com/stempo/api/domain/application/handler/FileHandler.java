@@ -12,14 +12,25 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 @Configuration
 @Slf4j
 public class FileHandler {
 
-    @Value("${resource.file.path}")
     private String filePath;
+    private final Set<String> disallowExtensions = new HashSet<>();
+
+    public FileHandler(
+            @Value("${resource.file.disallow-extension}") String[] disallowExtensions,
+            @Value("${resource.file.path}") String filePath
+    ) {
+        this.filePath = filePath;
+        this.disallowExtensions.addAll(Arrays.asList(disallowExtensions));
+    }
 
     public void init() {
         filePath = filePath.replace("/", File.separator).replace("\\", File.separator);
@@ -29,6 +40,7 @@ public class FileHandler {
         init();
         String originalFilename = multipartFile.getOriginalFilename();
         String extension = FilenameUtils.getExtension(originalFilename);
+        FileUtil.validateFileAttributes(originalFilename, disallowExtensions);
 
         String saveFilename = FileUtil.makeFileName(extension);
         String savePath = filePath + File.separator + category + File.separator + saveFilename;
@@ -43,6 +55,7 @@ public class FileHandler {
     public String saveFile(File file) throws IOException {
         String originalFilename = file.getName();
         String extension = FilenameUtils.getExtension(originalFilename);
+        FileUtil.validateFileAttributes(originalFilename, disallowExtensions);
 
         String saveFilename = FileUtil.makeFileName(extension);
         String savePath = filePath + File.separator + saveFilename;
