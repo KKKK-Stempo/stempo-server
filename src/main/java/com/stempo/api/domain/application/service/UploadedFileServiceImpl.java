@@ -3,6 +3,8 @@ package com.stempo.api.domain.application.service;
 import com.stempo.api.domain.domain.model.UploadedFile;
 import com.stempo.api.domain.domain.repository.UploadedFileRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +23,25 @@ public class UploadedFileServiceImpl implements UploadedFileService {
     }
 
     @Override
+    public Page<UploadedFile> getUploadedFiles(Pageable pageable) {
+        return uploadedFileRepository.findAll(pageable);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Optional<UploadedFile> getUploadedFileByOriginalFileName(String fileName) {
         return uploadedFileRepository.findByOriginalFileName(fileName);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UploadedFile getUploadedFileByUrl(String url) {
+        return uploadedFileRepository.findByUrlOrThrow(url);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUploadedFile(UploadedFile uploadedFile) {
+        uploadedFileRepository.delete(uploadedFile);
     }
 }

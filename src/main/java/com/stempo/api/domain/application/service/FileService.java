@@ -3,9 +3,17 @@ package com.stempo.api.domain.application.service;
 
 import com.stempo.api.domain.application.handler.FileHandler;
 import com.stempo.api.domain.domain.model.UploadedFile;
+import com.stempo.api.domain.presentation.dto.request.DeleteFileRequestDto;
+import com.stempo.api.domain.presentation.dto.response.UploadedFileResponseDto;
+import com.stempo.api.global.dto.PagedResponseDto;
+import com.stempo.api.global.exception.NotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -23,6 +31,7 @@ public class FileService {
     @Value("${resource.file.url}")
     private String fileURL;
 
+    @Transactional
     public List<String> saveFiles(List<MultipartFile> multipartFiles, String path) throws IOException {
         List<String> filePaths = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
@@ -30,6 +39,12 @@ public class FileService {
             filePaths.add(filePath);
         }
         return filePaths;
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<UploadedFileResponseDto> getFiles(Pageable pageable) {
+        Page<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFiles(pageable);
+        return new PagedResponseDto<>(uploadedFiles.map(UploadedFileResponseDto::toDto));
     }
 
     public String saveFile(MultipartFile multipartFile, String path) throws IOException {
@@ -50,6 +65,24 @@ public class FileService {
         UploadedFile uploadedFile = UploadedFile.create(file.getName(), fileName, savedFilePath, url, file.length());
         uploadedFileService.saveUploadedFile(uploadedFile);
         return url;
+    }
+
+    public boolean deleteFile(@Valid DeleteFileRequestDto requestDto) {
+        String url = requestDto.getUrl();
+        UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
+        String filePath = uploadedFile.getSavedPath();
+
+        File storedFile = new File(filePath);
+        if (!storedFile.exists()) {
+            throw new NotFoundException("File does not exist");
+        }
+
+        boolean deleted = fileHandler.deleteFile(uploadedFile.getSavedPath());
+        if (deleted) {
+            uploadedFileService.deleteUploadedFile(uploadedFile);
+        }
+
+        return deleted;
     }
 }
 
