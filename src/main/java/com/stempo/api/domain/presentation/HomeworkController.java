@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,6 +35,7 @@ public class HomeworkController {
     private final PageableUtil pageableUtil;
 
     @Operation(summary = "[U] 과제 추가", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @PostMapping(value = "/api/v1/homeworks")
     public ApiResponse<Long> addHomework(
             @Valid @RequestBody HomeworkRequestDto requestDto
@@ -46,6 +48,7 @@ public class HomeworkController {
             "completed(Optional)가 true이면 완료된 과제, false이면 미완료된 과제를 조회함<br>" +
             "completed가 없으면 모든 과제를 조회함<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
+    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @GetMapping(value = "/api/v1/homeworks")
     public ApiResponse<PagedResponseDto<HomeworkResponseDto>> getHomeworks(
             @RequestParam(name = "completed", required = false) Boolean completed,
@@ -60,6 +63,7 @@ public class HomeworkController {
     }
 
     @Operation(summary = "[U] 과제 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @PatchMapping(value = "/api/v1/homeworks/{homeworkId}")
     public ApiResponse<Long> updateHomework(
             @PathVariable(name = "homeworkId") Long homeworkId,
@@ -70,6 +74,7 @@ public class HomeworkController {
     }
 
     @Operation(summary = "[U] 과제 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @DeleteMapping(value = "/api/v1/homeworks/{homeworkId}")
     public ApiResponse<Long> deleteHomework(
             @PathVariable(name = "homeworkId") Long homeworkId
