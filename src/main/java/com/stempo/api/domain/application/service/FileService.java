@@ -66,7 +66,9 @@ public class FileService {
         String fileName = new File(savedFilePath).getName();
         String url = fileURL + "/" + fileName;
 
-        UploadedFile uploadedFile = UploadedFile.create(file.getName(), fileName, savedFilePath, url, file.length());
+        String encryptedFilePath = encryptionUtil.encrypt(savedFilePath);
+
+        UploadedFile uploadedFile = UploadedFile.create(file.getName(), fileName, encryptedFilePath, url, file.length());
         uploadedFileService.saveUploadedFile(uploadedFile);
         return url;
     }
