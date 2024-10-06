@@ -5,6 +5,7 @@ import com.stempo.api.domain.domain.repository.RecordRepository;
 import com.stempo.api.domain.presentation.dto.request.RecordRequestDto;
 import com.stempo.api.domain.presentation.dto.response.RecordResponseDto;
 import com.stempo.api.domain.presentation.dto.response.RecordStatisticsResponseDto;
+import com.stempo.api.global.util.EncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +23,17 @@ public class RecordServiceImpl implements RecordService {
 
     private final UserService userService;
     private final RecordRepository recordRepository;
+    private final EncryptionUtil encryptionUtil;
 
     @Override
     @Transactional
     public String record(RecordRequestDto requestDto) {
         String deviceTag = userService.getCurrentDeviceTag();
-        Record record = RecordRequestDto.toDomain(requestDto, deviceTag);
+        String encryptedAccuracy = encryptionUtil.encrypt(requestDto.getAccuracy().toString());
+        String encryptedDuration = encryptionUtil.encrypt(requestDto.getDuration().toString());
+        String encryptedSteps = encryptionUtil.encrypt(requestDto.getSteps().toString());
+
+        Record record = Record.create(deviceTag, encryptedAccuracy, encryptedDuration, encryptedSteps);
         return recordRepository.save(record).getDeviceTag();
     }
 
@@ -47,10 +53,10 @@ public class RecordServiceImpl implements RecordService {
         // 결과 합치기
         List<RecordResponseDto> combinedRecords = new ArrayList<>();
         if (latestBeforeStartDate != null) {
-            combinedRecords.add(RecordResponseDto.toDto(latestBeforeStartDate));
+            combinedRecords.add(convertToDecryptedDto(latestBeforeStartDate));
         }
         combinedRecords.addAll(records.stream()
-                .map(RecordResponseDto::toDto)
+                .map(this::convertToDecryptedDto)
                 .toList());
 
         // 데이터가 없을 경우 오늘 날짜로 값을 0으로 설정하여 반환
@@ -83,6 +89,14 @@ public class RecordServiceImpl implements RecordService {
         int consecutiveWalkTrainingDays = calculateConsecutiveTrainingDays(deviceTag);
 
         return RecordStatisticsResponseDto.of(todayWalkTrainingCount, weeklyWalkTrainingCount, consecutiveWalkTrainingDays);
+    }
+
+    private RecordResponseDto convertToDecryptedDto(Record record) {
+        String decryptedAccuracy = encryptionUtil.decrypt(record.getAccuracy());
+        String decryptedDuration = encryptionUtil.decrypt(record.getDuration());
+        String decryptedSteps = encryptionUtil.decrypt(record.getSteps());
+
+        return RecordResponseDto.create(decryptedAccuracy, decryptedDuration, decryptedSteps, record.getCreatedAt().toLocalDate());
     }
 
     private int calculateConsecutiveTrainingDays(String deviceTag) {

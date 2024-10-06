@@ -13,6 +13,8 @@ import com.stempo.api.global.auth.exception.TokenNotFoundException;
 import com.stempo.api.global.auth.exception.TokenValidateException;
 import com.stempo.api.global.dto.ApiResponse;
 import com.stempo.api.global.dto.ErrorResponse;
+import com.stempo.api.global.exception.DecryptionException;
+import com.stempo.api.global.exception.EncryptionException;
 import com.stempo.api.global.exception.InvalidColumnException;
 import com.stempo.api.global.exception.NotFoundException;
 import com.stempo.api.global.exception.PermissionDeniedException;
@@ -61,6 +63,7 @@ public class GlobalExceptionHandler {
             UnknownPathException.class,
             InvalidColumnException.class,
             SortingArgumentException.class,
+            NoSuchFieldException.class,
             IllegalArgumentException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
@@ -128,6 +131,8 @@ public class GlobalExceptionHandler {
             DirectoryCreationException.class,
             FilePermissionException.class,
             InvalidFileAttributeException.class,
+            EncryptionException.class,
+            DecryptionException.class,
             Exception.class
     })
     public ApiResponse<Void> serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {

@@ -30,9 +30,9 @@ public class RecordEntity extends BaseEntity {
     private String deviceTag;
 
     @Column(nullable = false)
-    private Double accuracy;
+    private String accuracy;
 
-    private Integer duration;
+    private String duration;
 
-    private Integer steps;
+    private String steps;
 }

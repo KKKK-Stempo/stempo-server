@@ -1,6 +1,5 @@
 package com.stempo.api.domain.presentation.dto.response;
 
-import com.stempo.api.domain.domain.model.Record;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,21 +14,21 @@ public class RecordResponseDto {
     private Integer steps;
     private LocalDate date;
 
-    public static RecordResponseDto toDto(Record record) {
-        return RecordResponseDto.builder()
-                .accuracy(record.getAccuracy())
-                .duration(record.getDuration())
-                .steps(record.getSteps())
-                .date(record.getCreatedAt().toLocalDate())
-                .build();
-    }
-
     public static RecordResponseDto createDefault() {
         return RecordResponseDto.builder()
                 .accuracy(0.0)
                 .duration(0)
                 .steps(0)
                 .date(LocalDate.now())
+                .build();
+    }
+
+    public static RecordResponseDto create(String accuracy, String duration, String steps, LocalDate date) {
+        return RecordResponseDto.builder()
+                .accuracy(Double.parseDouble(accuracy))
+                .duration(Integer.parseInt(duration))
+                .steps(Integer.parseInt(steps))
+                .date(date)
                 .build();
     }
 }

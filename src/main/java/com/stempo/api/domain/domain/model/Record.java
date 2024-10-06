@@ -18,8 +18,17 @@ public class Record {
 
     private Long id;
     private String deviceTag;
-    private Double accuracy;
-    private Integer duration;
-    private Integer steps;
+    private String accuracy;
+    private String duration;
+    private String steps;
     private LocalDateTime createdAt;
+
+    public static Record create(String deviceTag, String accuracy, String duration, String steps) {
+        return Record.builder()
+                .deviceTag(deviceTag)
+                .accuracy(accuracy)
+                .duration(duration)
+                .steps(steps)
+                .build();
+    }
 }

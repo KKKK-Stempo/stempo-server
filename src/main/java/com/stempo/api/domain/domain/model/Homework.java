@@ -22,6 +22,14 @@ public class Homework {
     private String description;
     private boolean completed;
 
+    public static Homework create(String deviceTag, String description) {
+        return Homework.builder()
+                .deviceTag(deviceTag)
+                .description(description)
+                .completed(false)
+                .build();
+    }
+
     public void update(HomeworkUpdateRequestDto requestDto) {
         Optional.ofNullable(requestDto.getDescription()).ifPresent(description -> this.description = description);
         Optional.ofNullable(requestDto.getCompleted()).ifPresent(completed -> this.completed = completed);
