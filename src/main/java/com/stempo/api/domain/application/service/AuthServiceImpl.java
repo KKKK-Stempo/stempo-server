@@ -8,6 +8,7 @@ import com.stempo.api.domain.presentation.dto.response.TokenInfo;
 import com.stempo.api.global.auth.exception.TokenForgeryException;
 import com.stempo.api.global.auth.jwt.JwtTokenProvider;
 import com.stempo.api.global.config.CustomAuthenticationProvider;
+import com.stempo.api.global.util.EncryptionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,20 +29,20 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomAuthenticationProvider authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final EncryptionUtil encryptionUtil;
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
     public TokenInfo registerUser(AuthRequestDto requestDto) {
-        String deviceTag = requestDto.getDeviceTag();
-        String password = requestDto.getPassword();
+        String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
+        String password = encryptPassword(requestDto.getPassword());
 
         if (userService.existsById(deviceTag)) {
             throw new UserAlreadyExistsException("User already exists.");
         }
 
-        String finalPassword = StringUtils.isEmpty(password) ? null : passwordEncoder.encode(password);
-        User user = User.create(deviceTag, finalPassword);
+        User user = User.create(deviceTag, password);
         userService.save(user);
         return jwtTokenProvider.generateToken(user.getDeviceTag(), user.getRole());
     }
@@ -58,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public TokenInfo login(AuthRequestDto requestDto) {
-        String deviceTag = requestDto.getDeviceTag();
+        String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
         String password = requestDto.getPassword();
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(deviceTag, password);
@@ -72,6 +73,14 @@ public class AuthServiceImpl implements AuthService {
         String refreshToken = jwtTokenProvider.resolveToken(request);
         validateRefreshToken(refreshToken);
         return reissueToken(refreshToken);
+    }
+
+    private String encryptDeviceTag(String deviceTag) {
+        return encryptionUtil.encryptWithHashedIV(deviceTag, deviceTag);
+    }
+
+    private String encryptPassword(String password) {
+        return StringUtils.isEmpty(password) ? null : passwordEncoder.encode(password);
     }
 
     private void validateRefreshToken(String refreshToken) {
