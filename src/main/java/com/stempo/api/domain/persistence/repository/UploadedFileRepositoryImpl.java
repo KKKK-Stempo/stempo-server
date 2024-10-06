@@ -5,6 +5,8 @@ import com.stempo.api.domain.domain.repository.UploadedFileRepository;
 import com.stempo.api.domain.persistence.entity.UploadedFileEntity;
 import com.stempo.api.domain.persistence.mappper.UploadedFileMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -21,6 +23,12 @@ public class UploadedFileRepositoryImpl implements UploadedFileRepository {
         UploadedFileEntity jpaEntity = mapper.toEntity(uploadedFile);
         UploadedFileEntity savedEntity = repository.save(jpaEntity);
         return mapper.toDomain(savedEntity);
+    }
+
+    @Override
+    public Page<UploadedFile> findAll(Pageable pageable) {
+        return repository.findAll(pageable)
+                .map(mapper::toDomain);
     }
 
     @Override
