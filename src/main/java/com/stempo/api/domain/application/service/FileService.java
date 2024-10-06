@@ -7,6 +7,7 @@ import com.stempo.api.domain.presentation.dto.request.DeleteFileRequestDto;
 import com.stempo.api.domain.presentation.dto.response.UploadedFileResponseDto;
 import com.stempo.api.global.dto.PagedResponseDto;
 import com.stempo.api.global.exception.NotFoundException;
+import com.stempo.api.global.util.EncryptionUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,7 @@ public class FileService {
 
     private final UploadedFileService uploadedFileService;
     private final FileHandler fileHandler;
+    private final EncryptionUtil encryptionUtil;
 
     @Value("${resource.file.url}")
     private String fileURL;
@@ -50,9 +52,11 @@ public class FileService {
     public String saveFile(MultipartFile multipartFile, String path) throws IOException {
         String savedFilePath = fileHandler.saveFile(multipartFile, path);
         String fileName = new File(savedFilePath).getName();
-        String url = fileURL + "/" + path.replace(File.separator, "/") + "/" + fileName;
+        String url = generateFileUrl(path, fileName);
 
-        UploadedFile uploadedFile = UploadedFile.create(multipartFile.getOriginalFilename(), fileName, savedFilePath, url, multipartFile.getSize());
+        String encryptedFilePath = encryptionUtil.encrypt(savedFilePath);
+
+        UploadedFile uploadedFile = UploadedFile.create(multipartFile.getOriginalFilename(), fileName, encryptedFilePath, url, multipartFile.getSize());
         uploadedFileService.saveUploadedFile(uploadedFile);
         return uploadedFile.getUrl();
     }
@@ -70,19 +74,24 @@ public class FileService {
     public boolean deleteFile(@Valid DeleteFileRequestDto requestDto) {
         String url = requestDto.getUrl();
         UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
-        String filePath = uploadedFile.getSavedPath();
 
+        String filePath = encryptionUtil.decrypt(uploadedFile.getSavedPath());
         File storedFile = new File(filePath);
+
         if (!storedFile.exists()) {
             throw new NotFoundException("File does not exist");
         }
 
-        boolean deleted = fileHandler.deleteFile(uploadedFile.getSavedPath());
+        boolean deleted = fileHandler.deleteFile(filePath);
         if (deleted) {
             uploadedFileService.deleteUploadedFile(uploadedFile);
         }
 
         return deleted;
+    }
+
+    private String generateFileUrl(String path, String fileName) {
+        return fileURL + "/" + path.replace(File.separator, "/") + "/" + fileName;
     }
 }
 
