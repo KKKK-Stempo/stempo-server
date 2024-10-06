@@ -3,8 +3,11 @@ package com.stempo.api.domain.application.service;
 
 import com.stempo.api.domain.application.handler.FileHandler;
 import com.stempo.api.domain.domain.model.UploadedFile;
+import com.stempo.api.domain.presentation.dto.request.DeleteFileRequestDto;
 import com.stempo.api.domain.presentation.dto.response.UploadedFileResponseDto;
 import com.stempo.api.global.dto.PagedResponseDto;
+import com.stempo.api.global.exception.NotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -62,6 +65,24 @@ public class FileService {
         UploadedFile uploadedFile = UploadedFile.create(file.getName(), fileName, savedFilePath, url, file.length());
         uploadedFileService.saveUploadedFile(uploadedFile);
         return url;
+    }
+
+    public boolean deleteFile(@Valid DeleteFileRequestDto requestDto) {
+        String url = requestDto.getUrl();
+        UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
+        String filePath = uploadedFile.getSavedPath();
+
+        File storedFile = new File(filePath);
+        if (!storedFile.exists()) {
+            throw new NotFoundException("File does not exist");
+        }
+
+        boolean deleted = fileHandler.deleteFile(uploadedFile.getSavedPath());
+        if (deleted) {
+            uploadedFileService.deleteUploadedFile(uploadedFile);
+        }
+
+        return deleted;
     }
 }
 

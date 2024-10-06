@@ -1,6 +1,7 @@
 package com.stempo.api.domain.application.handler;
 
 import com.stempo.api.global.util.FileUtil;
+import com.stempo.api.global.util.LogSanitizerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,5 +67,14 @@ public class FileHandler {
         Files.copy(file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
         FileUtil.setFilePermissions(destination, savePath, filePath);
         return savePath;
+    }
+
+    public boolean deleteFile(String savedPath) {
+        File fileToDelete = new File(savedPath);
+        boolean deleted = fileToDelete.delete();
+        if (!deleted) {
+            log.error("Failed to delete file: {}", LogSanitizerUtil.sanitizeForLog(savedPath));
+        }
+        return deleted;
     }
 }

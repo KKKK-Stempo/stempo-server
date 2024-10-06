@@ -14,4 +14,8 @@ public interface UploadedFileRepository {
     Page<UploadedFile> findAll(Pageable pageable);
 
     Optional<UploadedFile> findByOriginalFileName(String outputFilename);
+
+    UploadedFile findByUrlOrThrow(String url);
+
+    void delete(UploadedFile uploadedFile);
 }

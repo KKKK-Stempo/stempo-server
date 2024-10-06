@@ -13,4 +13,8 @@ public interface UploadedFileService {
     Page<UploadedFile> getUploadedFiles(Pageable pageable);
 
     Optional<UploadedFile> getUploadedFileByOriginalFileName(String fileName);
+
+    UploadedFile getUploadedFileByUrl(String url);
+
+    void deleteUploadedFile(UploadedFile uploadedFile);
 }

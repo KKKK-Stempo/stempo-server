@@ -32,4 +32,16 @@ public class UploadedFileServiceImpl implements UploadedFileService {
     public Optional<UploadedFile> getUploadedFileByOriginalFileName(String fileName) {
         return uploadedFileRepository.findByOriginalFileName(fileName);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UploadedFile getUploadedFileByUrl(String url) {
+        return uploadedFileRepository.findByUrlOrThrow(url);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUploadedFile(UploadedFile uploadedFile) {
+        uploadedFileRepository.delete(uploadedFile);
+    }
 }
