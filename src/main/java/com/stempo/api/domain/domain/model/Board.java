@@ -32,6 +32,7 @@ public class Board {
         Optional.ofNullable(requestDto.getCategory()).ifPresent(category -> this.category = category);
         Optional.ofNullable(requestDto.getTitle()).ifPresent(title -> this.title = title);
         Optional.ofNullable(requestDto.getContent()).ifPresent(content -> this.content = content);
+        Optional.ofNullable(requestDto.getFileUrls()).ifPresent(fileUrls -> this.fileUrls = fileUrls);
     }
 
     public boolean isOwner(User user) {
