@@ -40,7 +40,8 @@ public class FileController {
         return ApiResponse.success(filePaths);
     }
 
-    @Operation(summary = "[A] 파일 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Operation(summary = "[A] 파일 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
+            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @Secured({ "ROLE_ADMIN" })
     @GetMapping("/api/v1/files")
     public ApiResponse<PagedResponseDto<UploadedFileResponseDto>> getFiles(
