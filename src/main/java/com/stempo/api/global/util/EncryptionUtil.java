@@ -74,6 +74,17 @@ public class EncryptionUtil {
         }
     }
 
+    public boolean compareEncryptedValues(String encryptedValue1, String encryptedValue2) {
+        try {
+            String decryptedValue1 = decrypt(encryptedValue1);
+            String decryptedValue2 = decrypt(encryptedValue2);
+
+            return decryptedValue1.equals(decryptedValue2);
+        } catch (DecryptionException e) {
+            return false;
+        }
+    }
+
     private byte[] generateRandomIV(int ivLengthBytes) {
         SecureRandom random = new SecureRandom();
         byte[] iv = new byte[ivLengthBytes];
