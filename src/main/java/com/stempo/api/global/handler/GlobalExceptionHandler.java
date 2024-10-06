@@ -63,6 +63,7 @@ public class GlobalExceptionHandler {
             UnknownPathException.class,
             InvalidColumnException.class,
             SortingArgumentException.class,
+            NoSuchFieldException.class,
             IllegalArgumentException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
