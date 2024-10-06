@@ -15,6 +15,10 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 
+/**
+ * AES-GCM 암호화를 사용하여 문자열을 암호화 및 복호화하는 유틸리티 클래스.
+ * 고유한 값에 기반한 IV(Initialization Vector)를 생성하여 일관된 암호화 결과를 제공하는 기능을 포함합니다.
+ */
 public class EncryptionUtil {
 
     private final String secretKey;
@@ -31,6 +35,13 @@ public class EncryptionUtil {
         return new EncryptionUtil(aesConfig.getSecretKey(), aesConfig.getIvLengthBytes(), aesConfig.getGcmTagLengthBits());
     }
 
+    /**
+     * 임의로 생성된 IV(Initialization Vector)를 사용하여 AES-GCM 암호화로 문자열을 암호화.
+     *
+     * @param strToEncrypt 암호화할 문자열.
+     * @return Base64 형식으로 인코딩된 암호화된 문자열.
+     * @throws EncryptionException 암호화 중 오류가 발생할 경우.
+     */
     public String encrypt(String strToEncrypt) {
         try {
             byte[] iv = generateRandomIV(this.ivLengthBytes);
@@ -52,6 +63,13 @@ public class EncryptionUtil {
         }
     }
 
+    /**
+     * AES-GCM 암호화로 암호화된 문자열을 복호화.
+     *
+     * @param strToDecrypt 복호화할 Base64 형식의 암호화된 문자열.
+     * @return 복호화된 문자열.
+     * @throws DecryptionException 복호화 중 오류가 발생할 경우.
+     */
     public String decrypt(String strToDecrypt) {
         try {
             byte[] combined = Base64.getDecoder().decode(strToDecrypt);
@@ -74,6 +92,13 @@ public class EncryptionUtil {
         }
     }
 
+    /**
+     * 두 개의 암호화된 문자열을 복호화하여 값이 동일한지 비교하는 메소드.
+     *
+     * @param encryptedValue1 첫 번째 암호화된 값.
+     * @param encryptedValue2 두 번째 암호화된 값.
+     * @return 두 값이 동일한지 여부를 반환.
+     */
     public boolean compareEncryptedValues(String encryptedValue1, String encryptedValue2) {
         try {
             String decryptedValue1 = decrypt(encryptedValue1);
@@ -85,6 +110,12 @@ public class EncryptionUtil {
         }
     }
 
+    /**
+     * 암호화를 위해 임의의 IV(Initialization Vector)를 생성.
+     *
+     * @param ivLengthBytes 생성할 IV의 길이 (바이트 단위).
+     * @return 생성된 IV를 나타내는 byte 배열.
+     */
     private byte[] generateRandomIV(int ivLengthBytes) {
         SecureRandom random = new SecureRandom();
         byte[] iv = new byte[ivLengthBytes];
@@ -92,6 +123,13 @@ public class EncryptionUtil {
         return iv;
     }
 
+    /**
+     * 두 개의 byte 배열을 하나의 배열로 결합.
+     *
+     * @param a 첫 번째 byte 배열.
+     * @param b 두 번째 byte 배열.
+     * @return 결합된 byte 배열.
+     */
     private byte[] concat(byte[] a, byte[] b) {
         if ((long) a.length + (long) b.length > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Resulting array size is too large to handle.");
