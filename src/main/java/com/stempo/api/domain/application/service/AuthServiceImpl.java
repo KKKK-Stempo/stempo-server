@@ -7,6 +7,7 @@ import com.stempo.api.domain.presentation.dto.request.AuthRequestDto;
 import com.stempo.api.domain.presentation.dto.response.TokenInfo;
 import com.stempo.api.global.auth.exception.TokenForgeryException;
 import com.stempo.api.global.auth.jwt.JwtTokenProvider;
+import com.stempo.api.global.config.AesConfig;
 import com.stempo.api.global.config.CustomAuthenticationProvider;
 import com.stempo.api.global.util.EncryptionUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EncryptionUtil encryptionUtil;
     private final ApplicationEventPublisher eventPublisher;
+    private final AesConfig aesConfig;
 
     @Override
     @Transactional
@@ -76,7 +78,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private String encryptDeviceTag(String deviceTag) {
-        return encryptionUtil.encryptWithHashedIV(deviceTag, deviceTag);
+        return encryptionUtil.encryptWithHashedIV(deviceTag, aesConfig.getDeviceTagSecretKey());
     }
 
     private String encryptPassword(String password) {

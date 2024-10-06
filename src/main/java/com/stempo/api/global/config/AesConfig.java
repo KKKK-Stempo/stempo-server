@@ -10,14 +10,17 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 public class AesConfig {
 
-    @Value("${security.aes-key}")
+    @Value("${security.aes.key}")
     private String secretKey;
 
-    @Value("${security.iv-length-bytes}")
+    @Value("${security.aes.iv-length-bytes}")
     private int ivLengthBytes;
 
-    @Value("${security.gcm-tag-length-bits}")
+    @Value("${security.aes.gcm-tag-length-bits}")
     private int gcmTagLengthBits;
+
+    @Value("${security.aes.device-tag-secret-key}")
+    private String deviceTagSecretKey;
 
     @Bean
     public EncryptionUtil encryptionUtil(AesConfig aesConfig) {
