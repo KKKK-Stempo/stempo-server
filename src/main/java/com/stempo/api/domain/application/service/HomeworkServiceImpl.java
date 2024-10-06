@@ -54,6 +54,7 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Transactional
     public Long updateHomework(Long homeworkId, HomeworkUpdateRequestDto requestDto) {
         Homework homework = repository.findByIdOrThrow(homeworkId);
+        requestDto.setDescription(encryptionUtil.encrypt(requestDto.getDescription()));
         homework.update(requestDto);
         return repository.save(homework).getId();
     }
