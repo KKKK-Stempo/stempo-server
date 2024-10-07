@@ -42,10 +42,9 @@ public class RecordRepositoryImpl implements RecordRepository {
     }
 
     @Override
-    public Record findLatestBeforeStartDate(String deviceTag, LocalDateTime startDateTime) {
-        Optional<RecordEntity> jpaEntity = repository.findLatestBeforeStartDate(deviceTag, startDateTime);
-        return jpaEntity.map(mapper::toDomain)
-                .orElse(null);
+    public Optional<Record> findLatestBeforeStartDate(String deviceTag, LocalDateTime startDateTime) {
+        return repository.findLatestBeforeStartDate(deviceTag, startDateTime)
+                .map(mapper::toDomain);
     }
 
     @Override

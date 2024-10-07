@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,24 +46,22 @@ public class RecordServiceImpl implements RecordService {
         LocalDateTime endDateTime = endDate.atStartOfDay().plusDays(1);
 
         // startDateTime 이전의 가장 최신 데이터 가져오기
-        Record latestBeforeStartDate = recordRepository.findLatestBeforeStartDate(deviceTag, startDateTime);
+        Optional<Record> latestBeforeStartDate = recordRepository.findLatestBeforeStartDate(deviceTag, startDateTime);
 
         // startDateTime과 endDateTime 사이의 데이터 가져오기
         List<Record> records = recordRepository.findByDateBetween(deviceTag, startDateTime, endDateTime);
 
         // 결과 합치기
         List<RecordResponseDto> combinedRecords = new ArrayList<>();
-        if (latestBeforeStartDate != null) {
-            combinedRecords.add(convertToDecryptedDto(latestBeforeStartDate));
-        }
+        latestBeforeStartDate.ifPresentOrElse(
+                record -> combinedRecords.add(convertToDecryptedDto(record)),
+                () -> combinedRecords.add(RecordResponseDto.create(0.0, 0, 0, startDate.minusDays(1)))
+        );
+
         combinedRecords.addAll(records.stream()
                 .map(this::convertToDecryptedDto)
                 .toList());
 
-        // 데이터가 없을 경우 오늘 날짜로 값을 0으로 설정하여 반환
-        if (combinedRecords.isEmpty()) {
-            combinedRecords.add(RecordResponseDto.createDefault());
-        }
         return combinedRecords;
     }
 
@@ -92,11 +91,12 @@ public class RecordServiceImpl implements RecordService {
     }
 
     private RecordResponseDto convertToDecryptedDto(Record record) {
-        String decryptedAccuracy = encryptionUtil.decrypt(record.getAccuracy());
-        String decryptedDuration = encryptionUtil.decrypt(record.getDuration());
-        String decryptedSteps = encryptionUtil.decrypt(record.getSteps());
+        Double decryptedAccuracy = Double.parseDouble(encryptionUtil.decrypt(record.getAccuracy()));
+        Integer decryptedDuration = Integer.parseInt(encryptionUtil.decrypt(record.getDuration()));
+        Integer decryptedSteps = Integer.parseInt(encryptionUtil.decrypt(record.getSteps()));
+        LocalDate date = record.getCreatedAt().toLocalDate();
 
-        return RecordResponseDto.create(decryptedAccuracy, decryptedDuration, decryptedSteps, record.getCreatedAt().toLocalDate());
+        return RecordResponseDto.create(decryptedAccuracy, decryptedDuration, decryptedSteps, date);
     }
 
     private int calculateConsecutiveTrainingDays(String deviceTag) {
