@@ -13,13 +13,4 @@ public class RecordResponseDto {
     private Integer duration;
     private Integer steps;
     private LocalDate date;
-
-    public static RecordResponseDto create(Double accuracy, Integer duration, Integer steps, LocalDate date) {
-        return RecordResponseDto.builder()
-                .accuracy(accuracy)
-                .duration(duration)
-                .steps(steps)
-                .date(date)
-                .build();
-    }
 }
