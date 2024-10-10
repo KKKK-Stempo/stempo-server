@@ -1,6 +1,5 @@
 package com.stempo.api.domain.presentation.dto.request;
 
-import com.stempo.api.domain.domain.model.Board;
 import com.stempo.api.domain.domain.model.BoardCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -32,14 +31,4 @@ public class BoardRequestDto {
     ]
     """)
     private List<String> fileUrls;
-
-    public static Board toDomain(BoardRequestDto requestDto, String deviceTag) {
-        return Board.builder()
-                .deviceTag(deviceTag)
-                .category(requestDto.getCategory())
-                .title(requestDto.getTitle())
-                .content(requestDto.getContent())
-                .fileUrls(requestDto.getFileUrls())
-                .build();
-    }
 }
