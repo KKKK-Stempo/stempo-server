@@ -89,7 +89,7 @@ public class RecordServiceImpl implements RecordService {
         // 연속된 훈련 일수 계산
         int consecutiveWalkTrainingDays = calculateConsecutiveTrainingDays(deviceTag);
 
-        return RecordStatisticsResponseDto.of(todayWalkTrainingCount, weeklyWalkTrainingCount, consecutiveWalkTrainingDays);
+        return mapper.toDto(todayWalkTrainingCount, weeklyWalkTrainingCount, consecutiveWalkTrainingDays);
     }
 
     private RecordResponseDto convertToDecryptedDto(Record record) {
