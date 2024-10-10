@@ -166,4 +166,35 @@ public class FileUtil {
         );
         Files.setPosixFilePermissions(path, permissions);
     }
+
+    /**
+     * 주어진 파일 크기를 적절한 단위로 포맷팅합니다.
+     *
+     * 파일 크기는 바이트 단위로 제공되며, KB, MB, GB 단위로 포맷팅됩니다.
+     *
+     * <ul>
+     *     <li>1 KB 미만: "B" 단위 (바이트)</li>
+     *     <li>1 MB 미만: "KB" 단위 (킬로바이트), 소수점 둘째 자리까지 표시</li>
+     *     <li>1 GB 미만: "MB" 단위 (메가바이트), 소수점 둘째 자리까지 표시</li>
+     *     <li>1 GB 이상: "GB" 단위 (기가바이트), 소수점 둘째 자리까지 표시</li>
+     * </ul>
+     *
+     * @param fileSize 파일의 크기(바이트 단위)
+     * @return 포맷팅된 파일 크기 문자열 (예: "10.00KB", "1.50MB", "3.00GB")
+     */
+    public static String formatFileSize(long fileSize) {
+        final long KB = 1024;
+        final long MB = KB * 1024;
+        final long GB = MB * 1024;
+
+        if (fileSize < KB) {
+            return fileSize + " B";
+        } else if (fileSize < MB) {
+            return String.format("%.2fKB", fileSize / (double) KB);
+        } else if (fileSize < GB) {
+            return String.format("%.2fMB", fileSize / (double) MB);
+        } else {
+            return String.format("%.2fGB", fileSize / (double) GB);
+        }
+    }
 }

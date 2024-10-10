@@ -7,6 +7,7 @@ import com.stempo.api.domain.domain.repository.BoardRepository;
 import com.stempo.api.domain.presentation.dto.request.BoardRequestDto;
 import com.stempo.api.domain.presentation.dto.request.BoardUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.BoardResponseDto;
+import com.stempo.api.domain.presentation.mapper.BoardDtoMapper;
 import com.stempo.api.global.dto.PagedResponseDto;
 import com.stempo.api.global.exception.PermissionDeniedException;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +22,13 @@ public class BoardServiceImpl implements BoardService {
 
     private final UserService userService;
     private final BoardRepository repository;
+    private final BoardDtoMapper mapper;
 
     @Override
     @Transactional
     public Long registerBoard(BoardRequestDto requestDto) {
         User user = userService.getCurrentUser();
-        Board board = BoardRequestDto.toDomain(requestDto, user.getDeviceTag());
+        Board board = mapper.toDomain(requestDto, user.getDeviceTag());
         board.validateAccessPermissionForNotice(user);
         return repository.save(board).getId();
     }
@@ -36,7 +38,7 @@ public class BoardServiceImpl implements BoardService {
     public PagedResponseDto<BoardResponseDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
         validateAccessPermissionForSuggestion(category);
         Page<Board> boards = repository.findByCategory(category, pageable);
-        return new PagedResponseDto<>(boards.map(BoardResponseDto::toDto));
+        return new PagedResponseDto<>(boards.map(mapper::toDto));
     }
 
     @Override

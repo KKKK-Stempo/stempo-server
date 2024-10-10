@@ -1,4 +1,4 @@
-package com.stempo.api.domain.presentation;
+package com.stempo.api.domain.presentation.controller;
 
 import com.stempo.api.domain.application.service.BoardService;
 import com.stempo.api.domain.domain.model.BoardCategory;

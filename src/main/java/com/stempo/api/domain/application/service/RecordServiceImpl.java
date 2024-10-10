@@ -5,6 +5,7 @@ import com.stempo.api.domain.domain.repository.RecordRepository;
 import com.stempo.api.domain.presentation.dto.request.RecordRequestDto;
 import com.stempo.api.domain.presentation.dto.response.RecordResponseDto;
 import com.stempo.api.domain.presentation.dto.response.RecordStatisticsResponseDto;
+import com.stempo.api.domain.presentation.mapper.RecordDtoMapper;
 import com.stempo.api.global.util.EncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class RecordServiceImpl implements RecordService {
 
     private final UserService userService;
     private final RecordRepository recordRepository;
+    private final RecordDtoMapper mapper;
     private final EncryptionUtil encryptionUtil;
 
     @Override
@@ -55,7 +57,7 @@ public class RecordServiceImpl implements RecordService {
         List<RecordResponseDto> combinedRecords = new ArrayList<>();
         latestBeforeStartDate.ifPresentOrElse(
                 record -> combinedRecords.add(convertToDecryptedDto(record)),
-                () -> combinedRecords.add(RecordResponseDto.create(0.0, 0, 0, startDate.minusDays(1)))
+                () -> combinedRecords.add(mapper.toDto(0.0, 0, 0, startDate.minusDays(1)))
         );
 
         combinedRecords.addAll(records.stream()
@@ -87,7 +89,7 @@ public class RecordServiceImpl implements RecordService {
         // 연속된 훈련 일수 계산
         int consecutiveWalkTrainingDays = calculateConsecutiveTrainingDays(deviceTag);
 
-        return RecordStatisticsResponseDto.of(todayWalkTrainingCount, weeklyWalkTrainingCount, consecutiveWalkTrainingDays);
+        return mapper.toDto(todayWalkTrainingCount, weeklyWalkTrainingCount, consecutiveWalkTrainingDays);
     }
 
     private RecordResponseDto convertToDecryptedDto(Record record) {
@@ -96,7 +98,7 @@ public class RecordServiceImpl implements RecordService {
         Integer decryptedSteps = Integer.parseInt(encryptionUtil.decrypt(record.getSteps()));
         LocalDate date = record.getCreatedAt().toLocalDate();
 
-        return RecordResponseDto.create(decryptedAccuracy, decryptedDuration, decryptedSteps, date);
+        return mapper.toDto(decryptedAccuracy, decryptedDuration, decryptedSteps, date);
     }
 
     private int calculateConsecutiveTrainingDays(String deviceTag) {

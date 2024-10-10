@@ -5,6 +5,7 @@ import com.stempo.api.domain.domain.repository.HomeworkRepository;
 import com.stempo.api.domain.presentation.dto.request.HomeworkRequestDto;
 import com.stempo.api.domain.presentation.dto.request.HomeworkUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.HomeworkResponseDto;
+import com.stempo.api.domain.presentation.mapper.HomeworkDtoMapper;
 import com.stempo.api.global.dto.PagedResponseDto;
 import com.stempo.api.global.util.EncryptionUtil;
 import com.stempo.api.global.util.PaginationUtils;
@@ -22,6 +23,7 @@ public class HomeworkServiceImpl implements HomeworkService {
 
     private final UserService userService;
     private final HomeworkRepository repository;
+    private final HomeworkDtoMapper mapper;
     private final EncryptionUtil encryptionUtil;
 
     @Override
@@ -70,6 +72,6 @@ public class HomeworkServiceImpl implements HomeworkService {
     private HomeworkResponseDto decryptAndConvertToDto(Homework homework) {
         String decryptedDescription = encryptionUtil.decrypt(homework.getDescription());
         homework.setDescription(decryptedDescription);
-        return HomeworkResponseDto.toDto(homework);
+        return mapper.toDto(homework);
     }
 }

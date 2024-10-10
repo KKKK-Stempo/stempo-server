@@ -5,6 +5,7 @@ import com.stempo.api.domain.application.handler.FileHandler;
 import com.stempo.api.domain.domain.model.UploadedFile;
 import com.stempo.api.domain.presentation.dto.request.DeleteFileRequestDto;
 import com.stempo.api.domain.presentation.dto.response.UploadedFileResponseDto;
+import com.stempo.api.domain.presentation.mapper.UploadedFileDtoMapper;
 import com.stempo.api.global.dto.PagedResponseDto;
 import com.stempo.api.global.exception.NotFoundException;
 import com.stempo.api.global.util.EncryptionUtil;
@@ -27,6 +28,7 @@ import java.util.List;
 public class FileService {
 
     private final UploadedFileService uploadedFileService;
+    private final UploadedFileDtoMapper mapper;
     private final FileHandler fileHandler;
     private final EncryptionUtil encryptionUtil;
 
@@ -46,7 +48,7 @@ public class FileService {
     @Transactional(readOnly = true)
     public PagedResponseDto<UploadedFileResponseDto> getFiles(Pageable pageable) {
         Page<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFiles(pageable);
-        return new PagedResponseDto<>(uploadedFiles.map(UploadedFileResponseDto::toDto));
+        return new PagedResponseDto<>(uploadedFiles.map(mapper::toDto));
     }
 
     public String saveFile(MultipartFile multipartFile, String path) throws IOException {

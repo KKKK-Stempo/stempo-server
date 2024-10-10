@@ -1,4 +1,4 @@
-package com.stempo.api.domain.presentation;
+package com.stempo.api.domain.presentation.controller;
 
 import com.stempo.api.domain.application.service.RecordService;
 import com.stempo.api.domain.presentation.dto.request.RecordRequestDto;
