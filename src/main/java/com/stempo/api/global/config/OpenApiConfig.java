@@ -1,5 +1,6 @@
 package com.stempo.api.global.config;
 
+import com.stempo.api.global.annotation.SuccessApiResponseCustomizer;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,9 +25,8 @@ public class OpenApiConfig {
     public OpenAPI openAPI(@Value("${springdoc.version}") String appVersion) {
         Info info = new Info().title("Stempo").version(appVersion)
                 .description("Stempo API Document")
-                .termsOfService("http://swagger.io/terms/")
                 .contact(new Contact().name("한관희").url("https://github.com/limehee").email("noop103@naver.com"))
-                .license(new License().name("Stempo License Version 1.0").url("https://github.com/KKKK-Stempo"));
+                .license(new License().name("GNU GENERAL PUBLIC LICENSE v3.0").url("https://www.gnu.org/licenses/gpl-3.0.html"));
 
         final String securitySchemeName = "bearerAuth";
         Server server = new Server().url("/");
@@ -45,5 +46,14 @@ public class OpenApiConfig {
                                 )
                 )
                 .info(info);
+    }
+
+    @Bean
+    public GroupedOpenApi publicApi(SuccessApiResponseCustomizer successApiResponseCustomizer) {
+        return GroupedOpenApi.builder()
+                .group("public")
+                .pathsToMatch("/api/**")
+                .addOperationCustomizer(successApiResponseCustomizer)
+                .build();
     }
 }
