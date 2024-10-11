@@ -5,6 +5,7 @@ import com.stempo.api.domain.application.exception.DirectoryCreationException;
 import com.stempo.api.domain.application.exception.FilePermissionException;
 import com.stempo.api.domain.application.exception.FileUploadFailException;
 import com.stempo.api.domain.application.exception.InvalidFileAttributeException;
+import com.stempo.api.domain.application.exception.ResourceNotFoundException;
 import com.stempo.api.domain.application.exception.RhythmGenerationException;
 import com.stempo.api.domain.application.exception.UserAlreadyExistsException;
 import com.stempo.api.global.auth.exception.AuthenticationInfoNotFoundException;
@@ -100,6 +101,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             NullPointerException.class,
             NotFoundException.class,
+            ResourceNotFoundException.class,
             NoSuchElementException.class,
             FileNotFoundException.class
     })

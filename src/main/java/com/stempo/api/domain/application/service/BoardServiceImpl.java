@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoardServiceImpl implements BoardService {
 
     private final UserService userService;
+    private final UploadedFileService uploadedFileService;
     private final BoardRepository repository;
     private final BoardDtoMapper mapper;
 
@@ -28,6 +29,7 @@ public class BoardServiceImpl implements BoardService {
     @Transactional
     public Long registerBoard(BoardRequestDto requestDto) {
         User user = userService.getCurrentUser();
+        uploadedFileService.verifyFilesExist(requestDto.getFileUrls());
         Board board = mapper.toDomain(requestDto, user.getDeviceTag());
         board.validateAccessPermissionForNotice(user);
         return repository.save(board).getId();
@@ -46,6 +48,7 @@ public class BoardServiceImpl implements BoardService {
     public Long updateBoard(Long boardId, BoardUpdateRequestDto requestDto) {
         User user = userService.getCurrentUser();
         Board board = repository.findByIdOrThrow(boardId);
+        uploadedFileService.verifyFilesExist(requestDto.getFileUrls());
         board.validateAccessPermission(user);
         board.update(requestDto);
         return repository.save(board).getId();

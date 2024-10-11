@@ -5,6 +5,8 @@ import com.stempo.api.domain.presentation.dto.request.BoardRequestDto;
 import com.stempo.api.domain.presentation.dto.response.BoardResponseDto;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @Component
 public class BoardDtoMapper {
 
@@ -14,7 +16,7 @@ public class BoardDtoMapper {
                 .category(requestDto.getCategory())
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
-                .fileUrls(requestDto.getFileUrls())
+                .fileUrls(requestDto.getFileUrls() == null ? new ArrayList<>() : requestDto.getFileUrls())
                 .build();
     }
 
@@ -25,7 +27,7 @@ public class BoardDtoMapper {
                 .category(board.getCategory())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .fileUrls(board.getFileUrls())
+                .fileUrls(board.getFileUrls() == null ? new ArrayList<>() : board.getFileUrls())
                 .createdAt(board.getCreatedAt().toString())
                 .build();
     }
