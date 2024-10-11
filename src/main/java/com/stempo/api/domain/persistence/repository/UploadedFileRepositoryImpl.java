@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -49,5 +50,10 @@ public class UploadedFileRepositoryImpl implements UploadedFileRepository {
     public void delete(UploadedFile uploadedFile) {
         UploadedFileEntity jpaEntity = mapper.toEntity(uploadedFile);
         repository.delete(jpaEntity);
+    }
+
+    @Override
+    public long countByUrlIn(List<String> fileUrls) {
+        return repository.countByUrlIn(fileUrls);
     }
 }

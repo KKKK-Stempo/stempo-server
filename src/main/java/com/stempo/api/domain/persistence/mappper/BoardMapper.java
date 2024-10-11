@@ -4,6 +4,8 @@ import com.stempo.api.domain.domain.model.Board;
 import com.stempo.api.domain.persistence.entity.BoardEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @Component
 public class BoardMapper {
 
@@ -14,7 +16,7 @@ public class BoardMapper {
                 .category(board.getCategory())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .fileUrls(board.getFileUrls())
+                .fileUrls(board.getFileUrls() == null ? new ArrayList<>() : board.getFileUrls())
                 .build();
     }
 
@@ -25,7 +27,7 @@ public class BoardMapper {
                 .category(entity.getCategory())
                 .title(entity.getTitle())
                 .content(entity.getContent())
-                .fileUrls(entity.getFileUrls())
+                .fileUrls(entity.getFileUrls() == null ? new ArrayList<>() : entity.getFileUrls())
                 .createdAt(entity.getCreatedAt())
                 .build();
     }
