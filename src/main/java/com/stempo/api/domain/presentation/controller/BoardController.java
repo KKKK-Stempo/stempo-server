@@ -5,6 +5,7 @@ import com.stempo.api.domain.domain.model.BoardCategory;
 import com.stempo.api.domain.presentation.dto.request.BoardRequestDto;
 import com.stempo.api.domain.presentation.dto.request.BoardUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.BoardResponseDto;
+import com.stempo.api.global.annotation.SuccessApiResponse;
 import com.stempo.api.global.dto.ApiResponse;
 import com.stempo.api.global.dto.PagedResponseDto;
 import com.stempo.api.global.exception.InvalidColumnException;
@@ -37,6 +38,7 @@ public class BoardController {
 
     @Operation(summary = "[U] 게시글 작성", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "공지사항은 ROLE_ADMIN 이상의 권한이 필요함")
+    @SuccessApiResponse(data = "boardId", dataType = Long.class, dataDescription = "게시글 ID")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @PostMapping("/api/v1/boards")
     public ApiResponse<Long> registerBoard(
@@ -65,6 +67,7 @@ public class BoardController {
     
     @Operation(summary = "[U] 게시글 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "ADMIN은 모든 게시글 수정 가능")
+    @SuccessApiResponse(data = "boardId", dataType = Long.class, dataDescription = "게시글 ID")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @PatchMapping("/api/v1/boards/{boardId}")
     public ApiResponse<Long> updateBoard(
@@ -77,6 +80,7 @@ public class BoardController {
 
     @Operation(summary = "[U] 게시글 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "ADMIN은 모든 게시글 삭제 가능")
+    @SuccessApiResponse(data = "boardId", dataType = Long.class, dataDescription = "게시글 ID")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @DeleteMapping("/api/v1/boards/{boardId}")
     public ApiResponse<Long> deleteBoard(

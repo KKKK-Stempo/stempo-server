@@ -3,6 +3,7 @@ package com.stempo.api.domain.presentation.controller;
 import com.stempo.api.domain.application.service.AuthService;
 import com.stempo.api.domain.presentation.dto.request.AuthRequestDto;
 import com.stempo.api.domain.presentation.dto.response.TokenInfo;
+import com.stempo.api.global.annotation.SuccessApiResponse;
 import com.stempo.api.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,6 +33,7 @@ public class AuthController {
     }
 
     @Operation(summary = "[U] 회원 탈퇴", description = "ROLE_USER 이상의 권한이 필요함")
+    @SuccessApiResponse(data = "deviceTag", dataType = String.class, dataDescription = "사용자의 디바이스 식별자")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @DeleteMapping("/api/v1/auth/unregister")
     public ApiResponse<String> unregisterUser() {

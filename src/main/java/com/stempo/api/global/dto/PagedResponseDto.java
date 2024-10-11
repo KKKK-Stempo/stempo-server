@@ -1,5 +1,6 @@
 package com.stempo.api.global.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,12 +10,25 @@ import java.util.List;
 @Getter
 public class PagedResponseDto<T> {
 
+    @Schema(description = "현재 페이지 번호", example = "0")
     private final int currentPage;
+
+    @Schema(description = "이전 페이지 존재 여부", example = "false")
     private final boolean hasPrevious;
+
+    @Schema(description = "다음 페이지 존재 여부", example = "true")
     private final boolean hasNext;
+
+    @Schema(description = "전체 페이지 수", example = "10")
     private final int totalPages;
+
+    @Schema(description = "전체 아이템 수", example = "100")
     private final long totalItems;
+
+    @Schema(description = "현재 페이지 아이템 수", example = "10")
     private final int take;
+
+    @Schema(description = "현재 페이지 아이템 목록")
     private final List<T> items;
 
     public PagedResponseDto(Page<T> page) {

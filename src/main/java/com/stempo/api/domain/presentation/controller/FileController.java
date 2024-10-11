@@ -3,6 +3,7 @@ package com.stempo.api.domain.presentation.controller;
 import com.stempo.api.domain.application.service.FileService;
 import com.stempo.api.domain.presentation.dto.request.DeleteFileRequestDto;
 import com.stempo.api.domain.presentation.dto.response.UploadedFileResponseDto;
+import com.stempo.api.global.annotation.SuccessApiResponse;
 import com.stempo.api.global.dto.ApiResponse;
 import com.stempo.api.global.dto.PagedResponseDto;
 import com.stempo.api.global.exception.InvalidColumnException;
@@ -35,6 +36,7 @@ public class FileController {
     private final PageableUtil pageableUtil;
 
     @Operation(summary = "[U] 게시판 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @SuccessApiResponse(data = "[\"filePath1\", \"filePath2\"]", dataType = List.class, dataDescription = "파일 경로 리스트")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @PostMapping(value = "/api/v1/files/boards", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<String>> boardFileUpload(
@@ -61,6 +63,7 @@ public class FileController {
 
     @Operation(summary = "[A] 파일 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "파일 경로(/resources/files/)를 받아 해당 파일을 삭제함")
+    @SuccessApiResponse(data = "true", dataType = Boolean.class, dataDescription = "파일 삭제 여부")
     @Secured({ "ROLE_ADMIN" })
     @DeleteMapping("/api/v1/files")
     public ApiResponse<Boolean> deleteFile(

@@ -2,6 +2,7 @@ package com.stempo.api.domain.presentation.controller;
 
 import com.stempo.api.domain.application.service.RhythmService;
 import com.stempo.api.domain.presentation.dto.request.RhythmRequestDto;
+import com.stempo.api.global.annotation.SuccessApiResponse;
 import com.stempo.api.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +23,7 @@ public class RhythmController {
     @Operation(summary = "[U] 리듬 생성", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "BPM은 10 이상 200 이하의 값이어야 함<br>" +
             "Bit는 1 이상 8 이하의 값이어야 함")
+    @SuccessApiResponse(data = "/resources/files/{fileName}", dataType = String.class, dataDescription = "파일 경로")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @PostMapping("/api/v1/rhythm")
     public ApiResponse<String> generateRhythm(

@@ -4,6 +4,7 @@ import com.stempo.api.domain.application.service.HomeworkService;
 import com.stempo.api.domain.presentation.dto.request.HomeworkRequestDto;
 import com.stempo.api.domain.presentation.dto.request.HomeworkUpdateRequestDto;
 import com.stempo.api.domain.presentation.dto.response.HomeworkResponseDto;
+import com.stempo.api.global.annotation.SuccessApiResponse;
 import com.stempo.api.global.dto.ApiResponse;
 import com.stempo.api.global.dto.PagedResponseDto;
 import com.stempo.api.global.exception.InvalidColumnException;
@@ -35,6 +36,7 @@ public class HomeworkController {
     private final PageableUtil pageableUtil;
 
     @Operation(summary = "[U] 과제 추가", description = "ROLE_USER 이상의 권한이 필요함")
+    @SuccessApiResponse(data = "homeworkId", dataType = Long.class, dataDescription = "과제 ID")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @PostMapping(value = "/api/v1/homeworks")
     public ApiResponse<Long> addHomework(
@@ -63,6 +65,7 @@ public class HomeworkController {
     }
 
     @Operation(summary = "[U] 과제 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @SuccessApiResponse(data = "homeworkId", dataType = Long.class, dataDescription = "과제 ID")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @PatchMapping(value = "/api/v1/homeworks/{homeworkId}")
     public ApiResponse<Long> updateHomework(
@@ -74,6 +77,7 @@ public class HomeworkController {
     }
 
     @Operation(summary = "[U] 과제 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @SuccessApiResponse(data = "homeworkId", dataType = Long.class, dataDescription = "과제 ID")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @DeleteMapping(value = "/api/v1/homeworks/{homeworkId}")
     public ApiResponse<Long> deleteHomework(
