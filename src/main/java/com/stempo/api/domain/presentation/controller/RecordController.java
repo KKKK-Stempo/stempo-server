@@ -4,6 +4,7 @@ import com.stempo.api.domain.application.service.RecordService;
 import com.stempo.api.domain.presentation.dto.request.RecordRequestDto;
 import com.stempo.api.domain.presentation.dto.response.RecordResponseDto;
 import com.stempo.api.domain.presentation.dto.response.RecordStatisticsResponseDto;
+import com.stempo.api.global.annotation.SuccessApiResponse;
 import com.stempo.api.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +28,7 @@ public class RecordController {
     private final RecordService recordService;
 
     @Operation(summary = "[U] 보행 훈련 기록", description = "ROLE_USER 이상의 권한이 필요함")
+    @SuccessApiResponse(data = "deviceTag", dataType = String.class, dataDescription = "사용자의 디바이스 식별자")
     @Secured({ "ROLE_USER", "ROLE_ADMIN" })
     @PostMapping("/api/v1/records")
     public ApiResponse<String> record(

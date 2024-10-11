@@ -1,9 +1,13 @@
 package com.stempo.api.global.annotation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.BooleanSchema;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.stereotype.Component;
@@ -33,15 +37,20 @@ public class SuccessApiResponseCustomizer implements OperationCustomizer {
 
     private Schema<?> createSchema(SuccessApiResponse successApiResponse) {
         Schema<?> schema = new Schema<>();
-        schema.setType("object");
-        schema.addProperty("success", new Schema<Boolean>()
-                .type("boolean")
-                .example(true)
-                .description("응답 성공 여부"));
-        schema.addProperty("data", new Schema<>()
-                .type(successApiResponse.dataType().getSimpleName().toLowerCase())
-                .example(successApiResponse.data())
-                .description(successApiResponse.dataDescription()));
+        schema.addProperty("success", new BooleanSchema().example(true));
+
+        String data = successApiResponse.data();
+        if (!data.isEmpty()) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                Object parsedData = objectMapper.readValue(data, Object.class);
+                schema.addProperty("data", new Schema<>().example(parsedData));
+            } catch (JsonProcessingException e) {
+                schema.addProperty("data", new StringSchema().example(data));
+            }
+        } else {
+            schema.addProperty("data", new StringSchema().example(null));
+        }
 
         return schema;
     }

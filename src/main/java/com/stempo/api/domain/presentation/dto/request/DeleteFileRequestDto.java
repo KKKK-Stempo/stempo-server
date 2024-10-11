@@ -10,6 +10,6 @@ import lombok.Setter;
 public class DeleteFileRequestDto {
 
     @NotBlank(message = "File URL is required")
-    @Schema(description = "파일경로", example = "/resources/files/boards/123456.png", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "파일경로", example = "/resources/files/947051880039041_19dea234-b6ec-4c4b-bc92-c53c0d921943.jpg", requiredMode = Schema.RequiredMode.REQUIRED)
     private String url;
 }
