@@ -1,6 +1,6 @@
 package com.stempo.config;
 
-import com.stempo.handler.ApiLoggingInterceptor;
+import com.stempo.interceptor.ApiLoggingInterceptor;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

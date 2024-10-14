@@ -1,6 +1,6 @@
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
     enabled = true
-    archiveBaseName.set("${project.name}")
+    archiveBaseName.set(project.name)
     archiveVersion.set("${project.version}")
     archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
 }
