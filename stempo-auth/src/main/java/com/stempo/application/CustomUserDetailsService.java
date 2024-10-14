@@ -1,5 +1,7 @@
 package com.stempo.application;
 
+import com.stempo.model.CustomUserDetails;
+import com.stempo.model.User;
 import com.stempo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,8 +17,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findById(username)
-                .map(user -> (UserDetails) user)
+        User user = userRepository.findById(username)
                 .orElseThrow(() -> new UsernameNotFoundException("[User] id: " + username + " not found"));
+        return new CustomUserDetails(user);
     }
 }
