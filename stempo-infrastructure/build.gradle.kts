@@ -13,4 +13,5 @@ dependencies {
 
     // Util
     implementation(Dependencies.jakartaValidationApi)
+    implementation(Dependencies.commonsIo)
 }

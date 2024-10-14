@@ -15,5 +15,4 @@ dependencies {
     implementation(Dependencies.jakartaValidationApi)
     implementation(Dependencies.hibernateValidator)
     implementation(Dependencies.swagger)
-    implementation(Dependencies.commonsIo)
 }
