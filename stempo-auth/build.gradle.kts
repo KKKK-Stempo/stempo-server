@@ -1,7 +1,7 @@
 dependencies {
     // Project dependencies
-    implementation(project(":stempo-common"))
-    implementation(project(":stempo-domain"))
+    implementation(project(Modules.common))
+    implementation(project(Modules.domain))
 
     // Spring Project
     implementation(Dependencies.springBootStarterWeb)

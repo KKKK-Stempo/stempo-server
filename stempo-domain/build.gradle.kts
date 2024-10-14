@@ -1,6 +1,6 @@
 dependencies {
     // Project dependencies
-    implementation(project(":stempo-common"))
+    implementation(project(Modules.common))
 
     // Spring Project
     implementation(Dependencies.springDataCommons)

@@ -7,9 +7,9 @@ tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
 
 dependencies {
     // Project dependencies
-    implementation(project(":stempo-application"))
-    implementation(project(":stempo-common"))
-    implementation(project(":stempo-domain"))
+    implementation(project(Modules.application))
+    implementation(project(Modules.common))
+    implementation(project(Modules.domain))
 
     // Spring Project
     implementation(Dependencies.springBootStarterWeb)
