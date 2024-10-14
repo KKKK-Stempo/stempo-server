@@ -1,0 +1,27 @@
+bootJar {
+    enabled = false
+}
+
+bootBuildImage {
+    enabled = false
+}
+
+dependencies {
+    // Project dependencies
+    implementation project(':stempo-common')
+    implementation project(':stempo-domain')
+
+    // Spring Project
+    implementation 'org.springframework.boot:spring-boot-starter-web' // Spring Boot Web
+    implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
+
+    // Util
+    implementation 'jakarta.validation:jakarta.validation-api:3.1.0' // Jakarta Bean Validation
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6' // JWT 라이브러리
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6' // JWT 구현체
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6' // JWT Jackson 모듈
+
+    // Test
+    testImplementation 'org.springframework.security:spring-security-test' // Spring Security Test
+}
