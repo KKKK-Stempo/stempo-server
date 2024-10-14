@@ -1,7 +1,0 @@
-dependencies {
-    // Project dependencies
-    implementation project(':stempo-common')
-
-    // Spring Project
-    implementation 'org.springframework.data:spring-data-commons' // Spring Data Commons
-}
