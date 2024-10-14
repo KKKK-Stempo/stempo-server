@@ -1,11 +1,3 @@
-bootJar {
-    enabled = false
-}
-
-bootBuildImage {
-    enabled = false
-}
-
 dependencies {
     // Spring Project
     implementation 'org.springframework.boot:spring-boot-starter-web' // Spring Boot Web

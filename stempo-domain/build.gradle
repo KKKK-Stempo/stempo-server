@@ -1,11 +1,3 @@
-bootJar {
-    enabled = false
-}
-
-bootBuildImage {
-    enabled = false
-}
-
 dependencies {
     // Project dependencies
     implementation project(':stempo-common')

@@ -1,9 +1,8 @@
 bootJar {
     enabled = true
-}
-
-bootBuildImage {
-    enabled = false
+    archiveBaseName.set("${project.name}")
+    archiveVersion.set("${project.version}")
+    archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
 }
 
 dependencies {
