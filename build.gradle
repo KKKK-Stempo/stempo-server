@@ -47,8 +47,8 @@ subprojects {
 	dependencies {
 		implementation 'org.springframework.boot:spring-boot-starter' // Spring Boot
 		testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test
-		compileOnly 'org.projectlombok:lombok' // 롬복
-		annotationProcessor 'org.projectlombok:lombok' // 롬복
+		compileOnly 'org.projectlombok:lombok' // Lombok
+		annotationProcessor 'org.projectlombok:lombok' // Lombok
 	}
 
 	test {
