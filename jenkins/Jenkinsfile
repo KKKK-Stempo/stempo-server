@@ -164,7 +164,7 @@ def configureModuleProfile(String credentialsId, String resourcePath, String pro
             def path = "${resourcePath}/${profileFile}"
             sh """
                 mkdir -p ${resourcePath}
-                echo ${YML_FILE} > ${path}
+                cp ${YML_FILE} ${path}
             """
         }
     }
