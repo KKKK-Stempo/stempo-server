@@ -1,10 +1,6 @@
 def FAILED_STAGE = ""
 def BACKUP_FILE = ""
 
-def CONTENT_TYPE_JSON = 'application/json'
-def HTTP_POST = 'POST'
-def TIMEOUT_MS = 150000  // 2 minutes 30 seconds
-
 pipeline {
     agent any
 
@@ -251,6 +247,9 @@ def createSlackPayload(String message, String color, String jobUrl, String conso
 }
 
 def sendHttpPostRequest(String url, String payload) {
+    def CONTENT_TYPE_JSON = 'application/json'
+    def HTTP_POST = 'POST'
+
     sh """
         curl -X ${HTTP_POST} \\
             -H 'Content-type: ${CONTENT_TYPE_JSON}' \\
@@ -415,9 +414,12 @@ def deployNewInstance() {
 
 def performHealthCheck() {
     def PUBLIC_IP = sh(script: "curl -s ifconfig.me", returnStdout: true).trim()
+
     echo "Public IP address: ${PUBLIC_IP}"
 
     def start_time = System.currentTimeMillis()
+    def TIMEOUT_MS = 150000
+
     def timeout = start_time + TIMEOUT_MS
 
     while (System.currentTimeMillis() < timeout) {
