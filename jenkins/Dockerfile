@@ -7,11 +7,11 @@ COPY build.gradle.kts settings.gradle /app/
 COPY buildSrc /app/buildSrc
 
 # 의존성 캐싱을 위해 먼저 의존성만 설치 (빌드 전에 캐시 활용)
-RUN gradle dependencies --no-daemon --parallel --stacktrace
+RUN gradle dependencies --parallel --stacktrace
 
 # 소스 파일을 모두 복사한 후 애플리케이션 빌드
 COPY . /app
-RUN gradle build --no-daemon --parallel --stacktrace
+RUN gradle build --parallel --stacktrace
 
 # 2. 런타임용 이미지 생성
 FROM openjdk:21-jdk-slim
