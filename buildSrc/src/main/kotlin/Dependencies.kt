@@ -3,6 +3,7 @@ object Dependencies {
     const val springBootStarterWeb = "org.springframework.boot:spring-boot-starter-web"
     const val springBootStarterValidation = "org.springframework.boot:spring-boot-starter-validation"
     const val springBootStarterSecurity = "org.springframework.boot:spring-boot-starter-security"
+    const val springBootActuator = "org.springframework.boot:spring-boot-starter-actuator"
     const val springBootStarterDataJpa = "org.springframework.boot:spring-boot-starter-data-jpa"
     const val springDataCommons = "org.springframework.data:spring-data-commons"
     const val jakartaValidationApi = "jakarta.validation:jakarta.validation-api:${Versions.jakartaValidationApi}"

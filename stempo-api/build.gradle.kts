@@ -15,6 +15,7 @@ dependencies {
     implementation(Dependencies.springBootStarterWeb)
     implementation(Dependencies.springBootStarterValidation)
     implementation(Dependencies.springBootStarterSecurity)
+    implementation(Dependencies.springBootActuator)
     implementation(Dependencies.springDataCommons)
 
     // Util
