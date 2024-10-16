@@ -5,4 +5,3 @@ include ':stempo-api'
 include ':stempo-application'
 include ':stempo-domain'
 include ':stempo-infrastructure'
-
