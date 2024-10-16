@@ -26,65 +26,40 @@ pipeline {
             parallel {
                 stage('Configure API Module Profile') {
                     steps {
-                        withCredentials([file(credentialsId: 'stempo_prod_api_yml', variable: 'API_YML')]) {
-                            script {
-                                def apiPath = "${env.API_RESOURCES_PATH}/${env.API_PROFILE_FILE}"
-                                sh """
-                                    echo ${API_YML} > ${apiPath}
-                                """
-                            }
+                        script {
+                            configureModuleProfile('stempo_prod_api_yml', env.API_RESOURCES_PATH, env.API_PROFILE_FILE)
                         }
                     }
                 }
 
                 stage('Configure Application Module Profile') {
                     steps {
-                        withCredentials([file(credentialsId: 'stempo_prod_application_yml', variable: 'APPLICATION_YML')]) {
-                            script {
-                                def applicationPath = "${env.APPLICATION_RESOURCES_PATH}/${env.APPLICATION_PROFILE_FILE}"
-                                sh """
-                                    echo ${APPLICATION_YML} > ${applicationPath}
-                                """
-                            }
+                        script {
+                            configureModuleProfile('stempo_prod_application_yml', env.APPLICATION_RESOURCES_PATH, env.APPLICATION_PROFILE_FILE)
                         }
                     }
                 }
 
                 stage('Configure Auth Module Profile') {
                     steps {
-                        withCredentials([file(credentialsId: 'stempo_prod_auth_yml', variable: 'AUTH_YML')]) {
-                            script {
-                                def authPath = "${env.AUTH_RESOURCES_PATH}/${env.AUTH_PROFILE_FILE}"
-                                sh """
-                                    echo ${AUTH_YML} > ${authPath}
-                                """
-                            }
+                        script {
+                            configureModuleProfile('stempo_prod_auth_yml', env.AUTH_RESOURCES_PATH, env.AUTH_PROFILE_FILE)
                         }
                     }
                 }
 
                 stage('Configure Common Module Profile') {
                     steps {
-                        withCredentials([file(credentialsId: 'stempo_prod_common_yml', variable: 'COMMON_YML')]) {
-                            script {
-                                def commonPath = "${env.COMMON_RESOURCES_PATH}/${env.COMMON_PROFILE_FILE}"
-                                sh """
-                                    echo ${COMMON_YML} > ${commonPath}
-                                """
-                            }
+                        script {
+                            configureModuleProfile('stempo_prod_common_yml', env.COMMON_RESOURCES_PATH, env.COMMON_PROFILE_FILE)
                         }
                     }
                 }
 
                 stage('Configure Infrastructure Module Profile') {
                     steps {
-                        withCredentials([file(credentialsId: 'stempo_prod_infrastructure_yml', variable: 'INFRASTRUCTURE_YML')]) {
-                            script {
-                                def infrastructurePath = "${env.INFRASTRUCTURE_RESOURCES_PATH}/${env.INFRASTRUCTURE_PROFILE_FILE}"
-                                sh """
-                                    echo ${INFRASTRUCTURE_YML} > ${infrastructurePath}
-                                """
-                            }
+                        script {
+                            configureModuleProfile('stempo_prod_infrastructure_yml', env.INFRASTRUCTURE_RESOURCES_PATH, env.INFRASTRUCTURE_PROFILE_FILE)
                         }
                     }
                 }
@@ -183,6 +158,18 @@ pipeline {
     }
 }
 
+def configureModuleProfile(String credentialsId, String resourcePath, String profileFile) {
+    withCredentials([file(credentialsId: credentialsId, variable: 'YML_FILE')]) {
+        script {
+            def path = "${resourcePath}/${profileFile}"
+            sh """
+                mkdir -p ${resourcePath}
+                echo ${YML_FILE} > ${path}
+            """
+        }
+    }
+}
+
 def sendSlackBuildNotification(String message, String color) {
     def jobUrl = "${env.JENKINS_DOMAIN}/job/${env.JOB_NAME}"
     def consoleOutputUrl = "${jobUrl}/${env.BUILD_NUMBER}/console"
@@ -260,6 +247,7 @@ def sendHttpPostRequest(String url, String payload) {
 
 def loadEnvironmentVariables(String configFile) {
     def config = readYaml(file: configFile)
+    def workspacePath = env.WORKSPACE
 
     env.JENKINS_DOMAIN = config.'jenkins-domain'
     env.SLACK_WEBHOOK_URL = config.slack.'webhook-url'
@@ -302,22 +290,19 @@ def loadEnvironmentVariables(String configFile) {
 
     env.ACTUATOR_PATH = config.healthcheck.'actuator-path'
 
-    env.API_RESOURCES_PATH = config.modules.api.'resources-path'
+    env.API_RESOURCES_PATH = "${workspacePath}/${config.modules.api.'resources-path'}"
     env.API_PROFILE_FILE = config.modules.api.'profile-file'
 
-    env.APPLICATION_RESOURCES_PATH = config.modules.application.'resources-path'
+    env.APPLICATION_RESOURCES_PATH = "${workspacePath}/${config.modules.application.'resources-path'}"
     env.APPLICATION_PROFILE_FILE = config.modules.application.'profile-file'
 
-    env.AUTH_RESOURCES_PATH = config.modules.auth.'resources-path'
+    env.AUTH_RESOURCES_PATH = "${workspacePath}/${config.modules.auth.'resources-path'}"
     env.AUTH_PROFILE_FILE = config.modules.auth.'profile-file'
 
-    env.COMMON_RESOURCES_PATH = config.modules.common.'resources-path'
+    env.COMMON_RESOURCES_PATH = "${workspacePath}/${config.modules.common.'resources-path'}"
     env.COMMON_PROFILE_FILE = config.modules.common.'profile-file'
 
-    env.DOMAIN_RESOURCES_PATH = config.modules.domain.'resources-path'
-    env.DOMAIN_PROFILE_FILE = config.modules.domain.'profile-file'
-
-    env.INFRASTRUCTURE_RESOURCES_PATH = config.modules.infrastructure.'resources-path'
+    env.INFRASTRUCTURE_RESOURCES_PATH = "${workspacePath}/${config.modules.infrastructure.'resources-path'}"
     env.INFRASTRUCTURE_PROFILE_FILE = config.modules.infrastructure.'profile-file'
 }
 
