@@ -1,0 +1,393 @@
+def FAILED_STAGE = ""
+def BACKUP_FILE = ""
+
+def CONTENT_TYPE_JSON = 'application/json'
+def HTTP_POST = 'POST'
+def TIMEOUT_MS = 150000  // 2 minutes 30 seconds
+
+pipeline {
+    agent any
+
+    triggers {
+        githubPush()
+    }
+
+    stages {
+        stage('Load Environment Variables') {
+            steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                }
+                withCredentials([file(credentialsId: 'stempo_prod_config_yml', variable: 'CONFIG_FILE')]) {
+                    script {
+                        loadEnvironmentVariables(env.CONFIG_FILE)
+                    }
+                }
+            }
+        }
+
+        stage('Parallel Processing') {
+            parallel {
+                stage('Get Git Change Log') {
+                    steps {
+                        script {
+                            FAILED_STAGE = env.STAGE_NAME
+                            env.GIT_CHANGELOG = getChangeLog()
+                        }
+                    }
+                }
+
+                stage('MariaDB Backup') {
+                    steps {
+                        script {
+                            FAILED_STAGE = env.STAGE_NAME
+                            BACKUP_FILE = backupMariaDB()
+                        }
+                    }
+                }
+
+                stage('Docker Hub Login') {
+                    steps {
+                        script {
+                            FAILED_STAGE = env.STAGE_NAME
+                            dockerLogin()
+                        }
+                    }
+                }
+
+                stage('Determine Containers') {
+                    steps {
+                        script {
+                            FAILED_STAGE = env.STAGE_NAME
+                            determineContainers()
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                    buildAndPushDockerImage()
+                }
+            }
+        }
+
+        stage('Deploy New Instance') {
+            steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                    deployNewInstance()
+                }
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                    performHealthCheck()
+                }
+            }
+        }
+
+        stage('Switch Traffic and Cleanup') {
+            steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                    switchTrafficAndCleanup()
+                }
+            }
+        }
+    }
+
+    post {
+        failure {
+            script {
+                sendSlackBuildNotification(":scream_cat: Stage *${FAILED_STAGE}* failed.", env.SLACK_COLOR_FAILURE)
+            }
+        }
+
+        success {
+            script {
+                sendSlackBuildNotification(":rocket: Deployment completed successfully", env.SLACK_COLOR_SUCCESS)
+            }
+        }
+    }
+}
+
+def sendSlackBuildNotification(String message, String color) {
+    def jobUrl = "${env.JENKINS_DOMAIN}/job/${env.JOB_NAME}"
+    def consoleOutputUrl = "${jobUrl}/${env.BUILD_NUMBER}/console"
+
+    def payload = createSlackPayload(message, color, jobUrl, consoleOutputUrl)
+    def payloadJson = groovy.json.JsonOutput.toJson(payload)
+
+    sendHttpPostRequest(env.SLACK_WEBHOOK_URL, payloadJson)
+}
+
+def createSlackPayload(String message, String color, String jobUrl, String consoleOutputUrl) {
+    return [
+        blocks: [
+            [
+                type: "section",
+                text: [
+                    type: "mrkdwn",
+                    text: message
+                ]
+            ]
+        ],
+        attachments: [
+            [
+                color: color,
+                blocks: [
+                    [
+                        type: "section",
+                        text: [
+                            type: "mrkdwn",
+                            text: "*Change Log:*\n${env.GIT_CHANGELOG}"
+                        ]
+                    ],
+                    [
+                        type: "actions",
+                        elements: [
+                            [
+                                type: "button",
+                                text: [
+                                    type: "plain_text",
+                                    text: "Job",
+                                    emoji: true
+                                ],
+                                url: jobUrl,
+                                value: "click_job"
+                            ],
+                            [
+                                type: "button",
+                                text: [
+                                    type: "plain_text",
+                                    text: "Console Output",
+                                    emoji: true
+                                ],
+                                url: consoleOutputUrl,
+                                value: "click_console_output"
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+}
+
+def sendHttpPostRequest(String url, String payload) {
+    sh """
+        curl -X ${HTTP_POST} \\
+            -H 'Content-type: ${CONTENT_TYPE_JSON}' \\
+            --data '${payload}' \\
+            ${url}
+    """
+}
+
+def loadEnvironmentVariables(String configFile) {
+    def config = readYaml(file: configFile)
+
+    env.JENKINS_DOMAIN = config.'jenkins-domain'
+    env.SLACK_WEBHOOK_URL = config.slack.'webhook-url'
+    env.SLACK_COLOR_SUCCESS = config.slack.'color-success'
+    env.SLACK_COLOR_FAILURE = config.slack.'color-failure'
+
+    env.MARIA_DB_USER = config.mariadb.user
+    env.MARIA_DB_PASSWORD = config.mariadb.password
+    env.BACKUP_DIR = config.mariadb.'backup-dir'
+
+    env.DOCKER_HUB_REPO = config.dockerhub.repo
+    env.DOCKER_HUB_USER = config.dockerhub.user
+    env.DOCKER_HUB_PASSWORD = config.dockerhub.password
+
+    env.HOST_CONFIG_PATH = config.host.'config-path'
+    env.HOST_CLOUD_PATH = config.host.'cloud-path'
+    env.HOST_LOGS_PATH = config.host.'logs-path'
+
+    env.CONTAINER_CONFIG_PATH = config.container.'config-path'
+    env.CONTAINER_CLOUD_PATH = config.container.'cloud-path'
+    env.CONTAINER_LOGS_PATH = config.container.'logs-path'
+
+    env.BLUE_CONTAINER = config.containers.blue
+    env.GREEN_CONTAINER = config.containers.green
+    env.BLUE_URL = config.containers.'blue-url'
+    env.GREEN_URL = config.containers.'green-url'
+    env.IMAGE_NAME = config.containers.'image-name'
+
+    env.APPLICATION_NETWORK = config.networks.application
+    env.INFRA_NETWORK = config.networks.infra
+
+    env.PROFILE = config.spring.profile
+    env.PORT_A = config.spring.'port-a'.toString()
+    env.PORT_B = config.spring.'port-b'.toString()
+
+    env.DOCKERFILE_PATH = "${env.WORKSPACE}${config.docker.'dockerfile-path'}"
+    env.NGINX_CONTAINER_NAME = config.docker.'nginx-container-name'
+    env.MARIA_DB_CONTAINER_NAME = config.docker.'mariadb-container-name'
+    env.NGINX_CONFIG_PATH = config.docker.'nginx-config-path'
+
+    env.ACTUATOR_PATH = config.healthcheck.'actuator-path'
+}
+
+def getChangeLog() {
+    def previousCommit = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'HEAD~1'
+    def currentCommit = env.GIT_COMMIT ?: 'HEAD'
+
+    def changeLog = sh(
+        script: "git log ${previousCommit}..${currentCommit} --pretty=format:\"* %h - %s (%an)\" --abbrev-commit",
+        returnStdout: true
+    ).trim()
+
+    def lines = changeLog.split('\n')
+    if (lines.size() > 10) {
+        changeLog = lines.take(10).join('\n') + '\n... (truncated)'
+    }
+
+    return changeLog
+}
+
+def backupMariaDB() {
+    def BACKUP_FILE = "mariadb_backup_${new Date().format('yyyy-MM-dd_HH-mm-ss')}.sql"
+    sh """
+        echo "Backing up MariaDB database to ${env.BACKUP_DIR}/${BACKUP_FILE}..."
+        docker exec -e MYSQL_PWD=${env.MARIA_DB_PASSWORD} ${env.MARIA_DB_CONTAINER_NAME} sh -c 'mysqldump -u ${env.MARIA_DB_USER} --all-databases > ${env.BACKUP_DIR}/${BACKUP_FILE}'
+    """
+    return BACKUP_FILE
+}
+
+def dockerLogin() {
+    sh """
+        echo "Logging in to Docker Hub..."
+        echo "${env.DOCKER_HUB_PASSWORD}" | docker login -u ${env.DOCKER_HUB_USER} --password-stdin
+    """
+}
+
+def determineContainers() {
+    def blueRunning = sh(script: "docker ps --filter 'name=${env.BLUE_CONTAINER}' --format '{{.Names}}' | grep -q '${env.BLUE_CONTAINER}'", returnStatus: true) == 0
+    if (blueRunning) {
+        env.CURRENT_CONTAINER = env.BLUE_CONTAINER
+        env.DEPLOY_CONTAINER = env.GREEN_CONTAINER
+        env.NEW_TARGET = env.GREEN_URL
+        env.NEW_PORT = env.PORT_B
+        env.OLD_PORT = env.PORT_A
+    } else {
+        env.CURRENT_CONTAINER = env.GREEN_CONTAINER
+        env.DEPLOY_CONTAINER = env.BLUE_CONTAINER
+        env.NEW_TARGET = env.BLUE_URL
+        env.NEW_PORT = env.PORT_A
+        env.OLD_PORT = env.PORT_B
+    }
+    echo "Current container is ${env.CURRENT_CONTAINER}, deploying to ${env.DEPLOY_CONTAINER} on port ${env.NEW_PORT}."
+}
+
+def buildAndPushDockerImage() {
+    sh """
+        docker build -f ${env.DOCKERFILE_PATH} -t ${env.IMAGE_NAME}:${env.DEPLOY_CONTAINER} .
+        docker tag ${env.IMAGE_NAME}:${env.DEPLOY_CONTAINER} ${env.DOCKER_HUB_REPO}:${env.DEPLOY_CONTAINER}
+        docker push ${env.DOCKER_HUB_REPO}:${env.DEPLOY_CONTAINER}
+    """
+}
+
+def deployNewInstance() {
+    sh """
+        echo "Stopping and removing existing container if it exists"
+        if docker ps | grep -q ${env.DEPLOY_CONTAINER}; then
+            docker stop ${env.DEPLOY_CONTAINER}
+            docker rm ${env.DEPLOY_CONTAINER}
+        fi
+
+        echo "Running new container ${env.DEPLOY_CONTAINER} with image ${env.IMAGE_NAME}:${env.DEPLOY_CONTAINER}"
+        docker run -d --name ${env.DEPLOY_CONTAINER} \\
+            -p ${env.NEW_PORT}:8080 \\
+            --network ${env.APPLICATION_NETWORK} \\
+            -v ${env.HOST_CONFIG_PATH}:${env.CONTAINER_CONFIG_PATH} \\
+            -v ${env.HOST_CLOUD_PATH}:${env.CONTAINER_CLOUD_PATH} \\
+            -v ${env.HOST_LOGS_PATH}:${env.CONTAINER_LOGS_PATH} \\
+            -e LOG_PATH=${env.CONTAINER_LOGS_PATH} \\
+            -e SPRING_PROFILES_ACTIVE=${env.PROFILE} \\
+            ${env.IMAGE_NAME}:${env.DEPLOY_CONTAINER}
+
+        echo "Checking if infra network ${env.INFRA_NETWORK} exists"
+        if docker network ls --format '{{.Name}}' | grep -q '^${env.INFRA_NETWORK}\$'; then
+            echo "Connecting to infra network ${env.INFRA_NETWORK}"
+            docker network connect ${env.INFRA_NETWORK} ${env.DEPLOY_CONTAINER}
+        else
+            echo "Infra network ${env.INFRA_NETWORK} does not exist. Skipping connection."
+        fi
+
+        echo "Listing all containers"
+        docker ps -a
+    """
+}
+
+def performHealthCheck() {
+    def PUBLIC_IP = sh(script: "curl -s ifconfig.me", returnStdout: true).trim()
+    echo "Public IP address: ${PUBLIC_IP}"
+
+    def start_time = System.currentTimeMillis()
+    def timeout = start_time + TIMEOUT_MS
+
+    while (System.currentTimeMillis() < timeout) {
+        def elapsed = (System.currentTimeMillis() - start_time) / 1000
+        echo "Checking health... ${elapsed} seconds elapsed."
+        def status = sh(
+            script: """curl -s http://${PUBLIC_IP}:${env.NEW_PORT}${env.ACTUATOR_PATH} | grep 'UP'""",
+            returnStatus: true
+        )
+        if (status == 0) {
+            echo "New application started successfully after ${elapsed} seconds."
+            return
+        }
+        sleep 5
+    }
+
+    if (System.currentTimeMillis() >= timeout) {
+        sh "docker stop ${env.DEPLOY_CONTAINER}"
+        sh "docker rm ${env.DEPLOY_CONTAINER}"
+        error "Health check failed"
+    }
+}
+
+def switchTrafficAndCleanup() {
+    echo "Switching traffic to ${env.DEPLOY_CONTAINER} on port ${env.NEW_PORT}."
+    updateNginxConfig(env.NGINX_CONTAINER_NAME, env.NEW_TARGET, env.NGINX_CONFIG_PATH)
+    reloadNginx(env.NGINX_CONTAINER_NAME)
+    stopAndRemoveContainer(env.CURRENT_CONTAINER)
+}
+
+def updateNginxConfig(String nginxContainer, String newTargetUrl, String configPath) {
+    sh """
+        docker exec ${nginxContainer} bash -c '
+            export TARGET_URL=${newTargetUrl}
+            envsubst "\\\$TARGET_URL" < ${configPath}.template > ${configPath}
+        '
+        docker exec ${nginxContainer} sed -i 's/${env.OLD_PORT}/${env.NEW_PORT}/' ${configPath}
+    """
+}
+
+def reloadNginx(String nginxContainer) {
+    sh """
+        docker exec ${nginxContainer} nginx -t
+        docker exec ${nginxContainer} nginx -s reload
+        echo "Nginx configuration reloaded."
+    """
+}
+
+def stopAndRemoveContainer(String containerName) {
+    def containerRunning = sh(script: "docker ps --filter 'name=${containerName}' --format '{{.Names}}' | grep -q '${containerName}'", returnStatus: true) == 0
+    if (containerRunning) {
+        sh """
+            docker stop ${containerName}
+            docker rm ${containerName}
+            echo "Stopped and removed old container: ${containerName}."
+        """
+    } else {
+        echo "No running container found with name ${containerName}."
+    }
+}
