@@ -27,69 +27,67 @@ pipeline {
         }
 
         stage('Configure Spring Profiles') {
-            steps {
-                parallel {
-                    stage('Configure API Module Profile') {
-                        steps {
-                            withCredentials([file(credentialsId: 'stempo_prod_api_yml', variable: 'API_YML')]) {
-                                script {
-                                    def apiPath = "${env.API_RESOURCES_PATH}/${env.API_PROFILE_FILE}"
-                                    sh """
-                                        echo ${API_YML} > ${apiPath}
-                                    """
-                                }
+            parallel {
+                stage('Configure API Module Profile') {
+                    steps {
+                        withCredentials([file(credentialsId: 'stempo_prod_api_yml', variable: 'API_YML')]) {
+                            script {
+                                def apiPath = "${env.API_RESOURCES_PATH}/${env.API_PROFILE_FILE}"
+                                sh """
+                                    echo ${API_YML} > ${apiPath}
+                                """
                             }
                         }
                     }
+                }
 
-                    stage('Configure Application Module Profile') {
-                        steps {
-                            withCredentials([file(credentialsId: 'stempo_prod_application_yml', variable: 'APPLICATION_YML')]) {
-                                script {
-                                    def applicationPath = "${env.APPLICATION_RESOURCES_PATH}/${env.APPLICATION_PROFILE_FILE}"
-                                    sh """
-                                        echo ${APPLICATION_YML} > ${applicationPath}
-                                    """
-                                }
+                stage('Configure Application Module Profile') {
+                    steps {
+                        withCredentials([file(credentialsId: 'stempo_prod_application_yml', variable: 'APPLICATION_YML')]) {
+                            script {
+                                def applicationPath = "${env.APPLICATION_RESOURCES_PATH}/${env.APPLICATION_PROFILE_FILE}"
+                                sh """
+                                    echo ${APPLICATION_YML} > ${applicationPath}
+                                """
                             }
                         }
                     }
+                }
 
-                    stage('Configure Auth Module Profile') {
-                        steps {
-                            withCredentials([file(credentialsId: 'stempo_prod_auth_yml', variable: 'AUTH_YML')]) {
-                                script {
-                                    def authPath = "${env.AUTH_RESOURCES_PATH}/${env.AUTH_PROFILE_FILE}"
-                                    sh """
-                                        echo ${AUTH_YML} > ${authPath}
-                                    """
-                                }
+                stage('Configure Auth Module Profile') {
+                    steps {
+                        withCredentials([file(credentialsId: 'stempo_prod_auth_yml', variable: 'AUTH_YML')]) {
+                            script {
+                                def authPath = "${env.AUTH_RESOURCES_PATH}/${env.AUTH_PROFILE_FILE}"
+                                sh """
+                                    echo ${AUTH_YML} > ${authPath}
+                                """
                             }
                         }
                     }
+                }
 
-                    stage('Configure Common Module Profile') {
-                        steps {
-                            withCredentials([file(credentialsId: 'stempo_prod_common_yml', variable: 'COMMON_YML')]) {
-                                script {
-                                    def commonPath = "${env.COMMON_RESOURCES_PATH}/${env.COMMON_PROFILE_FILE}"
-                                    sh """
-                                        echo ${COMMON_YML} > ${commonPath}
-                                    """
-                                }
+                stage('Configure Common Module Profile') {
+                    steps {
+                        withCredentials([file(credentialsId: 'stempo_prod_common_yml', variable: 'COMMON_YML')]) {
+                            script {
+                                def commonPath = "${env.COMMON_RESOURCES_PATH}/${env.COMMON_PROFILE_FILE}"
+                                sh """
+                                    echo ${COMMON_YML} > ${commonPath}
+                                """
                             }
                         }
                     }
+                }
 
-                    stage('Configure Infrastructure Module Profile') {
-                        steps {
-                            withCredentials([file(credentialsId: 'stempo_prod_infrastructure_yml', variable: 'INFRASTRUCTURE_YML')]) {
-                                script {
-                                    def infrastructurePath = "${env.INFRASTRUCTURE_RESOURCES_PATH}/${env.INFRASTRUCTURE_PROFILE_FILE}"
-                                    sh """
-                                        echo ${INFRASTRUCTURE_YML} > ${infrastructurePath}
-                                    """
-                                }
+                stage('Configure Infrastructure Module Profile') {
+                    steps {
+                        withCredentials([file(credentialsId: 'stempo_prod_infrastructure_yml', variable: 'INFRASTRUCTURE_YML')]) {
+                            script {
+                                def infrastructurePath = "${env.INFRASTRUCTURE_RESOURCES_PATH}/${env.INFRASTRUCTURE_PROFILE_FILE}"
+                                sh """
+                                    echo ${INFRASTRUCTURE_YML} > ${infrastructurePath}
+                                """
                             }
                         }
                     }
