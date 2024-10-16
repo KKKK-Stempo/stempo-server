@@ -158,18 +158,6 @@ pipeline {
     }
 }
 
-def configureModuleProfile(String credentialsId, String resourcePath, String profileFile) {
-    withCredentials([file(credentialsId: credentialsId, variable: 'YML_FILE')]) {
-        script {
-            def path = "${resourcePath}/${profileFile}"
-            sh """
-                mkdir -p ${resourcePath}
-                cp ${YML_FILE} ${path}
-            """
-        }
-    }
-}
-
 def sendSlackBuildNotification(String message, String color) {
     def jobUrl = "${env.JENKINS_DOMAIN}/job/${env.JOB_NAME}"
     def consoleOutputUrl = "${jobUrl}/${env.BUILD_NUMBER}/console"
@@ -259,8 +247,6 @@ def loadEnvironmentVariables(String configFile) {
     env.BACKUP_DIR = config.mariadb.'backup-dir'
 
     env.DOCKER_HUB_REPO = config.dockerhub.repo
-    env.DOCKER_HUB_USER = config.dockerhub.user
-    env.DOCKER_HUB_PASSWORD = config.dockerhub.password
 
     env.HOST_CONFIG_PATH = config.host.'config-path'
     env.HOST_CLOUD_PATH = config.host.'cloud-path'
@@ -306,6 +292,18 @@ def loadEnvironmentVariables(String configFile) {
     env.INFRASTRUCTURE_PROFILE_FILE = config.modules.infrastructure.'profile-file'
 }
 
+def configureModuleProfile(String credentialsId, String resourcePath, String profileFile) {
+    withCredentials([file(credentialsId: credentialsId, variable: 'YML_FILE')]) {
+        script {
+            def path = "${resourcePath}/${profileFile}"
+            sh """
+                mkdir -p ${resourcePath}
+                cp \$YML_FILE ${path}
+            """
+        }
+    }
+}
+
 def getChangeLog() {
     def previousCommit = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'HEAD~1'
     def currentCommit = env.GIT_COMMIT ?: 'HEAD'
@@ -340,7 +338,7 @@ def dockerLogin() {
     withCredentials([usernamePassword(credentialsId: 'dockerhub_credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
         sh """
             echo "Logging in to Docker Hub..."
-            echo "${DOCKER_HUB_PASSWORD}" | docker login -u ${DOCKER_HUB_USER} --password-stdin
+            echo \$DOCKER_HUB_PASSWORD | docker login -u \$DOCKER_HUB_USER --password-stdin
         """
     }
 }
