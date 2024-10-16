@@ -337,10 +337,12 @@ def backupMariaDB() {
 }
 
 def dockerLogin() {
-    sh """
-        echo "Logging in to Docker Hub..."
-        echo "${env.DOCKER_HUB_PASSWORD}" | docker login -u ${env.DOCKER_HUB_USER} --password-stdin
-    """
+    withCredentials([usernamePassword(credentialsId: 'dockerhub_credentials', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+        sh """
+            echo "Logging in to Docker Hub..."
+            echo "${DOCKER_HUB_PASSWORD}" | docker login -u ${DOCKER_HUB_USER} --password-stdin
+        """
+    }
 }
 
 def determineContainers() {
