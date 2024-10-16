@@ -331,7 +331,7 @@ def backupMariaDB() {
     def BACKUP_FILE = "mariadb_backup_${new Date().format('yyyy-MM-dd_HH-mm-ss')}.sql"
     sh """
         echo "Backing up MariaDB database to ${env.BACKUP_DIR}/${BACKUP_FILE}..."
-        docker exec -e MYSQL_PWD=${env.MARIA_DB_PASSWORD} ${env.MARIA_DB_CONTAINER_NAME} sh -c 'mysqldump -u ${env.MARIA_DB_USER} --all-databases > ${env.BACKUP_DIR}/${BACKUP_FILE}'
+        docker exec -e MYSQL_PWD=${env.MARIA_DB_PASSWORD} ${env.MARIA_DB_CONTAINER_NAME} sh -c 'mariadb-dump -u ${env.MARIA_DB_USER} stempo > ${env.BACKUP_DIR}/${BACKUP_FILE}'
     """
     return BACKUP_FILE
 }
