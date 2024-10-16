@@ -2,8 +2,8 @@
 FROM gradle:8.10.2-jdk21 AS build
 WORKDIR /app
 
-# build.gradle.kts와 settings.gradle.kts 파일을 복사하여 의존성 설치 준비
-COPY build.gradle.kts settings.gradle.kts /app/
+# build.gradle.kts와 settings.gradle 파일을 복사하여 의존성 설치 준비
+COPY build.gradle.kts settings.gradle /app/
 
 # 의존성 캐싱을 위해 먼저 의존성만 설치 (빌드 전에 캐시 활용)
 RUN gradle dependencies --no-daemon --parallel --stacktrace
