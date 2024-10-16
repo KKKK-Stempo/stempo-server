@@ -330,6 +330,10 @@ def getChangeLog() {
         returnStdout: true
     ).trim()
 
+    if (changeLog == null || changeLog.isEmpty()) {
+        changeLog = "No changes found"
+    }
+
     def lines = changeLog.split('\n')
     if (lines.size() > 10) {
         changeLog = lines.take(10).join('\n') + '\n... (truncated)'
