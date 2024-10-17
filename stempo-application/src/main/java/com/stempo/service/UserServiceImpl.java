@@ -62,8 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void handleAccountLock(String deviceTag) {
-        User user = findById(deviceTag)
-                .orElseThrow(() -> new BadCredentialsException("[User] id: " + deviceTag + " not found"));
+        User user = getUserById(deviceTag);
         if (user.isAccountLocked()) {
             throw new AccountLockedException("Account is locked due to too many failed login attempts.");
         }
@@ -72,8 +71,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void handleFailedLogin(String deviceTag) {
-        User user = repository.findById(deviceTag)
-                .orElseThrow(() -> new BadCredentialsException("[User] id: " + deviceTag + " not found"));
+        User user = getUserById(deviceTag);
         user.incrementFailedLoginAttempts();
         if (user.getFailedLoginAttempts() >= maxFailedAttempts) {
             user.lockAccount();
@@ -85,9 +83,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void resetFailedAttempts(String deviceTag) {
-        User user = repository.findById(deviceTag)
-                .orElseThrow(() -> new BadCredentialsException("[User] id: " + deviceTag + " not found"));
+        User user = getUserById(deviceTag);
         user.resetFailedLoginAttempts();
         save(user);
+    }
+
+    private User getUserById(String deviceTag) {
+        return findById(deviceTag)
+                .orElseThrow(() -> new BadCredentialsException("[User] id: " + deviceTag + " not found"));
     }
 }
