@@ -1,5 +1,7 @@
 package com.stempo.filter;
 
+import com.stempo.util.HttpReqResUtils;
+import com.stempo.util.IpWhitelistValidator;
 import com.stempo.util.ResponseUtils;
 import com.stempo.util.WhitelistPathMatcher;
 import jakarta.servlet.FilterChain;
@@ -22,10 +24,15 @@ import java.util.Base64;
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final AuthenticationManager whitelistAuthenticationManager;
+    private final IpWhitelistValidator ipWhitelistValidator;
 
-    public CustomBasicAuthenticationFilter(AuthenticationManager whitelistAuthenticationManager) {
+    public CustomBasicAuthenticationFilter(
+            AuthenticationManager whitelistAuthenticationManager,
+            IpWhitelistValidator ipWhitelistValidator
+    ) {
         super(whitelistAuthenticationManager);
         this.whitelistAuthenticationManager = whitelistAuthenticationManager;
+        this.ipWhitelistValidator = ipWhitelistValidator;
     }
 
     @Override
@@ -36,11 +43,25 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
             return;
         }
 
+        if (!verifyIpAddressAccess(response)) {
+            return;
+        }
+
         if (!authenticateUserCredentials(request, response)) {
             return;
         }
 
         super.doFilterInternal(request, response, chain);
+    }
+
+    private boolean verifyIpAddressAccess(HttpServletResponse response) throws IOException {
+        String clientIpAddress = HttpReqResUtils.getClientIpAddressIfServletRequestExist();
+        if (!ipWhitelistValidator.isIpWhitelisted(clientIpAddress)) {
+            log.info("[{}] : Unauthorized access from non-whitelisted IP", clientIpAddress);
+            ResponseUtils.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
+        }
+        return true;
     }
 
     private boolean authenticateUserCredentials(HttpServletRequest request, HttpServletResponse response) throws IOException {

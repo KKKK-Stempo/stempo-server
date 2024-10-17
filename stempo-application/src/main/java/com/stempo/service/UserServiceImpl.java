@@ -3,7 +3,7 @@ package com.stempo.service;
 import com.stempo.exception.AccountLockedException;
 import com.stempo.model.User;
 import com.stempo.repository.UserRepository;
-import com.stempo.util.AuthUtil;
+import com.stempo.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String getCurrentDeviceTag() {
-        return AuthUtil.getAuthenticationInfoDeviceTag();
+        return AuthUtils.getAuthenticationInfoDeviceTag();
     }
 
     @Override
