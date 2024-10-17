@@ -21,6 +21,7 @@ import java.util.concurrent.CompletionException;
 public class ApplicationExceptionHandler {
 
     @ExceptionHandler({
+            InvalidPasswordException.class,
             StringIndexOutOfBoundsException.class,
             IllegalAccessException.class,
             NumberFormatException.class,

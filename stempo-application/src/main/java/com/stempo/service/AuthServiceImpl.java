@@ -6,10 +6,12 @@ import com.stempo.config.CustomAuthenticationProvider;
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.AuthRequestDto;
 import com.stempo.event.UserDeletedEvent;
+import com.stempo.exception.InvalidPasswordException;
 import com.stempo.exception.TokenForgeryException;
 import com.stempo.exception.UserAlreadyExistsException;
 import com.stempo.model.User;
 import com.stempo.util.EncryptionUtils;
+import com.stempo.util.PasswordValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenService tokenService;
     private final CustomAuthenticationProvider authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordValidator passwordValidator;
     private final EncryptionUtils encryptionUtils;
     private final ApplicationEventPublisher eventPublisher;
     private final AesConfig aesConfig;
@@ -38,13 +41,16 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public TokenInfo registerUser(AuthRequestDto requestDto) {
         String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
-        String password = encryptPassword(requestDto.getPassword().trim());
+        String password = requestDto.getPassword();
+
+        validatePassword(password, deviceTag);
+        String encryptedPassword = encryptPassword(password);
 
         if (userService.existsById(deviceTag)) {
             throw new UserAlreadyExistsException("User already exists.");
         }
 
-        User user = User.create(deviceTag, password);
+        User user = User.create(deviceTag, encryptedPassword);
         userService.save(user);
         return tokenService.generateToken(user.getDeviceTag(), user.getRole());
     }
@@ -63,6 +69,8 @@ public class AuthServiceImpl implements AuthService {
     public TokenInfo login(AuthRequestDto requestDto) {
         String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
         String password = requestDto.getPassword();
+
+        validatePassword(password, deviceTag);
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(deviceTag, password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -83,6 +91,12 @@ public class AuthServiceImpl implements AuthService {
 
     private String encryptPassword(String password) {
         return !StringUtils.hasLength(password) ? null : passwordEncoder.encode(password);
+    }
+
+    private void validatePassword(String password, String deviceTag) {
+        if (StringUtils.hasLength(password) && !passwordValidator.isValid(password, deviceTag)) {
+            throw new InvalidPasswordException("Password does not meet the required criteria.");
+        }
     }
 
     private void validateRefreshToken(String refreshToken) {
