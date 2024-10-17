@@ -2,8 +2,8 @@ package com.stempo.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stempo.filter.XssEscapeServletFilter;
-import com.stempo.util.XssSanitizer;
 import com.stempo.util.HtmlCharacterEscapes;
+import com.stempo.util.XssSanitizer;
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
