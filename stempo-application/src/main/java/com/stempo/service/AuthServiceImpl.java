@@ -38,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public TokenInfo registerUser(AuthRequestDto requestDto) {
         String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
-        String password = encryptPassword(requestDto.getPassword());
+        String password = encryptPassword(requestDto.getPassword().trim());
 
         if (userService.existsById(deviceTag)) {
             throw new UserAlreadyExistsException("User already exists.");
@@ -82,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private String encryptPassword(String password) {
-        return StringUtils.hasText(password) ? null : passwordEncoder.encode(password);
+        return !StringUtils.hasLength(password) ? null : passwordEncoder.encode(password);
     }
 
     private void validateRefreshToken(String refreshToken) {
