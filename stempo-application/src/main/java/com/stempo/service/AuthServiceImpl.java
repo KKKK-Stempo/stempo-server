@@ -47,10 +47,8 @@ public class AuthServiceImpl implements AuthService {
         String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
         String password = requestDto.getPassword();
 
+        handleDuplicateUser(deviceTag);
         validatePassword(password, deviceTag);
-        if (userService.existsById(deviceTag)) {
-            throw new UserAlreadyExistsException("User already exists.");
-        }
 
         User user = createUser(deviceTag, password);
         userService.save(user);
@@ -71,12 +69,9 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(noRollbackFor = {BadCredentialsException.class, InvalidPasswordException.class})
     public Object login(AuthRequestDto requestDto) {
         String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
-        String password = requestDto.getPassword();
+        validateLogin(deviceTag, requestDto.getPassword());
 
-        userService.handleAccountLock(deviceTag);
-        validatePassword(password, deviceTag);
-
-        return authenticateUserAndGenerateToken(deviceTag, password);
+        return handleAuthentication(deviceTag, requestDto.getPassword());
     }
 
     @Override
@@ -91,14 +86,8 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(noRollbackFor = {BadCredentialsException.class})
     public TokenInfo authenticate(TwoFactorAuthenticationRequestDto requestDto) {
         String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
-        String totp = requestDto.getTotp();
-
-        userService.handleAccountLock(deviceTag);
-        if (!authenticatorService.isAuthenticatorValid(deviceTag, totp)) {
-            userService.handleFailedLogin(deviceTag);
-            throw new BadCredentialsException("Invalid TOTP code.");
-        }
-
+        validateTwoFactorAuthentication(deviceTag, requestDto.getTotp());
+        userService.resetFailedAttempts(deviceTag);
         Role role = userService.getById(deviceTag).getRole();
         return tokenService.generateToken(deviceTag, role);
     }
@@ -110,26 +99,56 @@ public class AuthServiceImpl implements AuthService {
         return authenticatorService.resetAuthenticator(encryptedDeviceTag);
     }
 
-    private Object authenticateUserAndGenerateToken(String deviceTag, String password) {
-        try {
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(deviceTag, password);
-            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+    private void handleDuplicateUser(String deviceTag) {
+        if (userService.existsById(deviceTag)) {
+            throw new UserAlreadyExistsException("User already exists.");
+        }
+    }
 
-            // 로그인 성공 시 실패 횟수 초기화
+    private User createUser(String deviceTag, String password) {
+        String encryptedPassword = encryptPassword(password);
+        return User.create(deviceTag, encryptedPassword);
+    }
+
+    private Object handleAuthentication(String deviceTag, String password) {
+        try {
+            Authentication authentication = authenticateUser(deviceTag, password);
             userService.resetFailedAttempts(deviceTag);
-            boolean isAdmin = userService.getById(deviceTag).isAdmin();
-            if (isAdmin) {
-                if (!authenticatorService.isAuthenticatorExist(deviceTag)) {
-                    return authenticatorService.generateSecretKey(deviceTag);
-                } else {
-                    return null;
-                }
-            }
-            return tokenService.generateToken(authentication);
+
+            return handleTwoFactorAuthenticationIfNeeded(deviceTag, authentication);
         } catch (Exception e) {
             userService.handleFailedLogin(deviceTag);
             throw new BadCredentialsException("Invalid deviceTag or password.");
+        }
+    }
+
+    private Authentication authenticateUser(String deviceTag, String password) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(deviceTag, password);
+        return authenticationManager.authenticate(authenticationToken);
+    }
+
+    private Object handleTwoFactorAuthenticationIfNeeded(String deviceTag, Authentication authentication) {
+        boolean isAdmin = userService.getById(deviceTag).isAdmin();
+        boolean hasAuthenticator = authenticatorService.isAuthenticatorExist(deviceTag);
+
+        if (isAdmin) {
+            return hasAuthenticator ? null : authenticatorService.generateSecretKey(deviceTag);
+        } else {
+            return tokenService.generateToken(authentication);
+        }
+    }
+
+    private void validateLogin(String deviceTag, String password) {
+        userService.handleAccountLock(deviceTag);
+        validatePassword(password, deviceTag);
+    }
+
+    private void validateTwoFactorAuthentication(String deviceTag, String totp) {
+        userService.handleAccountLock(deviceTag);
+        if (!authenticatorService.isAuthenticatorValid(deviceTag, totp)) {
+            userService.handleFailedLogin(deviceTag);
+            throw new BadCredentialsException("Invalid TOTP code.");
         }
     }
 
@@ -143,11 +162,6 @@ public class AuthServiceImpl implements AuthService {
         if (!tokenService.isRefreshToken(refreshToken)) {
             throw new TokenForgeryException("Invalid refresh token.");
         }
-    }
-
-    private User createUser(String deviceTag, String password) {
-        String encryptedPassword = encryptPassword(password);
-        return User.create(deviceTag, encryptedPassword);
     }
 
     private String encryptDeviceTag(String deviceTag) {
