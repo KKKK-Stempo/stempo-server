@@ -52,7 +52,6 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ApiResponse<Void> handleServerError(HttpServletRequest request, HttpServletResponse response, Exception e) {
-        log.error("Server Error: {}", e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         return ApiResponse.failure();
     }

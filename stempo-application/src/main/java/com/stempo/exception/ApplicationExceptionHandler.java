@@ -51,6 +51,12 @@ public class ApplicationExceptionHandler {
         return ErrorResponse.failure(e);
     }
 
+    @ExceptionHandler(AccountLockedException.class)
+    public ErrorResponse<Exception> handleAccountLocked(HttpServletResponse response, AccountLockedException e) {
+        response.setStatus(423); // 423 Locked
+        return ErrorResponse.failure(e);
+    }
+
     @ExceptionHandler({
             IllegalStateException.class,
             FileUploadFailException.class,
@@ -64,7 +70,6 @@ public class ApplicationExceptionHandler {
             Exception.class
     })
     public ApiResponse<Void> handleServerError(HttpServletRequest request, HttpServletResponse response, Exception e) {
-        log.error("Server Error: {}", e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         return ApiResponse.failure();
     }

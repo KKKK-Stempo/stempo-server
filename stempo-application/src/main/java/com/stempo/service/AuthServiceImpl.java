@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,14 +45,13 @@ public class AuthServiceImpl implements AuthService {
         String password = requestDto.getPassword();
 
         validatePassword(password, deviceTag);
-        String encryptedPassword = encryptPassword(password);
-
         if (userService.existsById(deviceTag)) {
             throw new UserAlreadyExistsException("User already exists.");
         }
 
-        User user = User.create(deviceTag, encryptedPassword);
+        User user = createUser(deviceTag, password);
         userService.save(user);
+
         return tokenService.generateToken(user.getDeviceTag(), user.getRole());
     }
 
@@ -65,16 +65,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor = {BadCredentialsException.class, InvalidPasswordException.class})
     public TokenInfo login(AuthRequestDto requestDto) {
         String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
         String password = requestDto.getPassword();
 
+        userService.handleAccountLock(deviceTag);
         validatePassword(password, deviceTag);
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(deviceTag, password);
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
-        return tokenService.generateToken(authentication);
+        return authenticateUserAndGenerateToken(deviceTag, password);
     }
 
     @Override
@@ -85,12 +84,19 @@ public class AuthServiceImpl implements AuthService {
         return reissueToken(refreshToken);
     }
 
-    private String encryptDeviceTag(String deviceTag) {
-        return encryptionUtils.encryptWithHashedIV(deviceTag, aesConfig.getDeviceTagSecretKey());
-    }
+    private TokenInfo authenticateUserAndGenerateToken(String deviceTag, String password) {
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(deviceTag, password);
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-    private String encryptPassword(String password) {
-        return !StringUtils.hasLength(password) ? null : passwordEncoder.encode(password);
+            // 로그인 성공 시 실패 횟수 초기화
+            userService.resetFailedAttempts(deviceTag);
+            return tokenService.generateToken(authentication);
+        } catch (Exception e) {
+            userService.handleFailedLogin(deviceTag);
+            throw new BadCredentialsException("Invalid deviceTag or password.");
+        }
     }
 
     private void validatePassword(String password, String deviceTag) {
@@ -103,6 +109,19 @@ public class AuthServiceImpl implements AuthService {
         if (!tokenService.isRefreshToken(refreshToken)) {
             throw new TokenForgeryException("Invalid refresh token.");
         }
+    }
+
+    private User createUser(String deviceTag, String password) {
+        String encryptedPassword = encryptPassword(password);
+        return User.create(deviceTag, encryptedPassword);
+    }
+
+    private String encryptDeviceTag(String deviceTag) {
+        return encryptionUtils.encryptWithHashedIV(deviceTag, aesConfig.getDeviceTagSecretKey());
+    }
+
+    private String encryptPassword(String password) {
+        return !StringUtils.hasLength(password) ? null : passwordEncoder.encode(password);
     }
 
     private TokenInfo reissueToken(String refreshToken) {

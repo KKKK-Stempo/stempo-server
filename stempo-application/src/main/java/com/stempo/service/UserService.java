@@ -18,4 +18,10 @@ public interface UserService {
     String getCurrentDeviceTag();
 
     User getCurrentUser();
+
+    void handleAccountLock(String deviceTag);
+
+    void handleFailedLogin(String deviceTag);
+
+    void resetFailedAttempts(String deviceTag);
 }

@@ -27,6 +27,10 @@ public class UserEntity extends BaseEntity {
 
     private String password;
 
+    private int failedLoginAttempts;
+
+    private boolean accountLocked;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 }
