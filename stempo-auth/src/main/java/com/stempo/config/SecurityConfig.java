@@ -1,6 +1,7 @@
 package com.stempo.config;
 
 import com.stempo.application.JwtTokenService;
+import com.stempo.filter.CustomBasicAuthenticationFilter;
 import com.stempo.filter.JwtAuthenticationFilter;
 import com.stempo.util.ApiLogger;
 import com.stempo.util.HttpReqResUtils;
@@ -11,10 +12,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
@@ -28,6 +32,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final AuthenticationManager authenticationManager;
+    private final Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsCustomizer;
     private final JwtTokenService tokenService;
 
     @Bean
@@ -37,8 +43,12 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests.anyRequest().permitAll()
+                .authorizeHttpRequests(
+                        authorizeHttpRequestsCustomizer
+                )
+                .addFilterBefore(
+                        new CustomBasicAuthenticationFilter(authenticationManager),
+                        UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
                         new JwtAuthenticationFilter(tokenService),

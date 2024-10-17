@@ -1,6 +1,7 @@
 package com.stempo.filter;
 
 import com.stempo.application.JwtTokenService;
+import com.stempo.util.WhitelistPathMatcher;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -24,9 +25,18 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        String path = httpServletRequest.getRequestURI();
+
+        // 화이트리스트 경로인 경우 JWT 인증 대신 Basic Auth 인증을 사용
+        if (WhitelistPathMatcher.isWhitelistRequest(path)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         if (!authenticateToken(httpServletRequest)) {
             return;
         }
+
         chain.doFilter(request, response);
     }
 
