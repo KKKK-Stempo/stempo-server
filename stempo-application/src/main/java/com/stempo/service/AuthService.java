@@ -2,6 +2,7 @@ package com.stempo.service;
 
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.AuthRequestDto;
+import com.stempo.dto.request.TwoFactorAuthenticationRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface AuthService {
@@ -10,7 +11,11 @@ public interface AuthService {
 
     String unregisterUser();
 
-    TokenInfo login(AuthRequestDto requestDto);
+    Object login(AuthRequestDto requestDto);
 
     TokenInfo reissueToken(HttpServletRequest request);
+
+    TokenInfo authenticate(TwoFactorAuthenticationRequestDto requestDto);
+
+    String resetAuthenticator(String deviceTag);
 }

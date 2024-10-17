@@ -5,10 +5,12 @@ import com.stempo.config.AesConfig;
 import com.stempo.config.CustomAuthenticationProvider;
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.AuthRequestDto;
+import com.stempo.dto.request.TwoFactorAuthenticationRequestDto;
 import com.stempo.event.UserDeletedEvent;
 import com.stempo.exception.InvalidPasswordException;
 import com.stempo.exception.TokenForgeryException;
 import com.stempo.exception.UserAlreadyExistsException;
+import com.stempo.model.Role;
 import com.stempo.model.User;
 import com.stempo.util.EncryptionUtils;
 import com.stempo.util.PasswordValidator;
@@ -30,6 +32,7 @@ import org.springframework.util.StringUtils;
 public class AuthServiceImpl implements AuthService {
 
     private final UserService userService;
+    private final TotpAuthenticatorService authenticatorService;
     private final JwtTokenService tokenService;
     private final CustomAuthenticationProvider authenticationManager;
     private final PasswordEncoder passwordEncoder;
@@ -66,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(noRollbackFor = {BadCredentialsException.class, InvalidPasswordException.class})
-    public TokenInfo login(AuthRequestDto requestDto) {
+    public Object login(AuthRequestDto requestDto) {
         String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
         String password = requestDto.getPassword();
 
@@ -84,7 +87,26 @@ public class AuthServiceImpl implements AuthService {
         return reissueToken(refreshToken);
     }
 
-    private TokenInfo authenticateUserAndGenerateToken(String deviceTag, String password) {
+    @Override
+    public TokenInfo authenticate(TwoFactorAuthenticationRequestDto requestDto) {
+        String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
+        String totp = requestDto.getTotp();
+
+        if (!authenticatorService.isAuthenticatorValid(deviceTag, totp)) {
+            throw new BadCredentialsException("Invalid TOTP code.");
+        }
+
+        Role role = userService.getById(deviceTag).getRole();
+        return tokenService.generateToken(deviceTag, role);
+    }
+
+    @Override
+    public String resetAuthenticator(String deviceTag) {
+        String encryptedDeviceTag = encryptDeviceTag(deviceTag);
+        return authenticatorService.resetAuthenticator(encryptedDeviceTag);
+    }
+
+    private Object authenticateUserAndGenerateToken(String deviceTag, String password) {
         try {
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(deviceTag, password);
@@ -92,6 +114,14 @@ public class AuthServiceImpl implements AuthService {
 
             // 로그인 성공 시 실패 횟수 초기화
             userService.resetFailedAttempts(deviceTag);
+            boolean isAdmin = userService.getById(deviceTag).isAdmin();
+            if (isAdmin) {
+                if (!authenticatorService.isAuthenticatorExist(deviceTag)) {
+                    return authenticatorService.generateSecretKey(deviceTag);
+                } else {
+                    return null;
+                }
+            }
             return tokenService.generateToken(authentication);
         } catch (Exception e) {
             userService.handleFailedLogin(deviceTag);

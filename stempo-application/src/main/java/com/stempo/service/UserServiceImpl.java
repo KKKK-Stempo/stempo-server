@@ -34,6 +34,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getById(String deviceTag) {
+        return repository.findByIdOrThrow(deviceTag);
+    }
+
+    @Override
     public User save(User user) {
         return repository.save(user);
     }

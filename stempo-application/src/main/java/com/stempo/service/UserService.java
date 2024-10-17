@@ -11,6 +11,8 @@ public interface UserService {
 
     boolean existsById(String deviceTag);
 
+    User getById(String deviceTag);
+
     User save(User user);
 
     void delete(User user);
