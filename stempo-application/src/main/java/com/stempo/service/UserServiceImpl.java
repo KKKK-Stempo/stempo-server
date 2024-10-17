@@ -60,6 +60,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void handleAccountLock(String deviceTag) {
         User user = findById(deviceTag)
                 .orElseThrow(() -> new BadCredentialsException("[User] id: " + deviceTag + " not found"));

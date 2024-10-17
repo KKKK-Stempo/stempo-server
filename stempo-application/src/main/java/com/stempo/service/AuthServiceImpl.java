@@ -88,11 +88,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(noRollbackFor = {BadCredentialsException.class})
     public TokenInfo authenticate(TwoFactorAuthenticationRequestDto requestDto) {
         String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
         String totp = requestDto.getTotp();
 
+        userService.handleAccountLock(deviceTag);
         if (!authenticatorService.isAuthenticatorValid(deviceTag, totp)) {
+            userService.handleFailedLogin(deviceTag);
             throw new BadCredentialsException("Invalid TOTP code.");
         }
 
@@ -101,6 +104,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public String resetAuthenticator(String deviceTag) {
         String encryptedDeviceTag = encryptDeviceTag(deviceTag);
         return authenticatorService.resetAuthenticator(encryptedDeviceTag);
