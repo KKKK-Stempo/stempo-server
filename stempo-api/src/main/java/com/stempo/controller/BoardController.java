@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -38,7 +38,7 @@ public class BoardController {
     @Operation(summary = "[U] 게시글 작성", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "공지사항은 ROLE_ADMIN 이상의 권한이 필요함")
     @SuccessApiResponse(data = "boardId", dataType = Long.class, dataDescription = "게시글 ID")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/api/v1/boards")
     public ApiResponse<Long> registerBoard(
             @Valid @RequestBody BoardRequestDto requestDto
@@ -50,7 +50,7 @@ public class BoardController {
     @Operation(summary = "[U] 카테고리별 게시글 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "건의하기는 ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/api/v1/boards")
     public ApiResponse<PagedResponseDto<BoardResponseDto>> getBoardsByCategory(
             @RequestParam(name = "category") BoardCategory category,
@@ -67,7 +67,7 @@ public class BoardController {
     @Operation(summary = "[U] 게시글 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "ADMIN은 모든 게시글 수정 가능")
     @SuccessApiResponse(data = "boardId", dataType = Long.class, dataDescription = "게시글 ID")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
+    @PreAuthorize("hasRole('USER')")
     @PatchMapping("/api/v1/boards/{boardId}")
     public ApiResponse<Long> updateBoard(
             @PathVariable(name = "boardId") Long boardId,
@@ -80,7 +80,7 @@ public class BoardController {
     @Operation(summary = "[U] 게시글 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "ADMIN은 모든 게시글 삭제 가능")
     @SuccessApiResponse(data = "boardId", dataType = Long.class, dataDescription = "게시글 ID")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/api/v1/boards/{boardId}")
     public ApiResponse<Long> deleteBoard(
             @PathVariable(name = "boardId") Long boardId

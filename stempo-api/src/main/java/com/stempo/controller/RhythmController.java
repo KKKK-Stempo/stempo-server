@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +24,7 @@ public class RhythmController {
             "BPM은 10 이상 200 이하의 값이어야 함<br>" +
             "Bit는 1 이상 8 이하의 값이어야 함")
     @SuccessApiResponse(data = "/resources/files/{fileName}", dataType = String.class, dataDescription = "파일 경로")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/api/v1/rhythm")
     public ApiResponse<String> generateRhythm(
             @Valid @RequestBody RhythmRequestDto requestDto

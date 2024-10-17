@@ -30,7 +30,6 @@ public class InfrastructureExceptionHandler {
             Exception.class
     })
     public ErrorResponse<Exception> handleServerError(HttpServletResponse response, Exception e) {
-        log.error("Server Error: {}", e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         return ErrorResponse.failure(e);
     }

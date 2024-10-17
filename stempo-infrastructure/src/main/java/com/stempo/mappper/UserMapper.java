@@ -11,6 +11,8 @@ public class UserMapper {
         return UserEntity.builder()
                 .deviceTag(user.getDeviceTag())
                 .password(user.getPassword())
+                .failedLoginAttempts(user.getFailedLoginAttempts())
+                .accountLocked(user.isAccountLocked())
                 .role(user.getRole())
                 .build();
     }
@@ -19,6 +21,8 @@ public class UserMapper {
         return User.builder()
                 .deviceTag(entity.getDeviceTag())
                 .password(entity.getPassword())
+                .failedLoginAttempts(entity.getFailedLoginAttempts())
+                .accountLocked(entity.isAccountLocked())
                 .role(entity.getRole())
                 .build();
     }

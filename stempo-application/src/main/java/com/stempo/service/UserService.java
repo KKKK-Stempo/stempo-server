@@ -11,6 +11,8 @@ public interface UserService {
 
     boolean existsById(String deviceTag);
 
+    User getById(String deviceTag);
+
     User save(User user);
 
     void delete(User user);
@@ -18,4 +20,10 @@ public interface UserService {
     String getCurrentDeviceTag();
 
     User getCurrentUser();
+
+    void handleAccountLock(String deviceTag);
+
+    void handleFailedLogin(String deviceTag);
+
+    void resetFailedAttempts(String deviceTag);
 }

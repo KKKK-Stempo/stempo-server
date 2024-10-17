@@ -1,12 +1,10 @@
 package com.stempo.interceptor;
 
-import com.stempo.util.HttpReqResUtils;
+import com.stempo.util.ApiLogger;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -15,28 +13,13 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class ApiLoggingInterceptor implements HandlerInterceptor {
 
     @Override
-    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
         request.setAttribute("startTime", System.currentTimeMillis());
         return true;
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, @NotNull Object handler, Exception ex) throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String id = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
-        String clientIpAddress = HttpReqResUtils.getClientIpAddressIfServletRequestExist();
-        String requestUrl = request.getRequestURI();
-        String httpMethod = request.getMethod();
-        int httpStatus = response.getStatus();
-
-        long startTime = (Long) request.getAttribute("startTime");
-        long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
-
-        if (ex == null) {
-            log.info("[{}:{}] {} {} {} {}ms", clientIpAddress, id, requestUrl, httpMethod, httpStatus, duration);
-        } else {
-            log.error("[{}:{}] {} {} {} {}ms, Exception: {}", clientIpAddress, id, requestUrl, httpMethod, httpStatus, duration, ex.getMessage());
-        }
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, @NotNull Object handler, Exception ex) {
+        ApiLogger.logRequestDuration(request, response, ex);
     }
 }

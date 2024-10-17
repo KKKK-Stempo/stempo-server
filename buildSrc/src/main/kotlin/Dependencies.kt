@@ -15,7 +15,10 @@ object Dependencies {
     const val jjwtImpl = "io.jsonwebtoken:jjwt-impl:${Versions.jjwt}"
     const val jjwtJackson = "io.jsonwebtoken:jjwt-jackson:${Versions.jjwt}"
     const val commonsIo = "commons-io:commons-io:${Versions.commonsIo}"
+    const val commonText = "org.apache.commons:commons-text:${Versions.commonText}"
     const val gson = "com.google.code.gson:gson:${Versions.gson}"
+    const val owaspJavaHtmlSanitizer = "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:${Versions.owaspJavaHtmlSanitizer}"
+    const val googleAuthenticator = "com.warrenstrange:googleauth:${Versions.googleAuthenticator}"
 
     // Test dependencies
     const val springBootStarterTest = "org.springframework.boot:spring-boot-starter-test"
