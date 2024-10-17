@@ -1,6 +1,7 @@
 dependencies {
     // Spring Project
     implementation(Dependencies.springBootStarterWeb)
+    implementation(Dependencies.springBootStarterSecurity)
     implementation(Dependencies.springDataCommons)
 
     // Util

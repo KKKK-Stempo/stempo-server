@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +34,7 @@ public class AuthController {
 
     @Operation(summary = "[U] 회원 탈퇴", description = "ROLE_USER 이상의 권한이 필요함")
     @SuccessApiResponse(data = "deviceTag", dataType = String.class, dataDescription = "사용자의 디바이스 식별자")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/api/v1/auth/unregister")
     public ApiResponse<String> unregisterUser() {
         String deviceTag = authService.unregisterUser();
@@ -52,7 +52,7 @@ public class AuthController {
     }
 
     @Operation(summary = "[U] 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN" })
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/api/v1/auth/reissue")
     public ApiResponse<TokenInfo> reissueToken(
             HttpServletRequest request

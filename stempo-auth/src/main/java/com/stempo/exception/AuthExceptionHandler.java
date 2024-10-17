@@ -8,7 +8,9 @@ import io.jsonwebtoken.security.SecurityException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,6 +24,8 @@ public class AuthExceptionHandler {
 
     @ExceptionHandler({
             AuthenticationInfoNotFoundException.class,
+            AuthorizationDeniedException.class,
+            AuthorizationServiceException.class,
             BadCredentialsException.class,
             TokenValidateException.class,
             TokenNotFoundException.class,
