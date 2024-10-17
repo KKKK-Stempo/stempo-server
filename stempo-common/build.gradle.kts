@@ -8,4 +8,5 @@ dependencies {
     implementation(Dependencies.swagger)
     implementation(Dependencies.gson)
     implementation(Dependencies.commonsIo)
+    implementation(Dependencies.commonText)
 }

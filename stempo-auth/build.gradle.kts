@@ -14,6 +14,9 @@ dependencies {
     runtimeOnly(Dependencies.jjwtImpl)
     runtimeOnly(Dependencies.jjwtJackson)
 
+    // XSS Sanitizer
+    implementation(Dependencies.owaspJavaHtmlSanitizer)
+
     // Test dependencies
     testImplementation(Dependencies.springSecurityTest)
 }
