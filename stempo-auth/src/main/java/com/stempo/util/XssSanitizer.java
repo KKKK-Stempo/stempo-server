@@ -1,4 +1,4 @@
-package com.stempo.filter;
+package com.stempo.util;
 
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;

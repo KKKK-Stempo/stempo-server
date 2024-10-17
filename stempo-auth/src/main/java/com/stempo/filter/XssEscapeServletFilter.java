@@ -1,5 +1,6 @@
 package com.stempo.filter;
 
+import com.stempo.util.XssSanitizer;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
