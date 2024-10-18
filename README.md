@@ -1,12 +1,10 @@
-# Stempo Server &middot; [![GitHub License](https://img.shields.io/github/license/KKKK-Stempo/stempo-server)](https://github.com/KKKK-Stempo/stempo-server/blob/develop/LICENSE) [![Spring Boot Gradle CI](https://github.com/KKKK-Stempo/stempo-server/actions/workflows/spring-boot-gradle-ci.yml/badge.svg)](https://github.com/KKKK-Stempo/stempo-server/actions/workflows/spring-boot-gradle-ci.yml)
+ # Stempo Server <img src="https://github.com/user-attachments/assets/0a825ee4-3f9e-44db-94f7-31ae7e38d5f3" align=left width=100> &middot; [![GitHub License](https://img.shields.io/github/license/KKKK-Stempo/stempo-server)](https://github.com/KKKK-Stempo/stempo-server/blob/develop/LICENSE) [![Spring Boot Gradle CI](https://github.com/KKKK-Stempo/stempo-server/actions/workflows/spring-boot-gradle-ci.yml/badge.svg)](https://github.com/KKKK-Stempo/stempo-server/actions/workflows/spring-boot-gradle-ci.yml)
 
 Stempo는 뇌성마비 및 후천적 장애 환자들의 리듬기반 재활 훈련을 돕기 위한 프로젝트입니다. Stempo는 환자들의 보행 훈련을 지원하며, 사용자의 보행 기록을 분석하여 맞춤형 훈련 리듬을 제공합니다. 이 프로젝트는 장애 환자들이 일상 생활에서 신체 능력을 향상시키고 재활 속도를 높일 수 있도록 돕는 것을 목표로 합니다.
 
-- **맞춤형 리듬 제공**: 사용자의 데이터를 기반으로 개인 맞춤형 훈련 리듬을 제공하여 보행 능력을 향상.
-- **보행 훈련 기록 관리**: 사용자의 보행 훈련 기록을 저장하고, 분석하여 연속 훈련 일수, 훈련 횟수, 정확도 등을 시각적으로 제공.
-- **과제 관리**: 사용자에게 주어지는 재활 과제를 관리하고, 완료 상태를 기록하며 진척도를 추적.
-
 백엔드 시스템뿐만 아니라 안드로이드 시스템도 모두 공개되어 있습니다. 관심이 있으신 분들은 [여기](https://github.com/KKKK-Stempo/stempo-android)에서 안드로이드 리포지토리도 확인해보세요.
+
+![설명](https://github.com/user-attachments/assets/978dd883-667e-4cf7-afa1-5ad5495ceb70)
 
 ## 프로젝트 구조
 ```markdown
