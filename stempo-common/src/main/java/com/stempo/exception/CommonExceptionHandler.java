@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class CommonExceptionHandler {
 
     @ExceptionHandler({
+            InvalidFileNameException.class,
             InvalidFileAttributeException.class,
             InvalidColumnException.class,
             SortingArgumentException.class,
