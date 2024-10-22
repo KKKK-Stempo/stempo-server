@@ -74,11 +74,32 @@ class BoardTest {
     }
 
     @Test
+    void 게시글_정보_수정시_null_값을_무시한다() {
+        // given
+        Board updateBoard = Board.builder().build();
+
+        // when
+        board.update(updateBoard);
+
+        // then
+        assertThat(board.getCategory()).isEqualTo(BoardCategory.NOTICE);
+        assertThat(board.getTitle()).isEqualTo("Test Title");
+        assertThat(board.getContent()).isEqualTo("Test Content");
+        assertThat(board.getFileUrls()).containsExactly("file1", "file2");
+    }
+
+    @Test
     void 게시글_작성자인지_확인할_수_있다() {
         // then
         assertThat(board.isOwner(owner)).isTrue();
         assertThat(board.isOwner(admin)).isFalse();
         assertThat(board.isOwner(normalUser)).isFalse();
+    }
+
+    @Test
+    void 작성자가_null인_경우_false를_반환한다() {
+        // then
+        assertThat(board.isOwner(null)).isFalse();
     }
 
     @Test
@@ -96,8 +117,24 @@ class BoardTest {
     }
 
     @Test
+    void 접근권한_검증시_user가_null인_경우_예외를_발생시킨다() {
+        PermissionDeniedException exception = assertThrows(PermissionDeniedException.class,
+                () -> board.validateAccessPermission(null));
+        assertThat(exception.getMessage()).isEqualTo("게시글을 수정/삭제할 권한이 없습니다.");
+    }
+
+    @Test
     void 공지사항인지_확인할_수_있다() {
         assertThat(board.isNotice()).isTrue();
+    }
+
+    @Test
+    void 공지사항이_아닌경우_false를_반환한다() {
+        // when
+        board.setCategory(BoardCategory.FAQ);
+
+        // then
+        assertThat(board.isNotice()).isFalse();
     }
 
     @Test
@@ -110,5 +147,10 @@ class BoardTest {
     @Test
     void 공지사항에_관리자는_접근_가능하다() {
         assertDoesNotThrow(() -> board.validateAccessPermissionForNotice(admin));
+    }
+
+    @Test
+    void 공지사항에_작성자가_접근할_수_있다() {
+        assertDoesNotThrow(() -> board.validateAccessPermissionForNotice(owner));
     }
 }
