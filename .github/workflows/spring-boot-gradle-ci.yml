@@ -24,7 +24,7 @@ jobs:
       - name: Create application-test.yml from secret
         env:
           COMMON_TEST_YML: ${{ secrets.COMMON_TEST_YML }}
-          COMMON_TEST_DIR: /stempo-common/src/test/resources
+          COMMON_TEST_DIR: ./stempo-common/src/test/resources
           COMMON_DIR_FILE_NAME: application-test.yml
         run: |
           mkdir -p $COMMON_TEST_DIR
