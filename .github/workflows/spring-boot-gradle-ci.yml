@@ -22,7 +22,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Create application-test.yml from secret
-        run: echo "${{ secrets.TEST_YML }}" > application-test.yml
+        run: printf "%s" "${{ secrets.TEST_YML }}" > application-test.yml
 
       - name: Build and test with Gradle
         run: ./gradlew build test --args='-Dspring.profiles.active=test'
