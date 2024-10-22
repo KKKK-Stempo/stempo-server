@@ -21,7 +21,13 @@ public class User {
     private Role role;
 
     public static User create(String deviceTag, String password) {
-        return new User(deviceTag, password, 0, false, Role.USER);
+        return User.builder()
+                .deviceTag(deviceTag)
+                .password(password)
+                .failedLoginAttempts(0)
+                .accountLocked(false)
+                .role(Role.USER)
+                .build();
     }
 
     public void incrementFailedLoginAttempts() {
