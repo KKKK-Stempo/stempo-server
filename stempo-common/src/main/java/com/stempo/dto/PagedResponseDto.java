@@ -1,11 +1,10 @@
 package com.stempo.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 @Getter
 public class PagedResponseDto<T> {
@@ -51,13 +50,13 @@ public class PagedResponseDto<T> {
         this.items = page.getContent();
     }
 
-    public PagedResponseDto(List<T> ts, Pageable pageable, int size) {
+    public PagedResponseDto(List<T> ts, Pageable pageable, int totalItems) {
         this.currentPage = pageable.getPageNumber();
         this.hasPrevious = pageable.getPageNumber() > 0;
-        this.hasNext = ts.size() == size;
-        this.totalPages = (size != 0) ? ts.size() / size : 0;
-        this.totalItems = ts.size();
-        this.take = size;
+        this.hasNext = pageable.getOffset() + pageable.getPageSize() < totalItems && !ts.isEmpty();
+        this.totalPages = (int) Math.ceil((double) totalItems / pageable.getPageSize());
+        this.totalItems = totalItems;
+        this.take = ts.size();
         this.items = ts;
     }
 }

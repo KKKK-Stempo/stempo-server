@@ -3,8 +3,7 @@ package com.stempo.util;
 import com.stempo.exception.DirectoryCreationException;
 import com.stempo.exception.FilePermissionException;
 import com.stempo.exception.InvalidFileAttributeException;
-import org.apache.commons.io.FilenameUtils;
-
+import com.stempo.exception.InvalidFileNameException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,13 +14,14 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
+import org.apache.commons.io.FilenameUtils;
 
 public class FileUtils {
 
     /**
      * 주어진 파일 경로가 기본 디렉토리 내에 포함되는지 확인하고, 정상적인 경로를 반환합니다.
      *
-     * @param filePath     검증할 파일 경로
+     * @param filePath      검증할 파일 경로
      * @param baseDirectory 기본 디렉토리
      * @return 정상적인 파일 경로일 경우 Path 객체를 반환
      * @throws InvalidPathException 잘못된 경로일 경우 발생
@@ -78,55 +78,62 @@ public class FileUtils {
     /**
      * 파일명과 확장자를 검증합니다.
      *
-     * @param originalFilename 파일명
+     * @param originalFilename   파일명
      * @param disallowExtensions 허용되지 않은 확장자 목록
      * @throws IllegalArgumentException 유효하지 않은 파일명이나 확장자일 경우 발생
      */
-    public static void validateFileAttributes(String originalFilename, Set<String> disallowExtensions) throws IllegalArgumentException {
+    public static void validateFileAttributes(String originalFilename, Set<String> disallowExtensions)
+            throws IllegalArgumentException {
         String extension = FilenameUtils.getExtension(originalFilename);
-        if (!validateFilename(originalFilename)) {
-            throw new InvalidFileAttributeException("Invalid file name: " + originalFilename);
-        }
+        validateFilename(originalFilename);
         if (!validateExtension(extension, disallowExtensions)) {
             throw new InvalidFileAttributeException("Invalid file extension: " + extension);
         }
     }
 
     /**
-     * 파일명이 유효한지 확인합니다.
+     * 파일명이 유효한지 확인하고, 유효하지 않은 경우 예외를 발생시킵니다.
+     * <p>
+     * 유효하지 않은 파일명에는 다음과 같은 경우가 포함됩니다:
+     * <ul>
+     *   <li>파일명이 null이거나 빈 문자열인 경우</li>
+     *   <li>파일명에 "..", "/", "\\" 문자가 포함된 경우</li>
+     * </ul>
      *
-     * @param fileName 파일명
-     * @return 유효한 파일명일 경우 true, 그렇지 않을 경우 false
+     * @param fileName 검증할 파일명
+     * @throws InvalidFileNameException 유효하지 않은 파일명일 경우 발생
      */
-    private static boolean validateFilename(String fileName) {
+    protected static void validateFilename(String fileName) {
         if (fileName == null || fileName.trim().isEmpty()) {
-            return false;
+            return;
         }
-        return !fileName.contains("..") && !fileName.contains("/") && !fileName.contains("\\");
+        if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
+            throw new InvalidFileNameException("Invalid file name: " + fileName);
+        }
     }
 
     /**
      * 확장자가 허용된 것인지 확인합니다.
      *
-     * @param extension 파일 확장자
+     * @param extension          파일 확장자
      * @param disallowExtensions 허용되지 않은 확장자 목록
      * @return 허용된 확장자일 경우 true, 그렇지 않을 경우 false
      */
-    private static boolean validateExtension(String extension, Set<String> disallowExtensions) {
+    protected static boolean validateExtension(String extension, Set<String> disallowExtensions) {
         return !disallowExtensions.contains(extension.toLowerCase());
     }
 
     /**
      * 파일의 읽기 전용 권한을 설정합니다. OS에 따라 적절한 권한을 설정합니다.
      *
-     * @param file 파일 객체
+     * @param file     파일 객체
      * @param savePath 파일 경로
      * @throws FilePermissionException 파일 권한 설정에 실패한 경우 발생
      */
     public static void setFilePermissions(File file, String savePath, String baseDirectory) {
-        validateFilename(file.getName());
-        validateFilePath(file.getPath(), baseDirectory);
         try {
+            validateFilename(file.getName());
+            validateFilePath(file.getPath(), baseDirectory);
             String os = System.getProperty("os.name").toLowerCase();
             if (os.contains("win")) {
                 setReadOnlyPermissionsWindows(file, savePath);
@@ -134,20 +141,22 @@ public class FileUtils {
                 setReadOnlyPermissionsUnix(savePath);
             }
         } catch (Exception e) {
-            throw new FilePermissionException("Failed to set file permissions: " + LogSanitizerUtils.sanitizeForLog(savePath));
+            throw new FilePermissionException(
+                    "Failed to set file permissions: " + LogSanitizerUtils.sanitizeForLog(savePath));
         }
     }
 
     /**
      * 윈도우 시스템에서 파일을 읽기 전용으로 설정합니다.
      *
-     * @param file 파일 객체
+     * @param file     파일 객체
      * @param savePath 파일 경로
      * @throws FilePermissionException 파일 권한 설정에 실패한 경우 발생
      */
     private static void setReadOnlyPermissionsWindows(File file, String savePath) {
         if (!file.setReadOnly()) {
-            throw new FilePermissionException("Failed to set file read-only: " + LogSanitizerUtils.sanitizeForLog(savePath));
+            throw new FilePermissionException(
+                    "Failed to set file read-only: " + LogSanitizerUtils.sanitizeForLog(savePath));
         }
     }
 
@@ -169,7 +178,7 @@ public class FileUtils {
 
     /**
      * 주어진 파일 크기를 적절한 단위로 포맷팅합니다.
-     *
+     * <p>
      * 파일 크기는 바이트 단위로 제공되며, KB, MB, GB 단위로 포맷팅됩니다.
      *
      * <ul>

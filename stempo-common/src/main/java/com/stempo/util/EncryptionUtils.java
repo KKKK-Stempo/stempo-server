@@ -3,12 +3,6 @@ package com.stempo.util;
 import com.stempo.config.AesConfig;
 import com.stempo.exception.DecryptionException;
 import com.stempo.exception.EncryptionException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -16,10 +10,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
- * AES-GCM 암호화를 사용하여 문자열을 암호화 및 복호화하는 유틸리티 클래스.
- * 고유한 값에 기반한 IV(Initialization Vector)를 생성하여 일관된 암호화 결과를 제공하는 기능을 포함합니다.
+ * AES-GCM 암호화를 사용하여 문자열을 암호화 및 복호화하는 유틸리티 클래스. 고유한 값에 기반한 IV(Initialization Vector)를 생성하여 일관된 암호화 결과를 제공하는 기능을 포함합니다.
  */
 public class EncryptionUtils {
 
@@ -34,7 +32,8 @@ public class EncryptionUtils {
     }
 
     public static EncryptionUtils create(AesConfig aesConfig) {
-        return new EncryptionUtils(aesConfig.getSecretKey(), aesConfig.getIvLengthBytes(), aesConfig.getGcmTagLengthBits());
+        return new EncryptionUtils(aesConfig.getSecretKey(), aesConfig.getIvLengthBytes(),
+                aesConfig.getGcmTagLengthBits());
     }
 
     /**
@@ -95,8 +94,7 @@ public class EncryptionUtils {
     }
 
     /**
-     * 고유한 값에서 해싱된 IV(Initialization Vector)를 사용하여 AES-GCM으로 문자열을 암호화.
-     * 동일한 고유 값은 일관된 암호화 결과를 제공합니다.
+     * 고유한 값에서 해싱된 IV(Initialization Vector)를 사용하여 AES-GCM으로 문자열을 암호화. 동일한 고유 값은 일관된 암호화 결과를 제공합니다.
      *
      * @param strToEncrypt 암호화할 문자열.
      * @param uniqueValue  IV를 생성할 고유 값 (예: deviceTag).
@@ -118,8 +116,7 @@ public class EncryptionUtils {
     }
 
     /**
-     * 고유한 값에서 해싱된 IV를 사용하여 AES-GCM으로 암호화된 문자열을 복호화.
-     * 암호화 시 사용된 동일한 고유 값이 복호화에도 사용되어야 합니다.
+     * 고유한 값에서 해싱된 IV를 사용하여 AES-GCM으로 암호화된 문자열을 복호화. 암호화 시 사용된 동일한 고유 값이 복호화에도 사용되어야 합니다.
      *
      * @param strToDecrypt 복호화할 Base64 형식의 암호화된 문자열.
      * @param uniqueValue  IV를 생성한 고유 값
@@ -160,8 +157,7 @@ public class EncryptionUtils {
     }
 
     /**
-     * 고유한 값의 해시를 기반으로 IV(Initialization Vector)를 생성.
-     * 이 메소드는 고유 값을 SHA-256 해시 알고리즘으로 해싱하고, 해시 값을 사용하여 고정 길이의 IV를 생성합니다.
+     * 고유한 값의 해시를 기반으로 IV(Initialization Vector)를 생성. 이 메소드는 고유 값을 SHA-256 해시 알고리즘으로 해싱하고, 해시 값을 사용하여 고정 길이의 IV를 생성합니다.
      *
      * @param uniqueValue IV로 변환할 고유 값 (예: deviceTag).
      * @return 해시된 고유 값으로부터 유도된 IV를 나타내는 byte 배열.
@@ -183,7 +179,7 @@ public class EncryptionUtils {
      * @param ivLengthBytes 생성할 IV의 길이 (바이트 단위).
      * @return 생성된 IV를 나타내는 byte 배열.
      */
-    private byte[] generateRandomIV(int ivLengthBytes) {
+    protected byte[] generateRandomIV(int ivLengthBytes) {
         SecureRandom random = new SecureRandom();
         byte[] iv = new byte[ivLengthBytes];
         random.nextBytes(iv);
@@ -197,7 +193,7 @@ public class EncryptionUtils {
      * @param b 두 번째 byte 배열.
      * @return 결합된 byte 배열.
      */
-    private byte[] concat(byte[] a, byte[] b) {
+    protected byte[] concat(byte[] a, byte[] b) {
         if ((long) a.length + (long) b.length > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Resulting array size is too large to handle.");
         }

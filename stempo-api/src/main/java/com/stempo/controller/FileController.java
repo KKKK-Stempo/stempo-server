@@ -5,13 +5,13 @@ import com.stempo.dto.ApiResponse;
 import com.stempo.dto.PagedResponseDto;
 import com.stempo.dto.request.DeleteFileRequestDto;
 import com.stempo.dto.response.UploadedFileResponseDto;
-import com.stempo.exception.InvalidColumnException;
-import com.stempo.exception.SortingArgumentException;
 import com.stempo.service.FileService;
 import com.stempo.util.PageableUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -23,9 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,8 +51,9 @@ public class FileController {
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws InvalidColumnException, SortingArgumentException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, UploadedFileResponseDto.class);
+    ) {
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection,
+                UploadedFileResponseDto.class);
         PagedResponseDto<UploadedFileResponseDto> uploadedFiles = fileService.getFiles(pageable);
         return ApiResponse.success(uploadedFiles);
     }

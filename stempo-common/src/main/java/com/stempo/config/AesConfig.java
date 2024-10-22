@@ -22,6 +22,15 @@ public class AesConfig {
     @Value("${security.aes.device-tag-secret-key}")
     private String deviceTagSecretKey;
 
+    public AesConfig() {
+    }
+
+    public AesConfig(String secretKey, int ivLengthBytes, int gcmTagLengthBits) {
+        this.secretKey = secretKey;
+        this.ivLengthBytes = ivLengthBytes;
+        this.gcmTagLengthBits = gcmTagLengthBits;
+    }
+
     @Bean
     public EncryptionUtils encryptionUtil(AesConfig aesConfig) {
         return EncryptionUtils.create(aesConfig);

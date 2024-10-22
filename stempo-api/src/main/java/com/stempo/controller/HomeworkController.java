@@ -6,13 +6,12 @@ import com.stempo.dto.PagedResponseDto;
 import com.stempo.dto.request.HomeworkRequestDto;
 import com.stempo.dto.request.HomeworkUpdateRequestDto;
 import com.stempo.dto.response.HomeworkResponseDto;
-import com.stempo.exception.InvalidColumnException;
-import com.stempo.exception.SortingArgumentException;
 import com.stempo.service.HomeworkService;
 import com.stempo.util.PageableUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,8 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,7 +54,7 @@ public class HomeworkController {
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sortBy", defaultValue = "completed, id") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "asc, asc") List<String> sortDirection
-    ) throws InvalidColumnException, SortingArgumentException {
+    ) {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, HomeworkResponseDto.class);
         PagedResponseDto<HomeworkResponseDto> homeworks = homeworkService.getHomeworks(completed, pageable);
         return ApiResponse.success(homeworks);

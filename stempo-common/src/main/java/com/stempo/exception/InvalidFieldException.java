@@ -1,14 +1,14 @@
 package com.stempo.exception;
 
-public class InvalidColumnException extends Exception {
+public class InvalidFieldException extends RuntimeException {
 
     private static final String DEFAULT_MESSAGE = "";
 
-    public InvalidColumnException() {
+    public InvalidFieldException() {
         super(DEFAULT_MESSAGE);
     }
 
-    public InvalidColumnException(String s) {
+    public InvalidFieldException(String s) {
         super(s);
     }
 }
