@@ -2,19 +2,19 @@ package com.stempo.util;
 
 import com.stempo.exception.InvalidColumnException;
 import com.stempo.exception.SortingArgumentException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 @Component
 public class PageableUtils {
 
-    public static Pageable createPageable(int page, int size, List<String> sortByList, List<String> sortDirectionList, Class<?> domainClass) throws SortingArgumentException, InvalidColumnException {
+    public static Pageable createPageable(int page, int size, List<String> sortByList, List<String> sortDirectionList,
+            Class<?> domainClass) throws SortingArgumentException, InvalidColumnException {
         if (sortByList.size() != sortDirectionList.size()) {
             throw new SortingArgumentException();
         }
@@ -33,7 +33,8 @@ public class PageableUtils {
 
         Sort sort = Sort.by(
                 IntStream.range(0, sortByList.size())
-                        .mapToObj(i -> new Sort.Order(Sort.Direction.fromString(sortDirectionList.get(i)), sortByList.get(i)))
+                        .mapToObj(i -> new Sort.Order(Sort.Direction.fromString(sortDirectionList.get(i)),
+                                sortByList.get(i)))
                         .collect(Collectors.toList())
         );
 
