@@ -1,6 +1,6 @@
 package com.stempo.util;
 
-import com.stempo.exception.InvalidColumnException;
+import com.stempo.exception.InvalidFieldException;
 import com.stempo.exception.SortingArgumentException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,14 +14,14 @@ import org.springframework.stereotype.Component;
 public class PageableUtils {
 
     public static Pageable createPageable(int page, int size, List<String> sortByList, List<String> sortDirectionList,
-            Class<?> domainClass) throws SortingArgumentException, InvalidColumnException {
+            Class<?> domainClass) {
         if (sortByList.size() != sortDirectionList.size()) {
             throw new SortingArgumentException();
         }
 
         for (String sortBy : sortByList) {
             if (!ColumnValidator.isValidColumn(domainClass, sortBy)) {
-                throw new InvalidColumnException(sortBy + " is not a valid column.");
+                throw new InvalidFieldException(sortBy + " is not a valid column.");
             }
         }
 

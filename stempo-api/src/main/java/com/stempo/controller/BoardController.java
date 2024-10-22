@@ -6,14 +6,13 @@ import com.stempo.dto.PagedResponseDto;
 import com.stempo.dto.request.BoardRequestDto;
 import com.stempo.dto.request.BoardUpdateRequestDto;
 import com.stempo.dto.response.BoardResponseDto;
-import com.stempo.exception.InvalidColumnException;
-import com.stempo.exception.SortingArgumentException;
 import com.stempo.model.BoardCategory;
 import com.stempo.service.BoardService;
 import com.stempo.util.PageableUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,8 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -58,12 +55,12 @@ public class BoardController {
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws InvalidColumnException, SortingArgumentException {
+    ) {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BoardResponseDto.class);
         PagedResponseDto<BoardResponseDto> boards = boardService.getBoardsByCategory(category, pageable);
         return ApiResponse.success(boards);
     }
-    
+
     @Operation(summary = "[U] 게시글 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "ADMIN은 모든 게시글 수정 가능")
     @SuccessApiResponse(data = "boardId", dataType = Long.class, dataDescription = "게시글 ID")

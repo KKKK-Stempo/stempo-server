@@ -3,7 +3,7 @@ package com.stempo.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.stempo.exception.InvalidColumnException;
+import com.stempo.exception.InvalidFieldException;
 import com.stempo.exception.SortingArgumentException;
 import java.util.Arrays;
 import java.util.List;
@@ -13,14 +13,8 @@ import org.springframework.data.domain.Sort;
 
 class PageableUtilsTest {
 
-    static class TestDomain {
-
-        private String validField;
-        private int anotherField;
-    }
-
     @Test
-    void 주어진_정렬_조건으로_페이지네이션_객체를_생성한다() throws InvalidColumnException, SortingArgumentException {
+    void 주어진_정렬_조건으로_페이지네이션_객체를_생성한다() {
         // given
         int page = 0;
         int size = 10;
@@ -44,13 +38,13 @@ class PageableUtilsTest {
         // given
         int page = 0;
         int size = 10;
-        List<String> sortByList = Arrays.asList("invalidField"); // 유효하지 않은 필드
-        List<String> sortDirectionList = Arrays.asList("asc");
+        List<String> sortByList = List.of("invalidField"); // 유효하지 않은 필드
+        List<String> sortDirectionList = List.of("asc");
 
         // when, then
         assertThatThrownBy(
                 () -> PageableUtils.createPageable(page, size, sortByList, sortDirectionList, TestDomain.class))
-                .isInstanceOf(InvalidColumnException.class)
+                .isInstanceOf(InvalidFieldException.class)
                 .hasMessageContaining("invalidField is not a valid column.");
     }
 
@@ -59,8 +53,8 @@ class PageableUtilsTest {
         // given
         int page = 0;
         int size = 10;
-        List<String> sortByList = Arrays.asList("validField");
-        List<String> sortDirectionList = Arrays.asList("invalidDirection"); // 유효하지 않은 방향
+        List<String> sortByList = List.of("validField");
+        List<String> sortDirectionList = List.of("invalidDirection"); // 유효하지 않은 방향
 
         // when, then
         assertThatThrownBy(
@@ -74,12 +68,18 @@ class PageableUtilsTest {
         // given
         int page = 0;
         int size = 10;
-        List<String> sortByList = Arrays.asList("validField");
+        List<String> sortByList = List.of("validField");
         List<String> sortDirectionList = Arrays.asList("asc", "desc"); // 크기 불일치
 
         // when, then
         assertThatThrownBy(
                 () -> PageableUtils.createPageable(page, size, sortByList, sortDirectionList, TestDomain.class))
                 .isInstanceOf(SortingArgumentException.class);
+    }
+
+    static class TestDomain {
+
+        private String validField;
+        private int anotherField;
     }
 }
