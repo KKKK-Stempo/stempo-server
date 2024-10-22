@@ -41,7 +41,7 @@ class HomeworkTest {
     @Test
     void 숙제_수정시_null_값을_무시한다() {
         // given
-        Homework updateHomework = Homework.builder().build();  // 아무 값도 업데이트하지 않음
+        Homework updateHomework = Homework.builder().build();
 
         // when
         homework.update(updateHomework);

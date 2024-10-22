@@ -80,9 +80,15 @@ class UserTest {
 
     @Test
     void 일반_사용자는_관리자가_아니다() {
-        // when
+        // given
         user.setRole(Role.USER);
 
+        // then
+        assertThat(user.isAdmin()).isFalse();
+    }
+
+    @Test
+    void 기본적으로_관리자가_아닌_사용자는_false_를_반환한다() {
         // then
         assertThat(user.isAdmin()).isFalse();
     }
