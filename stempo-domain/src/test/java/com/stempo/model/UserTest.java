@@ -16,6 +16,7 @@ class UserTest {
 
     @Test
     void 사용자가_정상적으로_생성되는지_확인한다() {
+        // then
         assertThat(user).isNotNull();
         assertThat(user.getDeviceTag()).isEqualTo("DEVICE_TAG");
         assertThat(user.getPassword()).isEqualTo("PASSWORD");

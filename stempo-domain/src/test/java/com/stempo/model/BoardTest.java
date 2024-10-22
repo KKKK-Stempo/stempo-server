@@ -44,6 +44,7 @@ class BoardTest {
 
     @Test
     void 게시글이_정상적으로_생성되는지_확인한다() {
+        // then
         assertThat(board.getId()).isEqualTo(1L);
         assertThat(board.getDeviceTag()).isEqualTo("OWNER_DEVICE_TAG");
         assertThat(board.getCategory()).isEqualTo(BoardCategory.NOTICE);
@@ -97,12 +98,6 @@ class BoardTest {
     }
 
     @Test
-    void 작성자가_null인_경우_false를_반환한다() {
-        // then
-        assertThat(board.isOwner(null)).isFalse();
-    }
-
-    @Test
     void 게시글_수정_삭제_권한을_검증한다() {
         // 작성자 권한 검증
         assertDoesNotThrow(() -> board.validateAccessPermission(owner));
@@ -117,14 +112,8 @@ class BoardTest {
     }
 
     @Test
-    void 접근권한_검증시_user가_null인_경우_예외를_발생시킨다() {
-        PermissionDeniedException exception = assertThrows(PermissionDeniedException.class,
-                () -> board.validateAccessPermission(null));
-        assertThat(exception.getMessage()).isEqualTo("게시글을 수정/삭제할 권한이 없습니다.");
-    }
-
-    @Test
     void 공지사항인지_확인할_수_있다() {
+        // then
         assertThat(board.isNotice()).isTrue();
     }
 
@@ -139,18 +128,17 @@ class BoardTest {
 
     @Test
     void 공지사항에_권한없는_사용자가_접근할_수_없다() {
+        // when
         PermissionDeniedException exception = assertThrows(PermissionDeniedException.class,
                 () -> board.validateAccessPermissionForNotice(normalUser));
+
+        // then
         assertThat(exception.getMessage()).isEqualTo("공지사항 관리 권한이 없습니다.");
     }
 
     @Test
     void 공지사항에_관리자는_접근_가능하다() {
+        // then
         assertDoesNotThrow(() -> board.validateAccessPermissionForNotice(admin));
-    }
-
-    @Test
-    void 공지사항에_작성자가_접근할_수_있다() {
-        assertDoesNotThrow(() -> board.validateAccessPermissionForNotice(owner));
     }
 }

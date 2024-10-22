@@ -16,6 +16,7 @@ class HomeworkTest {
 
     @Test
     void 숙제가_정상적으로_생성되는지_확인한다() {
+        // then
         assertThat(homework).isNotNull();
         assertThat(homework.getDeviceTag()).isEqualTo("DEVICE_TAG");
         assertThat(homework.getDescription()).isEqualTo("DESCRIPTION");
@@ -41,7 +42,7 @@ class HomeworkTest {
     @Test
     void 숙제_수정시_null_값을_무시한다() {
         // given
-        Homework updateHomework = Homework.builder().build();
+        Homework updateHomework = Homework.create(null, null);
 
         // when
         homework.update(updateHomework);

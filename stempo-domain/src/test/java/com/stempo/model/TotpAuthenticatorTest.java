@@ -16,6 +16,7 @@ class TotpAuthenticatorTest {
 
     @Test
     void TOTP가_정상적으로_생성되는지_확인한다() {
+        // then
         assertThat(totpAuthenticator.getDeviceTag()).isEqualTo("DEVICE_TAG");
         assertThat(totpAuthenticator.getSecretKey()).isEqualTo("SECRET_KEY");
     }

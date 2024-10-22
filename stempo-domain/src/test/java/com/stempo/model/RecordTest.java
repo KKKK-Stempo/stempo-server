@@ -16,6 +16,7 @@ class RecordTest {
 
     @Test
     void 기록이_정상적으로_생성되는지_확인한다() {
+        // then
         assertThat(record.getId()).isNull();
         assertThat(record.getDeviceTag()).isEqualTo("DEVICE_TAG");
         assertThat(record.getAccuracy()).isEqualTo("90");

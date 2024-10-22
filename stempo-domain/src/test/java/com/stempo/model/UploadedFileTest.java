@@ -16,6 +16,7 @@ class UploadedFileTest {
 
     @Test
     void 업로드_파일_기록이_정상적으로_생성되는지_확인한다() {
+        // then
         assertThat(uploadedFile).isNotNull();
         assertThat(uploadedFile.getId()).isNull();
         assertThat(uploadedFile.getOriginalFileName()).isEqualTo("ORIGINAL_FILE_NAME");
