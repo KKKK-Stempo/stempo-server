@@ -13,7 +13,7 @@ class ColumnValidatorTest {
     }
 
     @Test
-    void isValidColumn_존재하는_컬럼을_확인한다() {
+    void 존재하는_컬럼을_확인한다() {
         // given
         String columnName = "validField";
 
@@ -25,7 +25,7 @@ class ColumnValidatorTest {
     }
 
     @Test
-    void isValidColumn_존재하지_않는_컬럼을_확인한다() {
+    void 존재하지_않는_컬럼을_확인한다() {
         // given
         String columnName = "nonExistingField";
 
@@ -37,7 +37,7 @@ class ColumnValidatorTest {
     }
 
     @Test
-    void isValidColumn_다른_타입의_필드를_확인한다() {
+    void 다른_타입의_필드를_확인한다() {
         // given
         String columnName = "anotherField";
 
@@ -49,7 +49,7 @@ class ColumnValidatorTest {
     }
 
     @Test
-    void isValidColumn_null_컬럼_이름을_확인한다() {
+    void null_컬럼_이름을_확인한다() {
         // given
         String columnName = null;
 

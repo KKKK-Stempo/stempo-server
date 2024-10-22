@@ -19,7 +19,7 @@ class EncryptionUtilsTest {
     }
 
     @Test
-    void encryptAndDecrypt_암호화_복호화가_정상적으로_동작한다() {
+    void 암호화된_값을_복호화하면_원본값과_일치한다() {
         // given
         String plainText = "Hello, World!";
 
@@ -32,7 +32,7 @@ class EncryptionUtilsTest {
     }
 
     @Test
-    void encryptWithHashedIV_일관된_IV로_암호화된_값이_복호화된다() {
+    void 해싱된_IV로_암호화된_값은_복호화할_수_있다() {
         // given
         String plainText = "Hello, World!";
         String uniqueValue = "deviceTag123";
@@ -46,7 +46,7 @@ class EncryptionUtilsTest {
     }
 
     @Test
-    void encryptWithHashedIV_다른_IV로_암호화된_값은_복호화할_수_없다() {
+    void 다른_IV로_암호화된_값은_복호화할_수_없다() {
         // given
         String plainText = "Hello, World!";
         String uniqueValue = "deviceTag123";
@@ -61,7 +61,7 @@ class EncryptionUtilsTest {
     }
 
     @Test
-    void compareEncryptedValues_암호화된_값_비교() {
+    void 동일한_원본값을_암호화한_경우_비교가_성공한다() {
         // given
         String plainText1 = "Text1";
         String plainText2 = "Text1";
@@ -78,7 +78,7 @@ class EncryptionUtilsTest {
     }
 
     @Test
-    void decrypt_잘못된_암호화_문자열로_복호화_실패() {
+    void 잘못된_암호화된_문자열은_복호화할_수_없다() {
         // given
         String invalidEncryptedText = "InvalidEncryptedText";
 
@@ -89,7 +89,7 @@ class EncryptionUtilsTest {
     }
 
     @Test
-    void generateIVFromUniqueValue_해싱된_IV가_정확히_생성된다() {
+    void 해싱된_IV가_정확히_생성된다() {
         // given
         String uniqueValue = "test-deviceTag";
         int ivLength = 12;
@@ -103,7 +103,7 @@ class EncryptionUtilsTest {
     }
 
     @Test
-    void generateRandomIV_임의의_IV가_정확히_생성된다() {
+    void 임의의_IV가_정확히_생성된다() {
         int ivLength = 12;
 
         byte[] iv = encryptionUtils.generateRandomIV(ivLength);
@@ -113,7 +113,7 @@ class EncryptionUtilsTest {
     }
 
     @Test
-    void concat_두_배열이_정상적으로_결합된다() {
+    void 두_배열이_정상적으로_결합된다() {
         byte[] array1 = {1, 2, 3};
         byte[] array2 = {4, 5, 6};
 

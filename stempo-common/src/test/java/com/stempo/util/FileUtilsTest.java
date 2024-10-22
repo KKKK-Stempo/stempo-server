@@ -137,7 +137,7 @@ class FileUtilsTest {
     }
 
     @Test
-    void 잘못된_파일명_검증() {
+    void 잘못된_파일명이_검증되면_예외가_발생한다() {
         // given
         String invalidFileName = "../invalid.txt";
 
@@ -148,7 +148,7 @@ class FileUtilsTest {
     }
 
     @Test
-    void 유효한_파일명_검증() {
+    void 유효한_파일명이면_예외가_발생하지_않는다() {
         // given
         String validFileName = "valid.txt";
 

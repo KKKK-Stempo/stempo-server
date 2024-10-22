@@ -55,7 +55,7 @@ class ApiLoggerTest {
     }
 
     @Test
-    void logRequest_로그가_정상적으로_출력되는지_확인한다() {
+    void 정상적으로_로그가_출력되는지_확인한다() {
         // given
         String clientIpAddress = "127.0.0.1";
         String message = "Test message";
@@ -75,7 +75,7 @@ class ApiLoggerTest {
     }
 
     @Test
-    void logRequestDuration_정상_요청_시간을_로그로_출력한다() {
+    void 정상_요청_시간을_로그로_출력한다() {
         // given
         long startTime = 1_000L;
         long endTime = startTime + 500;
@@ -104,7 +104,7 @@ class ApiLoggerTest {
     }
 
     @Test
-    void logRequestDuration_예외가_있을_때_에러_로그가_출력된다() {
+    void 예외가_있을_때_에러_로그가_출력된다() {
         // given
         long startTime = 1_000L;
         long endTime = startTime + 500;
