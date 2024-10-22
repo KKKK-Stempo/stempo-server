@@ -22,7 +22,13 @@ jobs:
         run: chmod +x gradlew
 
       - name: Create application-test.yml from secret
-        run: printf "%s" "${{ secrets.TEST_YML }}" > application-test.yml
+        env:
+          COMMON_TEST_YML: ${{ secrets.COMMON_TEST_YML }}
+          COMMON_TEST_DIR: /stempo-common/src/test/resources
+          COMMON_DIR_FILE_NAME: application-test.yml
+        run: |
+          mkdir -p $COMMON_TEST_DIR
+          echo $COMMON_TEST_YML | base64 --decode > $COMMON_TEST_DIR/$COMMON_DIR_FILE_NAME
 
       - name: Build and test with Gradle
         run: ./gradlew build test --args='-Dspring.profiles.active=test'
