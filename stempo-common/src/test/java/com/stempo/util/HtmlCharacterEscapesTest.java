@@ -23,6 +23,18 @@ class HtmlCharacterEscapesTest {
     }
 
     @Test
+    void 일반_ASCII_문자도_정상적으로_출력된다() {
+        // given
+        char[] normalChars = {'a', 'b', '1', ' ', '@'};
+
+        // when, then
+        for (char c : normalChars) {
+            SerializableString escapeSequence = htmlCharacterEscapes.getEscapeSequence(c);
+            assertThat(escapeSequence.getValue()).isEqualTo(Character.toString(c));
+        }
+    }
+
+    @Test
     void 이스케이프된_유니코드_문자가_정상적으로_출력된다() {
         // given
         char emojiChar = '\uD83D';
@@ -38,7 +50,7 @@ class HtmlCharacterEscapesTest {
     }
 
     @Test
-    void 제로_너비_조인너_이스케이프_테스트() {
+    void 제로_너비_조인너_이스케이프가_정상적으로_출력된다() {
         // given
         char zeroWidthJoiner = 0x200D;
 
@@ -47,5 +59,17 @@ class HtmlCharacterEscapesTest {
 
         // then
         assertThat(escapeSequence.getValue()).isEqualTo("\\u200d");
+    }
+
+    @Test
+    void 일반_유니코드_문자가_정상적으로_출력된다() {
+        // given
+        char regularUnicodeChar = 'A';
+
+        // when
+        SerializableString escapeSequence = htmlCharacterEscapes.getEscapeSequence(regularUnicodeChar);
+
+        // then
+        assertThat(escapeSequence.getValue()).isEqualTo("A");
     }
 }
