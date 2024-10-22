@@ -1,6 +1,7 @@
 package com.stempo.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.stempo.exception.FilePermissionException;
@@ -79,6 +80,34 @@ class FileUtilsTest {
     }
 
     @Test
+    void 파일_존재시_부모_디렉토리_생성이_정상적으로_작동한다() {
+        // given
+        File existingDirectory = new File(tempDir.toFile(), "existing_directory");
+        existingDirectory.mkdirs();
+
+        File fileInExistingDirectory = new File(existingDirectory, "file.txt");
+
+        // when
+        FileUtils.ensureParentDirectoryExists(fileInExistingDirectory, tempDir.toString());
+
+        // then
+        assertThat(existingDirectory.exists()).isTrue();
+    }
+
+    @Test
+    void 이미_존재하는_디렉토리에_대해_예외가_발생하지_않는다() {
+        // given
+        File existingDirectory = new File(tempDir.toFile(), "existing_directory");
+        existingDirectory.mkdirs(); // 디렉토리 미리 생성
+
+        File fileInExistingDirectory = new File(existingDirectory, "file.txt");
+
+        // when, then
+        assertThatCode(() -> FileUtils.ensureParentDirectoryExists(fileInExistingDirectory, tempDir.toString()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
     void 디렉토리가_존재하지_않으면_정상적으로_생성된다() {
         // given
         File newDirectory = new File(tempDir.toFile(), "new_directory");
@@ -121,7 +150,8 @@ class FileUtilsTest {
         Set<String> disallowedExtensions = Set.of("exe", "bat");
 
         // when, then
-        FileUtils.validateFileAttributes(fileName, disallowedExtensions);
+        assertThatCode(() -> FileUtils.validateFileAttributes(fileName, disallowedExtensions))
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -153,7 +183,22 @@ class FileUtilsTest {
         String validFileName = "valid.txt";
 
         // when, then
-        FileUtils.validateFilename(validFileName);
+        assertThatCode(() -> FileUtils.validateFilename(validFileName))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 파일명이_null이면_예외가_발생하지_않는다() {
+        // when, then
+        assertThatCode(() -> FileUtils.validateFilename(null))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 파일명이_빈_문자열이면_예외가_발생하지_않는다() {
+        // when, then
+        assertThatCode(() -> FileUtils.validateFilename(" "))
+                .doesNotThrowAnyException();
     }
 
     @Test
