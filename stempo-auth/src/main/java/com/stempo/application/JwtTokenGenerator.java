@@ -36,7 +36,9 @@ public class JwtTokenGenerator {
         Collection<? extends GrantedAuthority> authorities = principal.getAuthorities();
 
         String id = principal.getUsername();
-        Role role = Role.valueOf(authorities.stream().findFirst().isPresent() ? authorities.stream().findFirst().get().getAuthority() : "ROLE_USER");
+        Role role = Role.valueOf(
+                authorities.stream().findFirst().isPresent() ? authorities.stream().findFirst().get().getAuthority()
+                        : Role.USER.name());
         return generateToken(id, role);
     }
 
@@ -45,7 +47,7 @@ public class JwtTokenGenerator {
         Date accessTokenExpiry = new Date(expiry.getTime() + (accessTokenDuration));
         String accessToken = Jwts.builder()
                 .subject(id)
-                .claim("role", role)
+                .claim("role", role == null ? Role.USER.name() : role.name())
                 .issuedAt(expiry)
                 .expiration(accessTokenExpiry)
                 .signWith(key)
@@ -54,7 +56,7 @@ public class JwtTokenGenerator {
         Date refreshTokenExpiry = new Date(expiry.getTime() + (refreshTokenDuration));
         String refreshToken = Jwts.builder()
                 .subject(id)
-                .claim("role", role)
+                .claim("role", role == null ? Role.USER.name() : role.name())
                 .issuedAt(expiry)
                 .expiration(refreshTokenExpiry)
                 .signWith(key)

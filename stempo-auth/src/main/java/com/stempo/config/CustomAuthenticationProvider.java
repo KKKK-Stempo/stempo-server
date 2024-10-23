@@ -26,6 +26,11 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         UserDetails user = userDetailsService.loadUserByUsername(deviceTag);
 
+        // 사용자 정보가 없을 경우 예외 발생
+        if (user == null) {
+            throw new BadCredentialsException("자격 증명에 실패하였습니다.");
+        }
+
         // 비밀번호가 없는 계정인 경우 비밀번호를 확인하지 않고 로그인 처리
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());

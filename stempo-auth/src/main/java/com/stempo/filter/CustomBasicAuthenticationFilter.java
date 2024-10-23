@@ -9,6 +9,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
+import java.io.IOException;
+import java.util.Base64;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,9 +18,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-
-import java.io.IOException;
-import java.util.Base64;
 
 @Slf4j
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
@@ -36,7 +35,8 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         String path = request.getRequestURI();
         if (!WhitelistPathMatcher.isWhitelistRequest(path)) {
             chain.doFilter(request, response);
@@ -64,7 +64,8 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         return true;
     }
 
-    private boolean authenticateUserCredentials(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private boolean authenticateUserCredentials(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Basic ")) {
             response.setHeader("WWW-Authenticate", "Basic realm=\"Please enter your username and password\"");
@@ -74,6 +75,7 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
         String[] credentials = decodeCredentials(authorizationHeader);
         if (credentials.length < 2) {
+            log.warn("Invalid Authorization header format");
             ResponseUtils.sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
@@ -83,11 +85,15 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
 
         try {
-            // 화이트리스트용 AuthenticationManager로 인증 처리
             Authentication authentication = whitelistAuthenticationManager.authenticate(authRequest);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (BadCredentialsException e) {
+            log.warn("Authentication failed for user: {}", username);
             ResponseUtils.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
+        } catch (Exception e) {
+            log.error("Unexpected error during authentication", e);
+            ResponseUtils.sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
 

@@ -31,8 +31,8 @@ public class WhitelistProperties {
     @Getter
     @Setter
     public static class Patterns {
-        private String[] actuator;
-        private String[] apiDocs;
+        private String[] actuator = new String[0];
+        private String[] apiDocs = new String[0];
 
         public String[] getWhitelistPatterns() {
             return Stream.of(apiDocs, actuator)

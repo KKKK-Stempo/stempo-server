@@ -7,6 +7,9 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import java.security.Key;
+import java.util.Arrays;
+import java.util.Collection;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,10 +20,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
 
 @Component
 public class JwtTokenParser {
@@ -66,7 +65,9 @@ public class JwtTokenParser {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
-            return e.getClaims();
+            throw new TokenValidateException("만료된 토큰입니다.");
+        } catch (Exception e) {
+            throw new TokenValidateException("유효하지 않은 토큰입니다.");
         }
     }
 }
