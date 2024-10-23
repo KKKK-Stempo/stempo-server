@@ -42,7 +42,7 @@ class AuthUtilsTest {
 
     @Test
     void 인증정보에_이름이_없으면_예외를_던진다() {
-        // Given
+        // given
         SecurityContext securityContext = mock(SecurityContext.class);
         Authentication authentication = mock(Authentication.class);
 
@@ -51,7 +51,7 @@ class AuthUtilsTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
 
-        // When, Then
+        // when, then
         assertThatThrownBy(AuthUtils::getAuthenticationInfo)
                 .isInstanceOf(AuthenticationNotFoundException.class)
                 .hasMessage("인증된 사용자의 이름이 없습니다.");

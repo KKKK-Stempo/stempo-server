@@ -16,58 +16,58 @@ class XssSanitizerTest {
 
     @Test
     void XSS_공격_패턴이_제거된다() {
-        // Given
+        // given
         String input = "<script>alert('XSS');</script>";
 
-        // When
+        // when
         String sanitized = xssSanitizer.sanitize(input);
 
-        // Then
+        // then
         assertThat(sanitized).isEmpty();
     }
 
     @Test
     void 허용된_링크_태그는_유지된다() {
-        // Given
+        // given
         String input = "<a href='http://example.com'>Link</a>";
 
-        // When
+        // when
         String sanitized = xssSanitizer.sanitize(input);
 
-        // Then
+        // then
         assertThat(sanitized).isEqualTo("<a href=\"http://example.com\" rel=\"nofollow\">Link</a>");
     }
 
     @Test
     void 허용된_형식_태그는_유지된다() {
-        // Given
+        // given
         String input = "<b>Bold Text</b><i>Italic Text</i>";
 
-        // When
+        // when
         String sanitized = xssSanitizer.sanitize(input);
 
-        // Then
+        // then
         assertThat(sanitized).isEqualTo("<b>Bold Text</b><i>Italic Text</i>");
     }
 
     @Test
     void 입력값이_null이면_null을_반환한다() {
-        // When
+        // when
         String sanitized = xssSanitizer.sanitize(null);
 
-        // Then
+        // then
         assertThat(sanitized).isNull();
     }
 
     @Test
     void 안전한_문자열은_변경되지_않는다() {
-        // Given
+        // given
         String input = "Safe text";
 
-        // When
+        // when
         String sanitized = xssSanitizer.sanitize(input);
 
-        // Then
+        // then
         assertThat(sanitized).isEqualTo("Safe text");
     }
 }
