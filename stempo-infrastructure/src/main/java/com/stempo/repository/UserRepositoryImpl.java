@@ -17,8 +17,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        UserEntity jpaEntity = mapper.toEntity(user);
-        UserEntity savedEntity = repository.save(jpaEntity);
+        UserEntity entity = mapper.toEntity(user);
+        UserEntity savedEntity = repository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 
@@ -42,7 +42,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void delete(User user) {
-        UserEntity jpaEntity = mapper.toEntity(user);
-        repository.delete(jpaEntity);
+        UserEntity entity = mapper.toEntity(user);
+        repository.delete(entity);
     }
 }

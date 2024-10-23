@@ -20,8 +20,8 @@ public class BoardRepositoryImpl implements BoardRepository {
 
     @Override
     public Board save(Board board) {
-        BoardEntity jpaEntity = mapper.toEntity(board);
-        BoardEntity savedEntity = repository.save(jpaEntity);
+        BoardEntity entity = mapper.toEntity(board);
+        BoardEntity savedEntity = repository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 

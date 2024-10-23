@@ -20,8 +20,8 @@ public class UploadedFileRepositoryImpl implements UploadedFileRepository {
 
     @Override
     public UploadedFile save(UploadedFile uploadedFile) {
-        UploadedFileEntity jpaEntity = mapper.toEntity(uploadedFile);
-        UploadedFileEntity savedEntity = repository.save(jpaEntity);
+        UploadedFileEntity entity = mapper.toEntity(uploadedFile);
+        UploadedFileEntity savedEntity = repository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 
