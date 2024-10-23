@@ -39,6 +39,15 @@ jobs:
           mkdir -p $INFRA_TEST_DIR
           echo $INFRA_TEST_YML | base64 --decode > $INFRA_TEST_DIR/$INFRA_DIR_FILE_NAME
 
+      - name: Create application-test.yml from secret for stempo-auth
+        env:
+          AUTH_TEST_YML: ${{ secrets.AUTH_TEST_YML }}
+          AUTH_TEST_DIR: ./stempo-auth/src/test/resources
+          AUTH_DIR_FILE_NAME: application-test.yml
+        run: |
+          mkdir -p $AUTH_TEST_DIR
+          echo $AUTH_TEST_YML | base64 --decode > $AUTH_TEST_DIR/$AUTH_DIR_FILE_NAME
+
       - name: Run tests with Gradle
         run: ./gradlew test -Dspring.profiles.active=test --info
 
