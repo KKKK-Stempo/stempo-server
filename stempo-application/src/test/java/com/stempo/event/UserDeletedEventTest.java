@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class UserDeletedEventTest {
 
     @Test
-    void UserDeletedEvent_생성_테스트() {
+    void UserDeletedEvent가_정상적으로_생성된다() {
         // given
         String deviceTag = "testDeviceTag";
         Object source = new Object();
