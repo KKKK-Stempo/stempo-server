@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class AuthRequestDto {
 
-    @NotBlank(message = "deviceTag is required")
+    @NotBlank(message = "DeviceTag is required")
     @Schema(description = "디바이스 식별자", example = "490154203237518", requiredMode = Schema.RequiredMode.REQUIRED)
     private String deviceTag;
 

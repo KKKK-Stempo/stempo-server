@@ -32,7 +32,7 @@ class AuthRequestDtoTest {
 
         // then
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("deviceTag is required");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo("DeviceTag is required");
     }
 
     @Test
@@ -47,7 +47,7 @@ class AuthRequestDtoTest {
 
         // then
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("deviceTag is required");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo("DeviceTag is required");
     }
 
     @Test
@@ -62,7 +62,7 @@ class AuthRequestDtoTest {
 
         // then
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("deviceTag is required");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo("DeviceTag is required");
     }
 
     @Test
