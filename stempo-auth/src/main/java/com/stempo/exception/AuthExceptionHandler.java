@@ -6,6 +6,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SecurityException;
 import jakarta.servlet.http.HttpServletResponse;
+import java.nio.file.AccessDeniedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AuthorizationServiceException;
@@ -15,15 +16,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.nio.file.AccessDeniedException;
-
 @RestControllerAdvice(basePackages = "com.stempo")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthExceptionHandler {
 
     @ExceptionHandler({
-            AuthenticationInfoNotFoundException.class,
+            InvalidPrincipalException.class,
+            AuthenticationNotFoundException.class,
             AuthorizationDeniedException.class,
             AuthorizationServiceException.class,
             BadCredentialsException.class,
