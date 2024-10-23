@@ -12,7 +12,6 @@ import org.hibernate.validator.constraints.Range;
 public class RecordRequestDto {
 
     @NotNull(message = "Accuracy is required")
-    @PositiveOrZero(message = "Accuracy must be a positive value or zero")
     @Range(min = 0, max = 100, message = "Accuracy must be between 0 and 100")
     @Schema(description = "정확도", example = "0.0", minimum = "0.0", maximum = "100.0", requiredMode = Schema.RequiredMode.REQUIRED)
     private Double accuracy;
