@@ -2,12 +2,11 @@ package com.stempo.repository;
 
 import com.stempo.entity.TotpAuthenticatorEntity;
 import com.stempo.exception.NotFoundException;
-import com.stempo.mappper.TotpAuthenticatorMapper;
+import com.stempo.mapper.TotpAuthenticatorMapper;
 import com.stempo.model.TotpAuthenticator;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor

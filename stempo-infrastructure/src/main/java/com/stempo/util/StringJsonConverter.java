@@ -4,9 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Converter
@@ -16,6 +15,9 @@ public class StringJsonConverter implements AttributeConverter<List<String>, Str
 
     @Override
     public String convertToDatabaseColumn(List<String> attribute) {
+        if (attribute == null) {
+            return null;
+        }
         try {
             return objectMapper.writeValueAsString(attribute);
         } catch (Exception e) {
@@ -26,6 +28,9 @@ public class StringJsonConverter implements AttributeConverter<List<String>, Str
 
     @Override
     public List<String> convertToEntityAttribute(String dbData) {
+        if (dbData == null || dbData.equals("null")) {
+            return null;
+        }
         try {
             return objectMapper.readValue(dbData, new TypeReference<>() {
             });

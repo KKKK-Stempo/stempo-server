@@ -2,15 +2,14 @@ package com.stempo.repository;
 
 import com.stempo.entity.BoardEntity;
 import com.stempo.exception.NotFoundException;
-import com.stempo.mappper.BoardMapper;
+import com.stempo.mapper.BoardMapper;
 import com.stempo.model.Board;
 import com.stempo.model.BoardCategory;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,11 +18,10 @@ public class BoardRepositoryImpl implements BoardRepository {
     private final BoardJpaRepository repository;
     private final BoardMapper mapper;
 
-
     @Override
     public Board save(Board board) {
-        BoardEntity jpaEntity = mapper.toEntity(board);
-        BoardEntity savedEntity = repository.save(jpaEntity);
+        BoardEntity entity = mapper.toEntity(board);
+        BoardEntity savedEntity = repository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 

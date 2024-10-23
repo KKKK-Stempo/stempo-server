@@ -2,12 +2,11 @@ package com.stempo.repository;
 
 import com.stempo.entity.UserEntity;
 import com.stempo.exception.NotFoundException;
-import com.stempo.mappper.UserMapper;
+import com.stempo.mapper.UserMapper;
 import com.stempo.model.User;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,8 +17,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        UserEntity jpaEntity = mapper.toEntity(user);
-        UserEntity savedEntity = repository.save(jpaEntity);
+        UserEntity entity = mapper.toEntity(user);
+        UserEntity savedEntity = repository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 
@@ -43,7 +42,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void delete(User user) {
-        UserEntity jpaEntity = mapper.toEntity(user);
-        repository.delete(jpaEntity);
+        UserEntity entity = mapper.toEntity(user);
+        repository.delete(entity);
     }
 }

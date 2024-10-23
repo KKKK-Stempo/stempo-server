@@ -1,14 +1,13 @@
 package com.stempo.repository;
 
 import com.stempo.entity.RecordEntity;
-import com.stempo.mappper.RecordMapper;
+import com.stempo.mapper.RecordMapper;
 import com.stempo.model.Record;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,23 +18,23 @@ public class RecordRepositoryImpl implements RecordRepository {
 
     @Override
     public Record save(Record record) {
-        RecordEntity jpaEntity = mapper.toEntity(record);
-        RecordEntity savedEntity = repository.save(jpaEntity);
+        RecordEntity entity = mapper.toEntity(record);
+        RecordEntity savedEntity = repository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 
     @Override
     public void deleteAll(List<Record> records) {
-        List<RecordEntity> jpaEntities = records.stream()
+        List<RecordEntity> entities = records.stream()
                 .map(mapper::toEntity)
                 .toList();
-        repository.deleteAll(jpaEntities);
+        repository.deleteAll(entities);
     }
 
     @Override
     public List<Record> findByDateBetween(String deviceTag, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        List<RecordEntity> jpaEntities = repository.findByDateBetween(deviceTag, startDateTime, endDateTime);
-        return jpaEntities.stream()
+        List<RecordEntity> entities = repository.findByDateBetween(deviceTag, startDateTime, endDateTime);
+        return entities.stream()
                 .map(mapper::toDomain)
                 .toList();
     }
@@ -48,8 +47,8 @@ public class RecordRepositoryImpl implements RecordRepository {
 
     @Override
     public List<Record> findByDeviceTag(String deviceTag) {
-        List<RecordEntity> jpaEntities = repository.findByDeviceTag(deviceTag);
-        return jpaEntities.stream()
+        List<RecordEntity> entities = repository.findByDeviceTag(deviceTag);
+        return entities.stream()
                 .map(mapper::toDomain)
                 .toList();
     }
@@ -60,7 +59,8 @@ public class RecordRepositoryImpl implements RecordRepository {
     }
 
     @Override
-    public int countByDeviceTagAndCreatedAtBetween(String deviceTag, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public int countByDeviceTagAndCreatedAtBetween(String deviceTag, LocalDateTime startDateTime,
+            LocalDateTime endDateTime) {
         return repository.countByDeviceTagAndCreatedAtBetween(deviceTag, startDateTime, endDateTime);
     }
 }

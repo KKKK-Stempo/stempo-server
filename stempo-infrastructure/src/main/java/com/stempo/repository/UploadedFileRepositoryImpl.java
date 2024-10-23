@@ -2,15 +2,14 @@ package com.stempo.repository;
 
 import com.stempo.entity.UploadedFileEntity;
 import com.stempo.exception.NotFoundException;
-import com.stempo.mappper.UploadedFileMapper;
+import com.stempo.mapper.UploadedFileMapper;
 import com.stempo.model.UploadedFile;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,8 +20,8 @@ public class UploadedFileRepositoryImpl implements UploadedFileRepository {
 
     @Override
     public UploadedFile save(UploadedFile uploadedFile) {
-        UploadedFileEntity jpaEntity = mapper.toEntity(uploadedFile);
-        UploadedFileEntity savedEntity = repository.save(jpaEntity);
+        UploadedFileEntity entity = mapper.toEntity(uploadedFile);
+        UploadedFileEntity savedEntity = repository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 

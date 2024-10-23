@@ -21,7 +21,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Create application-test.yml from secret
+      - name: Create application-test.yml from secret for stempo-common
         env:
           COMMON_TEST_YML: ${{ secrets.COMMON_TEST_YML }}
           COMMON_TEST_DIR: ./stempo-common/src/test/resources
@@ -29,6 +29,15 @@ jobs:
         run: |
           mkdir -p $COMMON_TEST_DIR
           echo $COMMON_TEST_YML | base64 --decode > $COMMON_TEST_DIR/$COMMON_DIR_FILE_NAME
+
+      - name: Create application-test.yml from secret for stempo-infrastructure
+        env:
+          INFRA_TEST_YML: ${{ secrets.INFRA_TEST_YML }}
+          INFRA_TEST_DIR: ./stempo-infrastructure/src/test/resources
+          INFRA_DIR_FILE_NAME: application-test.yml
+        run: |
+          mkdir -p $INFRA_TEST_DIR
+          echo $INFRA_TEST_YML | base64 --decode > $INFRA_TEST_DIR/$INFRA_DIR_FILE_NAME
 
       - name: Run tests with Gradle
         run: ./gradlew test -Dspring.profiles.active=test --info

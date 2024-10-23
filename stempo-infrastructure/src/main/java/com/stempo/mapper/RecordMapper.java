@@ -1,4 +1,4 @@
-package com.stempo.mappper;
+package com.stempo.mapper;
 
 import com.stempo.entity.RecordEntity;
 import com.stempo.model.Record;
