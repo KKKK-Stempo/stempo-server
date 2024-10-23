@@ -1,5 +1,6 @@
 package com.stempo.filter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.verify;
@@ -106,8 +107,8 @@ class CustomBasicAuthenticationFilterTest {
         // then
         verify(filterChain).doFilter(request, response);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        assert authentication != null;
-        assert authentication.getName().equals("user");
+        assertThat(authentication).isNotNull();
+        assertThat(authentication.getName()).isEqualTo("user");
     }
 
     @Test

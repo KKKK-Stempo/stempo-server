@@ -1,5 +1,6 @@
 package com.stempo.filter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -39,6 +40,7 @@ class JwtAuthenticationFilterTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenService);
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -81,7 +83,7 @@ class JwtAuthenticationFilterTest {
         verify(tokenService).validateTokenSilently(token);
         verify(tokenService).getAuthentication(token);
         verify(filterChain).doFilter(request, response);
-        assert SecurityContextHolder.getContext().getAuthentication().equals(authentication);
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isEqualTo(authentication);
     }
 
     @Test
@@ -100,7 +102,7 @@ class JwtAuthenticationFilterTest {
         // then
         verify(tokenService).resolveToken(request);
         verify(filterChain).doFilter(request, response);
-        assert SecurityContextHolder.getContext().getAuthentication() == null;
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
     }
 
     @Test
@@ -123,6 +125,6 @@ class JwtAuthenticationFilterTest {
         verify(tokenService).resolveToken(request);
         verify(tokenService).validateTokenSilently(invalidToken);
         verify(filterChain).doFilter(request, response);
-        assert SecurityContextHolder.getContext().getAuthentication() == null;
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
     }
 }
