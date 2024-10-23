@@ -4,9 +4,8 @@ import com.stempo.dto.request.BoardRequestDto;
 import com.stempo.dto.request.BoardUpdateRequestDto;
 import com.stempo.dto.response.BoardResponseDto;
 import com.stempo.model.Board;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
+import org.springframework.stereotype.Component;
 
 @Component
 public class BoardDtoMapper {

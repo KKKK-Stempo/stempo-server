@@ -2,9 +2,8 @@ package com.stempo.mapper;
 
 import com.stempo.dto.response.RecordResponseDto;
 import com.stempo.dto.response.RecordStatisticsResponseDto;
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDate;
+import org.springframework.stereotype.Component;
 
 @Component
 public class RecordDtoMapper {
@@ -18,7 +17,8 @@ public class RecordDtoMapper {
                 .build();
     }
 
-    public RecordStatisticsResponseDto toDto(int todayWalkTrainingCount, int weeklyWalkTrainingCount, int consecutiveWalkTrainingDays) {
+    public RecordStatisticsResponseDto toDto(int todayWalkTrainingCount, int weeklyWalkTrainingCount,
+            int consecutiveWalkTrainingDays) {
         return RecordStatisticsResponseDto.builder()
                 .todayWalkTrainingCount(todayWalkTrainingCount)
                 .weeklyWalkTrainingCount(weeklyWalkTrainingCount)
