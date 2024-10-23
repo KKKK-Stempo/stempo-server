@@ -14,5 +14,6 @@ dependencies {
 
     // Util
     implementation(Dependencies.jakartaValidationApi)
+    implementation(Dependencies.hibernateValidator)
     implementation(Dependencies.commonsIo)
 }
