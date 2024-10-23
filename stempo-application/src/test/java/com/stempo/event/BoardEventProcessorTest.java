@@ -29,7 +29,6 @@ class BoardEventProcessorTest {
         processorRegistry.register(boardEventProcessor);
     }
 
-
     @Test
     void 사용자가_삭제되면_게시글도_삭제된다() {
         // given
