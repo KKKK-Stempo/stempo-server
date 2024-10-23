@@ -38,11 +38,11 @@ public class WhitelistPathMatcher implements InitializingBean {
         return isPatternMatch(path, whitelistPatterns);
     }
 
-    public static boolean isSwaggerIndexEndpoint(String path) {
+    public static boolean isApiDocsIndexEndpoint(String path) {
         return apiDocsPatterns[2].equals(path);
     }
 
-    private static boolean isPatternMatch(String path, String[] patterns) {
+    protected static boolean isPatternMatch(String path, String[] patterns) {
         for (String pattern : patterns) {
             if (Pattern.compile(pattern).matcher(path).find()) {
                 return true;
