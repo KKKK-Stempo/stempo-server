@@ -9,11 +9,16 @@ import org.yaml.snakeyaml.Yaml;
 public class YamlConfig {
 
     @Bean
-    public Yaml yamlParser() {
+    public Yaml yamlParser(DumperOptions dumperOptions) {
+        return new Yaml(dumperOptions);
+    }
+
+    @Bean
+    public DumperOptions dumperOptions() {
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         options.setIndent(2);
         options.setPrettyFlow(true);
-        return new Yaml(options);
+        return options;
     }
 }
