@@ -15,6 +15,9 @@ public class StringJsonConverter implements AttributeConverter<List<String>, Str
 
     @Override
     public String convertToDatabaseColumn(List<String> attribute) {
+        if (attribute == null) {
+            return null;
+        }
         try {
             return objectMapper.writeValueAsString(attribute);
         } catch (Exception e) {
@@ -25,6 +28,9 @@ public class StringJsonConverter implements AttributeConverter<List<String>, Str
 
     @Override
     public List<String> convertToEntityAttribute(String dbData) {
+        if (dbData == null || dbData.equals("null")) {
+            return null;
+        }
         try {
             return objectMapper.readValue(dbData, new TypeReference<>() {
             });
