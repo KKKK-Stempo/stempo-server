@@ -1,10 +1,9 @@
 package com.stempo.util;
 
 import com.stempo.config.WhitelistProperties;
+import java.util.regex.Pattern;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
-
-import java.util.regex.Pattern;
 
 @Component
 public class WhitelistPathMatcher implements InitializingBean {
@@ -17,13 +16,6 @@ public class WhitelistPathMatcher implements InitializingBean {
 
     public WhitelistPathMatcher(WhitelistProperties whitelistProperties) {
         this.whitelistProperties = whitelistProperties;
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        actuatorPatterns = whitelistProperties.getPatterns().getActuator();
-        apiDocsPatterns = whitelistProperties.getPatterns().getApiDocs();
-        whitelistPatterns = whitelistProperties.getPatterns().getWhitelistPatterns();
     }
 
     public static boolean isApiDocsRequest(String path) {
@@ -43,11 +35,22 @@ public class WhitelistPathMatcher implements InitializingBean {
     }
 
     protected static boolean isPatternMatch(String path, String[] patterns) {
+        if (patterns == null) {
+            return false;
+        }
+
         for (String pattern : patterns) {
             if (Pattern.compile(pattern).matcher(path).find()) {
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        actuatorPatterns = whitelistProperties.getPatterns().getActuator();
+        apiDocsPatterns = whitelistProperties.getPatterns().getApiDocs();
+        whitelistPatterns = whitelistProperties.getPatterns().getWhitelistPatterns();
     }
 }
