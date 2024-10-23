@@ -23,6 +23,11 @@ class YamlConfigTest {
     }
 
     @Test
+    void dumperOptions_빈이_정상적으로_생성된다() {
+        assertThat(dumperOptions).isNotNull();
+    }
+
+    @Test
     void dumperOptions_설정이_정상적으로_적용된다() {
         assertThat(dumperOptions.getDefaultFlowStyle()).isEqualTo(DumperOptions.FlowStyle.BLOCK);
         assertThat(dumperOptions.getIndent()).isEqualTo(2);
