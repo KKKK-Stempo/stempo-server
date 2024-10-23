@@ -10,6 +10,7 @@ dependencies {
 
     // DB
     implementation(Dependencies.mariadbDriver)
+    testRuntimeOnly(Dependencies.h2database)
 
     // Util
     implementation(Dependencies.jakartaValidationApi)

@@ -10,6 +10,7 @@ object Dependencies {
     const val hibernateValidator = "org.hibernate.validator:hibernate-validator:${Versions.hibernateValidator}"
     const val swagger = "org.springdoc:springdoc-openapi-starter-webmvc-ui:${Versions.swagger}"
     const val mariadbDriver = "org.mariadb.jdbc:mariadb-java-client:${Versions.mariadb}"
+    const val h2database = "com.h2database:h2"
     const val lombok = "org.projectlombok:lombok"
     const val jjwtApi = "io.jsonwebtoken:jjwt-api:${Versions.jjwt}"
     const val jjwtImpl = "io.jsonwebtoken:jjwt-impl:${Versions.jjwt}"
@@ -17,7 +18,8 @@ object Dependencies {
     const val commonsIo = "commons-io:commons-io:${Versions.commonsIo}"
     const val commonText = "org.apache.commons:commons-text:${Versions.commonText}"
     const val gson = "com.google.code.gson:gson:${Versions.gson}"
-    const val owaspJavaHtmlSanitizer = "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:${Versions.owaspJavaHtmlSanitizer}"
+    const val owaspJavaHtmlSanitizer =
+        "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:${Versions.owaspJavaHtmlSanitizer}"
     const val googleAuthenticator = "com.warrenstrange:googleauth:${Versions.googleAuthenticator}"
 
     // Test dependencies
