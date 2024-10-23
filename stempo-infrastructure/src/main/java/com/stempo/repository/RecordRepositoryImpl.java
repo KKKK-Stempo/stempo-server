@@ -3,12 +3,11 @@ package com.stempo.repository;
 import com.stempo.entity.RecordEntity;
 import com.stempo.mappper.RecordMapper;
 import com.stempo.model.Record;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -60,7 +59,8 @@ public class RecordRepositoryImpl implements RecordRepository {
     }
 
     @Override
-    public int countByDeviceTagAndCreatedAtBetween(String deviceTag, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public int countByDeviceTagAndCreatedAtBetween(String deviceTag, LocalDateTime startDateTime,
+            LocalDateTime endDateTime) {
         return repository.countByDeviceTagAndCreatedAtBetween(deviceTag, startDateTime, endDateTime);
     }
 }

@@ -2,9 +2,8 @@ package com.stempo.mappper;
 
 import com.stempo.entity.HomeworkEntity;
 import com.stempo.model.Homework;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 @Component
 public class HomeworkMapper {

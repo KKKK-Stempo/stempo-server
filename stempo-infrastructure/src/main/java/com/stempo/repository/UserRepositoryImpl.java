@@ -4,10 +4,9 @@ import com.stempo.entity.UserEntity;
 import com.stempo.exception.NotFoundException;
 import com.stempo.mappper.UserMapper;
 import com.stempo.model.User;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor

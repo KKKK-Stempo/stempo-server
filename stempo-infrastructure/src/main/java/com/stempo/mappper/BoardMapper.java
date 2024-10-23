@@ -2,9 +2,8 @@ package com.stempo.mappper;
 
 import com.stempo.entity.BoardEntity;
 import com.stempo.model.Board;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
+import org.springframework.stereotype.Component;
 
 @Component
 public class BoardMapper {

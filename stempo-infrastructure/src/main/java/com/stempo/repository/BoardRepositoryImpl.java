@@ -5,12 +5,11 @@ import com.stempo.exception.NotFoundException;
 import com.stempo.mappper.BoardMapper;
 import com.stempo.model.Board;
 import com.stempo.model.BoardCategory;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
