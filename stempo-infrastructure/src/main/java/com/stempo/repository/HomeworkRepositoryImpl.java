@@ -2,7 +2,7 @@ package com.stempo.repository;
 
 import com.stempo.entity.HomeworkEntity;
 import com.stempo.exception.NotFoundException;
-import com.stempo.mappper.HomeworkMapper;
+import com.stempo.mapper.HomeworkMapper;
 import com.stempo.model.Homework;
 import java.util.List;
 import java.util.Optional;

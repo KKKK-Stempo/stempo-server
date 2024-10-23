@@ -2,7 +2,7 @@ package com.stempo.repository;
 
 import com.stempo.entity.UserEntity;
 import com.stempo.exception.NotFoundException;
-import com.stempo.mappper.UserMapper;
+import com.stempo.mapper.UserMapper;
 import com.stempo.model.User;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

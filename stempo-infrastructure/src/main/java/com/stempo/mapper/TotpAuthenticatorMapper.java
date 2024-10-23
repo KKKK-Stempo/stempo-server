@@ -1,4 +1,4 @@
-package com.stempo.mappper;
+package com.stempo.mapper;
 
 import com.stempo.entity.TotpAuthenticatorEntity;
 import com.stempo.model.TotpAuthenticator;

@@ -1,4 +1,4 @@
-package com.stempo.mappper;
+package com.stempo.mapper;
 
 import com.stempo.entity.UploadedFileEntity;
 import com.stempo.model.UploadedFile;

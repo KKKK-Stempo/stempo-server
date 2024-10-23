@@ -2,7 +2,7 @@ package com.stempo.repository;
 
 import com.stempo.entity.UploadedFileEntity;
 import com.stempo.exception.NotFoundException;
-import com.stempo.mappper.UploadedFileMapper;
+import com.stempo.mapper.UploadedFileMapper;
 import com.stempo.model.UploadedFile;
 import java.util.List;
 import java.util.Optional;

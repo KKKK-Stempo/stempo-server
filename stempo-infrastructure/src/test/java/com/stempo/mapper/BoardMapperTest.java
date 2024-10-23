@@ -1,4 +1,4 @@
-package com.stempo.mappper;
+package com.stempo.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

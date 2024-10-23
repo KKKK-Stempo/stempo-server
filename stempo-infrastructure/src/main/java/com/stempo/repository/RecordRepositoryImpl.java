@@ -1,7 +1,7 @@
 package com.stempo.repository;
 
 import com.stempo.entity.RecordEntity;
-import com.stempo.mappper.RecordMapper;
+import com.stempo.mapper.RecordMapper;
 import com.stempo.model.Record;
 import java.time.LocalDateTime;
 import java.util.List;

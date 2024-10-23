@@ -2,7 +2,7 @@ package com.stempo.repository;
 
 import com.stempo.entity.BoardEntity;
 import com.stempo.exception.NotFoundException;
-import com.stempo.mappper.BoardMapper;
+import com.stempo.mapper.BoardMapper;
 import com.stempo.model.Board;
 import com.stempo.model.BoardCategory;
 import java.util.List;
