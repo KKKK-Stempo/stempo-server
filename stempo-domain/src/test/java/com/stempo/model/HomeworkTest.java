@@ -15,7 +15,7 @@ class HomeworkTest {
     }
 
     @Test
-    void 숙제가_정상적으로_생성되는지_확인한다() {
+    void 과제가_정상적으로_생성되는지_확인한다() {
         // then
         assertThat(homework).isNotNull();
         assertThat(homework.getDeviceTag()).isEqualTo("DEVICE_TAG");
@@ -24,7 +24,7 @@ class HomeworkTest {
     }
 
     @Test
-    void 숙제를_수정할_수_있다() {
+    void 과제를_수정할_수_있다() {
         // given
         Homework updateHomework = Homework.builder()
                 .description("UPDATED_DESCRIPTION")
@@ -40,7 +40,7 @@ class HomeworkTest {
     }
 
     @Test
-    void 숙제_수정시_null_값을_무시한다() {
+    void 과제_수정시_null_값을_무시한다() {
         // given
         Homework updateHomework = Homework.create(null, null);
 
@@ -53,7 +53,7 @@ class HomeworkTest {
     }
 
     @Test
-    void 숙제의_완료_상태를_변경할_수_있다() {
+    void 과제의_완료_상태를_변경할_수_있다() {
         // given
         homework.setCompleted(true);
 

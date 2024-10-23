@@ -61,7 +61,7 @@ class BoardRepositoryImplTest {
     }
 
     @Test
-    void 게시판_저장_성공() {
+    void 게시판을_저장한다() {
         // given
         when(boardMapper.toEntity(any(Board.class))).thenReturn(boardEntity);
         when(boardJpaRepository.save(any(BoardEntity.class))).thenReturn(boardEntity);
@@ -77,7 +77,7 @@ class BoardRepositoryImplTest {
     }
 
     @Test
-    void 게시판_삭제_성공() {
+    void 게시판을_삭제한다() {
         // given
         when(boardMapper.toEntity(any(Board.class))).thenReturn(boardEntity);
 
@@ -89,7 +89,7 @@ class BoardRepositoryImplTest {
     }
 
     @Test
-    void 게시판_모두_삭제_성공() {
+    void 게시판을_모두_삭제한다() {
         // given
         when(boardMapper.toEntity(any(Board.class))).thenReturn(boardEntity);
 
@@ -101,7 +101,7 @@ class BoardRepositoryImplTest {
     }
 
     @Test
-    void 게시판_카테고리로_조회_성공() {
+    void 카테고리로_게시판을_조회한다() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         Page<BoardEntity> boardEntities = new PageImpl<>(List.of(boardEntity));
@@ -118,7 +118,7 @@ class BoardRepositoryImplTest {
     }
 
     @Test
-    void 게시판_ID로_조회_성공() {
+    void ID로_게시판을_조회한다() {
         // given
         when(boardJpaRepository.findById(1L)).thenReturn(Optional.of(boardEntity));
         when(boardMapper.toDomain(any(BoardEntity.class))).thenReturn(board);
@@ -132,7 +132,7 @@ class BoardRepositoryImplTest {
     }
 
     @Test
-    void 게시판_ID로_조회_실패_시_예외발생() {
+    void ID로_게시판을_조회할_때_존재하지_않으면_예외를_던진다() {
         // given
         when(boardJpaRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -141,7 +141,7 @@ class BoardRepositoryImplTest {
     }
 
     @Test
-    void 게시판_디바이스태그로_조회_성공() {
+    void 디바이스_태그로_게시판을_조회한다() {
         // given
         when(boardJpaRepository.findByDeviceTag("device123")).thenReturn(List.of(boardEntity));
         when(boardMapper.toDomain(any(BoardEntity.class))).thenReturn(board);
