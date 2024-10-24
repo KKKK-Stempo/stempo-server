@@ -9,25 +9,31 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class RhythmServiceImpl implements RhythmService {
 
+    private final String venvPath;
+    private final String scriptPath;
     private final UploadedFileService uploadedFileService;
     private final FileService fileService;
 
-    @Value("${python.venv.path}")
-    private String venvPath;
-
-    @Value("${python.script.path}")
-    private String scriptPath;
+    protected RhythmServiceImpl(
+            @Value("${python.venv.path}") String venvPath,
+            @Value("${python.script.path}") String scriptPath,
+            UploadedFileService uploadedFileService,
+            FileService fileService
+    ) {
+        this.venvPath = venvPath;
+        this.scriptPath = scriptPath;
+        this.uploadedFileService = uploadedFileService;
+        this.fileService = fileService;
+    }
 
     @Override
     @Transactional
