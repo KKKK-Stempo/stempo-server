@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
 
-    @Value("${security.max-failed-attempts}")
+    @Value("${security.max-failed-attempts:5}")
     private int maxFailedAttempts;
 
     @Override
