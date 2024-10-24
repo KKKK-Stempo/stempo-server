@@ -85,7 +85,7 @@ class TotpServiceTest {
         when(encryptionUtils.encryptWithHashedIV(anyString(), anyString())).thenReturn(encryptedDeviceTag);
         when(authenticatorService.isAuthenticatorValid(encryptedDeviceTag, requestDto.getTotp())).thenReturn(false);
 
-        // when & then
+        // when, then
         assertThatThrownBy(() -> totpService.authenticate(requestDto, tokenService))
                 .isInstanceOf(BadCredentialsException.class)
                 .hasMessage("Invalid TOTP code.");

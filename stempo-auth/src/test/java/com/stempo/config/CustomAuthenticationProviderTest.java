@@ -108,7 +108,7 @@ class CustomAuthenticationProviderTest {
 
         Authentication authentication = new UsernamePasswordAuthenticationToken("user", rawPassword);
 
-        // when & then
+        // when, then
         assertThatThrownBy(() -> authenticationProvider.authenticate(authentication))
                 .isInstanceOf(BadCredentialsException.class)
                 .hasMessageContaining("자격 증명에 실패하였습니다.");

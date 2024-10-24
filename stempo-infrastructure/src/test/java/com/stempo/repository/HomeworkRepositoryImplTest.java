@@ -120,7 +120,7 @@ class HomeworkRepositoryImplTest {
         // given
         when(homeworkJpaRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        // when & then
+        // when, then
         assertThrows(NotFoundException.class, () -> homeworkRepository.findByIdOrThrow(1L));
     }
 
