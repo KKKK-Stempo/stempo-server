@@ -82,7 +82,6 @@ class UserRegistrationServiceTest {
     void 중복_사용자일_경우_UserAlreadyExistsException_발생() {
         // given
         when(userService.existsById(any())).thenReturn(true);
-        when(passwordValidator.isValid(anyString(), any())).thenReturn(true);
         when(encryptionUtils.encryptWithHashedIV(any(), any())).thenReturn("encrypted-device");
 
         // when, then
@@ -93,10 +92,6 @@ class UserRegistrationServiceTest {
 
     @Test
     void 비밀번호가_유효하지_않을_경우_InvalidPasswordException_발생() {
-        // given
-        when(userService.existsById(anyString())).thenReturn(false);
-        when(passwordValidator.isValid(anyString(), anyString())).thenReturn(false);
-
         // when, then
         assertThatThrownBy(() -> userRegistrationService.registerUser(authRequestDto, tokenService))
                 .isInstanceOf(InvalidPasswordException.class)
