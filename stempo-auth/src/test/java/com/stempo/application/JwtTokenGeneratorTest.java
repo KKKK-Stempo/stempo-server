@@ -10,12 +10,14 @@ import java.util.Collection;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+@ExtendWith(MockitoExtension.class)
 class JwtTokenGeneratorTest {
 
     private final long accessTokenDuration = 60000L; // 1분
@@ -32,7 +34,6 @@ class JwtTokenGeneratorTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         String secretKey = "supersecretkeythatmustbe32byteslong!";
         jwtTokenGenerator = new JwtTokenGenerator(secretKey, accessTokenDuration, refreshTokenDuration);
         jwtTokenParser = new JwtTokenParser(secretKey);

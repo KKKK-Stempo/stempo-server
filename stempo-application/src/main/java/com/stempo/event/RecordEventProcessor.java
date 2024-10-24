@@ -3,11 +3,10 @@ package com.stempo.event;
 import com.stempo.model.Record;
 import com.stempo.repository.RecordRepository;
 import jakarta.annotation.PostConstruct;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

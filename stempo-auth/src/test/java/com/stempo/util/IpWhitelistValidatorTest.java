@@ -9,8 +9,10 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class IpWhitelistValidatorTest {
 
     private WhitelistFileLoader whitelistFileLoader;
@@ -18,7 +20,6 @@ class IpWhitelistValidatorTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         whitelistFileLoader = mock(WhitelistFileLoader.class);
     }
 

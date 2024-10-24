@@ -4,31 +4,36 @@ import com.stempo.dto.request.RhythmRequestDto;
 import com.stempo.exception.DirectoryCreationException;
 import com.stempo.exception.RhythmGenerationException;
 import com.stempo.model.UploadedFile;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class RhythmServiceImpl implements RhythmService {
 
+    private final String venvPath;
+    private final String scriptPath;
     private final UploadedFileService uploadedFileService;
     private final FileService fileService;
 
-    @Value("${python.venv.path}")
-    private String venvPath;
-
-    @Value("${python.script.path}")
-    private String scriptPath;
+    protected RhythmServiceImpl(
+            @Value("${python.venv.path}") String venvPath,
+            @Value("${python.script.path}") String scriptPath,
+            UploadedFileService uploadedFileService,
+            FileService fileService
+    ) {
+        this.venvPath = venvPath;
+        this.scriptPath = scriptPath;
+        this.uploadedFileService = uploadedFileService;
+        this.fileService = fileService;
+    }
 
     @Override
     @Transactional
@@ -66,13 +71,15 @@ public class RhythmServiceImpl implements RhythmService {
         if (!outputDir.toFile().exists()) {
             boolean dirCreated = outputDir.toFile().mkdirs();
             if (!dirCreated) {
-                throw new DirectoryCreationException("Failed to create output directory: " + outputDir.toString());
+                throw new DirectoryCreationException("Failed to create output directory: " + outputDir);
             }
         }
     }
 
-    private void runPythonScript(int bpm, int bit, Path venvPythonPath, Path scriptAbsolutePath, Path projectRoot) throws Exception {
-        ProcessBuilder pb = new ProcessBuilder(venvPythonPath.toString(), scriptAbsolutePath.toString(), String.valueOf(bpm), String.valueOf(bit));
+    private void runPythonScript(int bpm, int bit, Path venvPythonPath, Path scriptAbsolutePath, Path projectRoot)
+            throws Exception {
+        ProcessBuilder pb = new ProcessBuilder(venvPythonPath.toString(), scriptAbsolutePath.toString(),
+                String.valueOf(bpm), String.valueOf(bit));
         pb.directory(projectRoot.toFile());
         pb.redirectErrorStream(true); // 표준 오류를 표준 출력으로 병합
         Process process = pb.start();
@@ -101,7 +108,7 @@ public class RhythmServiceImpl implements RhythmService {
                 throw new RhythmGenerationException("Error saving generated file: " + e.getMessage(), e);
             }
         } else {
-            throw new RhythmGenerationException("Generated rhythm file does not exist: " + outputFilePath.toString());
+            throw new RhythmGenerationException("Generated rhythm file does not exist: " + outputFilePath);
         }
     }
 }

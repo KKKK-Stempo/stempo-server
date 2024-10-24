@@ -13,13 +13,14 @@ import com.stempo.model.Role;
 import com.stempo.model.User;
 import com.stempo.repository.UserRepository;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+@ExtendWith(MockitoExtension.class)
 class CustomUserDetailsServiceTest {
 
     @Mock
@@ -27,11 +28,6 @@ class CustomUserDetailsServiceTest {
 
     @InjectMocks
     private CustomUserDetailsService customUserDetailsService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void 유저가_정상적으로_로드되는지_확인한다() {

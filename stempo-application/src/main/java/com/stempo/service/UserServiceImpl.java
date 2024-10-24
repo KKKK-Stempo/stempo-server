@@ -4,14 +4,13 @@ import com.stempo.exception.AccountLockedException;
 import com.stempo.model.User;
 import com.stempo.repository.UserRepository;
 import com.stempo.util.AuthUtils;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +19,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
 
-    @Value("${security.max-failed-attempts}")
+    @Value("${security.max-failed-attempts:5}")
     private int maxFailedAttempts;
 
     @Override

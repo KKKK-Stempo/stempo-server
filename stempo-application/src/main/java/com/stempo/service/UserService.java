@@ -2,7 +2,6 @@ package com.stempo.service;
 
 
 import com.stempo.model.User;
-
 import java.util.Optional;
 
 public interface UserService {

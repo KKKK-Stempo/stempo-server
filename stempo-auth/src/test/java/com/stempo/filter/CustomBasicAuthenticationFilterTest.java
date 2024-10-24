@@ -12,19 +12,20 @@ import com.stempo.util.WhitelistPathMatcher;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+@ExtendWith(MockitoExtension.class)
 class CustomBasicAuthenticationFilterTest {
 
     @Mock
@@ -48,9 +49,7 @@ class CustomBasicAuthenticationFilterTest {
     private CustomBasicAuthenticationFilter filter;
 
     @BeforeEach
-    void setUp() throws IOException {
-        MockitoAnnotations.openMocks(this);
-
+    void setUp() {
         WhitelistProperties.Patterns patterns = new WhitelistProperties.Patterns();
         patterns.setActuator(new String[]{"/actuator/*"});
         patterns.setApiDocs(new String[]{"/docs/*", "/swagger/*"});
@@ -59,8 +58,6 @@ class CustomBasicAuthenticationFilterTest {
 
         WhitelistPathMatcher whitelistPathMatcher = new WhitelistPathMatcher(whitelistProperties);
         whitelistPathMatcher.afterPropertiesSet();
-
-        when(response.getWriter()).thenReturn(new PrintWriter(System.out));
 
         filter = new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator);
     }
@@ -82,6 +79,7 @@ class CustomBasicAuthenticationFilterTest {
         // given
         when(request.getRequestURI()).thenReturn("/docs");
         when(ipWhitelistValidator.isIpWhitelisted(anyString())).thenReturn(false);
+        when(response.getWriter()).thenReturn(new PrintWriter(System.out));
 
         // when
         filter.doFilterInternal(request, response, filterChain);
@@ -118,6 +116,7 @@ class CustomBasicAuthenticationFilterTest {
         when(ipWhitelistValidator.isIpWhitelisted(anyString())).thenReturn(true);
         when(request.getHeader("Authorization")).thenReturn(
                 "Basic " + Base64.getEncoder().encodeToString("user:wrongpassword".getBytes()));
+        when(response.getWriter()).thenReturn(new PrintWriter(System.out));
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new BadCredentialsException("Invalid credentials"));
@@ -135,6 +134,7 @@ class CustomBasicAuthenticationFilterTest {
         when(request.getRequestURI()).thenReturn("/docs");
         when(ipWhitelistValidator.isIpWhitelisted(anyString())).thenReturn(true);
         when(request.getHeader("Authorization")).thenReturn(null);
+        when(response.getWriter()).thenReturn(new PrintWriter(System.out));
 
         // when
         filter.doFilterInternal(request, response, filterChain);

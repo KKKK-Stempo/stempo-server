@@ -9,7 +9,10 @@ import com.stempo.mapper.UploadedFileDtoMapper;
 import com.stempo.model.UploadedFile;
 import com.stempo.util.EncryptionUtils;
 import com.stempo.util.FileHandler;
-import jakarta.validation.Valid;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -17,11 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +56,8 @@ public class FileService {
 
         String encryptedFilePath = encryptionUtils.encrypt(savedFilePath);
 
-        UploadedFile uploadedFile = UploadedFile.create(multipartFile.getOriginalFilename(), fileName, encryptedFilePath, url, multipartFile.getSize());
+        UploadedFile uploadedFile = UploadedFile.create(multipartFile.getOriginalFilename(), fileName,
+                encryptedFilePath, url, multipartFile.getSize());
         uploadedFileService.saveUploadedFile(uploadedFile);
         return uploadedFile.getUrl();
     }
@@ -70,28 +69,25 @@ public class FileService {
 
         String encryptedFilePath = encryptionUtils.encrypt(savedFilePath);
 
-        UploadedFile uploadedFile = UploadedFile.create(file.getName(), fileName, encryptedFilePath, url, file.length());
+        UploadedFile uploadedFile = UploadedFile.create(file.getName(), fileName, encryptedFilePath, url,
+                file.length());
         uploadedFileService.saveUploadedFile(uploadedFile);
         return url;
     }
 
-    public boolean deleteFile(@Valid DeleteFileRequestDto requestDto) {
+    public boolean deleteFile(DeleteFileRequestDto requestDto) {
         String url = requestDto.getUrl();
         UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
 
         String filePath = encryptionUtils.decrypt(uploadedFile.getSavedPath());
-        File storedFile = new File(filePath);
-
-        if (!storedFile.exists()) {
-            throw new NotFoundException("File does not exist");
-        }
-
         boolean deleted = fileHandler.deleteFile(filePath);
-        if (deleted) {
-            uploadedFileService.deleteUploadedFile(uploadedFile);
+
+        if (!deleted) {
+            throw new NotFoundException("File does not exist or could not be deleted");
         }
 
-        return deleted;
+        uploadedFileService.deleteUploadedFile(uploadedFile);
+        return true;
     }
 
     private String generateFileUrl(String path, String fileName) {

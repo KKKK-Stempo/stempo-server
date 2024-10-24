@@ -8,13 +8,14 @@ import static org.mockito.Mockito.when;
 import com.stempo.dto.TokenInfo;
 import com.stempo.model.Role;
 import jakarta.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 
+@ExtendWith(MockitoExtension.class)
 class JwtTokenServiceImplTest {
 
     @InjectMocks
@@ -34,11 +35,6 @@ class JwtTokenServiceImplTest {
 
     @Mock
     private HttpServletRequest request;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void 인증정보로_토큰을_생성한다() {
@@ -92,7 +88,6 @@ class JwtTokenServiceImplTest {
     void 요청에서_토큰을_추출한다() {
         // given
         String bearerToken = "Bearer testToken";
-        when(request.getHeader("Authorization")).thenReturn(bearerToken);
         when(tokenParser.resolveToken(request)).thenReturn("testToken");
 
         // when

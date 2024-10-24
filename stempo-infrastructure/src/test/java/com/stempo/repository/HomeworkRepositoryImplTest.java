@@ -19,13 +19,15 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+@ExtendWith(MockitoExtension.class)
 class HomeworkRepositoryImplTest {
 
     @Mock
@@ -42,8 +44,6 @@ class HomeworkRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         homework = Homework.builder()
                 .id(1L)
                 .deviceTag("device123")
@@ -120,7 +120,7 @@ class HomeworkRepositoryImplTest {
         // given
         when(homeworkJpaRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        // when & then
+        // when, then
         assertThrows(NotFoundException.class, () -> homeworkRepository.findByIdOrThrow(1L));
     }
 

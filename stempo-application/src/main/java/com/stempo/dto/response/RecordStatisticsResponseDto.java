@@ -11,7 +11,7 @@ public class RecordStatisticsResponseDto {
     @Schema(description = "오늘 보행 훈련 횟수", example = "0")
     private int todayWalkTrainingCount;
 
-    @Schema(description = "이번 주 보행 훈련 횟수", example = "0")
+    @Schema(description = "주간 보행 훈련 횟수", example = "0")
     private int weeklyWalkTrainingCount;
 
     @Schema(description = "연속 보행 훈련 일수", example = "0")

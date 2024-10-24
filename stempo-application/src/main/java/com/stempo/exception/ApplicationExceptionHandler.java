@@ -4,6 +4,8 @@ import com.stempo.dto.ApiResponse;
 import com.stempo.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.concurrent.CompletionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.query.sqm.UnknownPathException;
@@ -11,9 +13,6 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.io.IOException;
-import java.util.concurrent.CompletionException;
 
 @RestControllerAdvice(basePackages = "com.stempo")
 @RequiredArgsConstructor
