@@ -8,8 +8,10 @@ import java.security.Key;
 import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class JwtTokenValidatorTest {
 
     private JwtTokenValidator jwtTokenValidator;
@@ -17,7 +19,6 @@ class JwtTokenValidatorTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         String secretKey = "supersecretkeythatmustbe32byteslong!";
         key = Keys.hmacShaKeyFor(secretKey.getBytes());
 

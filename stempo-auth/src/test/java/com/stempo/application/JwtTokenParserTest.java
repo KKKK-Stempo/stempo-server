@@ -17,12 +17,14 @@ import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+@ExtendWith(MockitoExtension.class)
 class JwtTokenParserTest {
 
     private JwtTokenParser jwtTokenParser;
@@ -41,7 +43,6 @@ class JwtTokenParserTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         String secretKey = "supersecretkeythatmustbe32byteslong!";
         key = Keys.hmacShaKeyFor(secretKey.getBytes());
 

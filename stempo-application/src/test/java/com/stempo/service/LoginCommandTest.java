@@ -9,9 +9,11 @@ import com.stempo.application.JwtTokenService;
 import com.stempo.dto.request.AuthRequestDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class LoginCommandTest {
 
     @Mock
@@ -31,8 +33,6 @@ class LoginCommandTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         requestDto = new AuthRequestDto();
         requestDto.setDeviceTag("test-device-tag");
         requestDto.setPassword("test-password");

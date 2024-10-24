@@ -9,11 +9,13 @@ import com.stempo.event.UserDeletedEvent;
 import com.stempo.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
+@ExtendWith(MockitoExtension.class)
 class UserEventServiceTest {
 
     @Mock
@@ -29,7 +31,6 @@ class UserEventServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         user = User.builder().deviceTag("test-device").build();
     }
 

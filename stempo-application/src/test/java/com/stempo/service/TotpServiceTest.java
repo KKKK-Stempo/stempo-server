@@ -17,11 +17,13 @@ import com.stempo.model.User;
 import com.stempo.util.EncryptionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
 
+@ExtendWith(MockitoExtension.class)
 class TotpServiceTest {
 
     @Mock
@@ -48,7 +50,6 @@ class TotpServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         requestDto = new TwoFactorAuthenticationRequestDto();
         requestDto.setDeviceTag("test-device");
         requestDto.setTotp("123456");

@@ -17,14 +17,16 @@ import java.io.PrintWriter;
 import java.util.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+@ExtendWith(MockitoExtension.class)
 class CustomBasicAuthenticationFilterTest {
 
     @Mock
@@ -49,8 +51,6 @@ class CustomBasicAuthenticationFilterTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        MockitoAnnotations.openMocks(this);
-
         WhitelistProperties.Patterns patterns = new WhitelistProperties.Patterns();
         patterns.setActuator(new String[]{"/actuator/*"});
         patterns.setApiDocs(new String[]{"/docs/*", "/swagger/*"});

@@ -19,14 +19,16 @@ import com.stempo.model.User;
 import com.stempo.util.EncryptionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+@ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest {
 
     @Mock
@@ -56,7 +58,6 @@ class AuthenticationServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         authRequestDto = new AuthRequestDto();
         authRequestDto.setDeviceTag("test-device");
         authRequestDto.setPassword("test-password");

@@ -11,21 +11,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+@ExtendWith(MockitoExtension.class)
 class FileHandlerTest {
-
-    private FileHandler fileHandler;
 
     @TempDir
     Path tempDir;
+    private FileHandler fileHandler;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         fileHandler = new FileHandler(
                 new String[]{"exe", "bat"},
                 tempDir.toString()

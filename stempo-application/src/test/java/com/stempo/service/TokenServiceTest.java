@@ -17,11 +17,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 
+@ExtendWith(MockitoExtension.class)
 class TokenServiceTest {
 
     @Mock
@@ -44,7 +46,6 @@ class TokenServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         user = User.builder().deviceTag("user-device").role(Role.USER).build();
         tokenInfo = TokenInfo.create("access-token", "refresh-token");
     }

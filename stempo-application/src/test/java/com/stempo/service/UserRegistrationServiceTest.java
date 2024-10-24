@@ -18,11 +18,13 @@ import com.stempo.util.EncryptionUtils;
 import com.stempo.util.PasswordValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@ExtendWith(MockitoExtension.class)
 class UserRegistrationServiceTest {
 
     @Mock
@@ -50,7 +52,6 @@ class UserRegistrationServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         authRequestDto = new AuthRequestDto();
         authRequestDto.setDeviceTag("test-device");
         authRequestDto.setPassword("Password123!");
