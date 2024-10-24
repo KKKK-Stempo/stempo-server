@@ -3,9 +3,9 @@ package com.stempo.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,15 +59,21 @@ class BoardServiceImplTest {
         boardUpdateRequestDto = new BoardUpdateRequestDto();
 
         user = User.create("test-device", "test-password");
-        board = Board.builder().id(1L).deviceTag("test-device").category(BoardCategory.SUGGESTION).title("test-title")
-                .content("test-content").fileUrls(List.of("test-file")).build();
+        board = Board.builder()
+                .id(1L)
+                .deviceTag("test-device")
+                .category(BoardCategory.SUGGESTION)
+                .title("test-title")
+                .content("test-content")
+                .fileUrls(List.of("test-file"))
+                .build();
 
         boardRequestDto.setFileUrls(Arrays.asList("file1.jpg", "file2.jpg"));
         boardUpdateRequestDto.setFileUrls(List.of("file1_updated.jpg"));
     }
 
     @Test
-    void 게시글_등록시_Id를_반환한다() {
+    void 게시글을_등록한다() {
         // given
         when(userService.getCurrentUser()).thenReturn(user);
         when(mapper.toDomain(any(BoardRequestDto.class), anyString())).thenReturn(board);
@@ -83,7 +89,7 @@ class BoardServiceImplTest {
     }
 
     @Test
-    void 권한이_없는_사용자가_건의하기_게시글을_조회시_PermissionDeniedException_발생() {
+    void 권한이_없는_사용자가_건의하기_게시글을_조회하면_예외가_발생한다() {
         // given
         when(userService.getCurrentUser()).thenReturn(user);
 
@@ -94,7 +100,7 @@ class BoardServiceImplTest {
     }
 
     @Test
-    void 게시글_카테고리별_조회시_PagedResponseDto를_반환한다() {
+    void 카테고리별로_게시글을_조회한다() {
         // given
         Page<Board> boardsPage = new PageImpl<>(List.of(board));
         when(repository.findByCategory(any(BoardCategory.class), any(Pageable.class))).thenReturn(boardsPage);
@@ -110,7 +116,7 @@ class BoardServiceImplTest {
     }
 
     @Test
-    void 게시글_수정시_Id를_반환한다() {
+    void 게시글을_수정한다() {
         // given
         when(userService.getCurrentUser()).thenReturn(user);
         when(repository.findByIdOrThrow(anyLong())).thenReturn(board);
@@ -127,7 +133,7 @@ class BoardServiceImplTest {
     }
 
     @Test
-    void 게시글_삭제시_Id를_반환한다() {
+    void 게시글을_삭제한다() {
         // given
         when(userService.getCurrentUser()).thenReturn(user);
         when(repository.findByIdOrThrow(anyLong())).thenReturn(board);
