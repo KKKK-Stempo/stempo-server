@@ -133,7 +133,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void 관리자_로그인에_성공하고_TOTP가_존재하지_않으면_시크릿키를_반환한다() {
+    void 관리자_로그인에_성공하고_TOTP가_존재하지_않으면_비밀키를_반환한다() {
         // given
         String deviceTag = "admin-device";
         String encryptedDeviceTag = "encrypted-admin-device";

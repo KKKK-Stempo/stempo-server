@@ -97,7 +97,7 @@ class TotpServiceTest {
     }
 
     @Test
-    void 시크릿키를_리셋하면_새로운_시크릿키를_반환한다() {
+    void 비밀키를_리셋하면_새로운_비밀키를_반환한다() {
         // given
         String deviceTag = "test-device";
         String encryptedDeviceTag = "encrypted-test-device";
