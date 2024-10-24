@@ -88,7 +88,6 @@ class JwtTokenServiceImplTest {
     void 요청에서_토큰을_추출한다() {
         // given
         String bearerToken = "Bearer testToken";
-        when(request.getHeader("Authorization")).thenReturn(bearerToken);
         when(tokenParser.resolveToken(request)).thenReturn("testToken");
 
         // when

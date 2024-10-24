@@ -79,9 +79,6 @@ class JwtTokenParserTest {
     void 권한이_없는_토큰_인증_실패시_예외를_던진다() {
         // given
         String username = "testUser";
-        when(authentication.getPrincipal()).thenReturn(userDetails);
-        when(userDetails.getUsername()).thenReturn(username);
-        when(userDetails.getAuthorities()).thenReturn(List.of());
 
         // JWT 토큰 생성 시 role 필드를 포함하지 않음
         String tokenWithoutRole = Jwts.builder()
