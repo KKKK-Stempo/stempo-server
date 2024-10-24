@@ -9,7 +9,6 @@ import com.stempo.mapper.UploadedFileDtoMapper;
 import com.stempo.model.UploadedFile;
 import com.stempo.util.EncryptionUtils;
 import com.stempo.util.FileHandler;
-import jakarta.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -76,23 +75,19 @@ public class FileService {
         return url;
     }
 
-    public boolean deleteFile(@Valid DeleteFileRequestDto requestDto) {
+    public boolean deleteFile(DeleteFileRequestDto requestDto) {
         String url = requestDto.getUrl();
         UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
 
         String filePath = encryptionUtils.decrypt(uploadedFile.getSavedPath());
-        File storedFile = new File(filePath);
-
-        if (!storedFile.exists()) {
-            throw new NotFoundException("File does not exist");
-        }
-
         boolean deleted = fileHandler.deleteFile(filePath);
-        if (deleted) {
-            uploadedFileService.deleteUploadedFile(uploadedFile);
+
+        if (!deleted) {
+            throw new NotFoundException("File does not exist or could not be deleted");
         }
 
-        return deleted;
+        uploadedFileService.deleteUploadedFile(uploadedFile);
+        return true;
     }
 
     private String generateFileUrl(String path, String fileName) {
