@@ -27,29 +27,29 @@ public class AuthenticationService {
         String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
         userService.handleAccountLock(deviceTag);
 
-        return handleAuthentication(deviceTag, requestDto.getPassword(), tokenService, authenticatorService);
+        return attemptAuthentication(deviceTag, requestDto.getPassword(), tokenService, authenticatorService);
     }
 
-    private Object handleAuthentication(String deviceTag, String password, JwtTokenService tokenService,
+    private Object attemptAuthentication(String deviceTag, String password, JwtTokenService tokenService,
             TotpAuthenticatorService authenticatorService) {
         try {
-            Authentication authentication = authenticateUser(deviceTag, password);
+            Authentication authentication = performAuthentication(deviceTag, password);
             userService.resetFailedAttempts(deviceTag);
 
-            return handleTwoFactorAuthenticationIfNeeded(deviceTag, authentication, authenticatorService, tokenService);
+            return handleTwoFactorIfRequired(deviceTag, authentication, authenticatorService, tokenService);
         } catch (Exception e) {
             userService.handleFailedLogin(deviceTag);
             throw new BadCredentialsException("Invalid deviceTag or password.");
         }
     }
 
-    private Authentication authenticateUser(String deviceTag, String password) {
+    private Authentication performAuthentication(String deviceTag, String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(deviceTag, password);
         return authenticationManager.authenticate(authenticationToken);
     }
 
-    private Object handleTwoFactorAuthenticationIfNeeded(String deviceTag, Authentication authentication,
+    private Object handleTwoFactorIfRequired(String deviceTag, Authentication authentication,
             TotpAuthenticatorService authenticatorService, JwtTokenService tokenService) {
         boolean isAdmin = userService.getById(deviceTag).isAdmin();
         boolean hasAuthenticator = authenticatorService.isAuthenticatorExist(deviceTag);

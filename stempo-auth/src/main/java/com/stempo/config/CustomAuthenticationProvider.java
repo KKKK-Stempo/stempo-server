@@ -31,9 +31,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("자격 증명에 실패하였습니다.");
         }
 
-        // 비밀번호가 없는 계정인 경우 비밀번호를 확인하지 않고 로그인 처리
+        // 비밀번호가 없는 계정인 경우, 입력된 비밀번호도 null 또는 빈 문자열인지 확인
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            if (password == null || password.isEmpty()) {
+                return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            } else {
+                throw new BadCredentialsException("자격 증명에 실패하였습니다.");
+            }
         }
 
         // 비밀번호가 존재하는 경우 비밀번호를 비교 (BCryptPasswordEncoder를 사용하여 비교)
