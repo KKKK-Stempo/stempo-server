@@ -1,5 +1,6 @@
 package com.stempo.exception;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.Getter;
 
 @Getter
@@ -15,7 +16,7 @@ public class BaseException extends RuntimeException {
 
     // 커스텀 메시지를 전달할 경우, 해당 메시지 사용
     public BaseException(ErrorCode errorCode, String customMessage) {
-        super(customMessage != null && !customMessage.isEmpty() ? customMessage : errorCode.getDefaultMessage());
+        super(StringUtils.isNotEmpty(customMessage) ? customMessage : errorCode.getDefaultMessage());
         this.errorCode = errorCode;
     }
 }
