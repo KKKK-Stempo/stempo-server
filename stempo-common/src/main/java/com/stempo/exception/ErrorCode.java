@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     // 400 BAD_REQUEST Errors
-    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "요청이 올바르지 않습니다."),
     MISSING_PARAMETER(HttpStatus.BAD_REQUEST, "필수 매개변수가 누락되었습니다."),
     TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "매개변수 유형이 일치하지 않습니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 올바르지 않습니다."),
@@ -28,14 +27,11 @@ public enum ErrorCode {
     METHOD_ARGUMENT_NOT_VALID(HttpStatus.BAD_REQUEST, "메서드 매개변수가 유효하지 않습니다."),
     HTTP_MESSAGE_NOT_READABLE(HttpStatus.BAD_REQUEST, "HTTP 메시지를 읽을 수 없습니다."),
     CONSTRAINT_VIOLATION(HttpStatus.BAD_REQUEST, "제약 조건 위반이 발생했습니다."),
-    STRING_INDEX_OUT_OF_BOUNDS(HttpStatus.BAD_REQUEST, "문자열 인덱스가 허용된 범위를 벗어났습니다."),
 
     // 401 UNAUTHORIZED Errors
-    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
     ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "접근이 거부되었습니다."),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
-    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "토큰을 찾을 수 없습니다."),
     TOKEN_FORGERY(HttpStatus.UNAUTHORIZED, "토큰 위조가 감지되었습니다."),
     USERNAME_NOT_FOUND(HttpStatus.UNAUTHORIZED, "사용자 이름을 찾을 수 없습니다."),
     INVALID_PRINCIPAL(HttpStatus.UNAUTHORIZED, "유효하지 않은 인증 정보입니다."),
@@ -70,7 +66,6 @@ public enum ErrorCode {
     DATA_INTEGRITY_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터 무결성 오류가 발생했습니다."),
     INCORRECT_RESULT_SIZE(HttpStatus.INTERNAL_SERVER_ERROR, "결과 크기가 예상과 일치하지 않습니다."),
     ARRAY_INDEX_OUT_OF_BOUNDS(HttpStatus.INTERNAL_SERVER_ERROR, "배열 인덱스가 허용된 범위를 벗어났습니다."),
-    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
     SECURITY_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "보안 오류가 발생했습니다."),
     COMPLETION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "완료 처리 중 예외가 발생했습니다."),
     RHYTHM_GENERATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "리듬 생성 중 오류가 발생했습니다."),

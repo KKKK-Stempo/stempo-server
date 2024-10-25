@@ -39,14 +39,15 @@ public class ExceptionMapper {
         exceptionToErrorCodeMap.put(HttpMessageNotReadableException.class, ErrorCode.HTTP_MESSAGE_NOT_READABLE);
         exceptionToErrorCodeMap.put(MissingServletRequestParameterException.class, ErrorCode.MISSING_PARAMETER);
         exceptionToErrorCodeMap.put(MethodArgumentTypeMismatchException.class, ErrorCode.TYPE_MISMATCH);
-        exceptionToErrorCodeMap.put(InvalidDataAccessApiUsageException.class, ErrorCode.INVALID_REQUEST);
+        exceptionToErrorCodeMap.put(InvalidDataAccessApiUsageException.class, ErrorCode.INVALID_DATA_ACCESS);
         exceptionToErrorCodeMap.put(IllegalArgumentException.class, ErrorCode.ILLEGAL_ARGUMENT);
         exceptionToErrorCodeMap.put(IllegalAccessException.class, ErrorCode.ILLEGAL_ACCESS);
-        exceptionToErrorCodeMap.put(StringIndexOutOfBoundsException.class, ErrorCode.STRING_INDEX_OUT_OF_BOUNDS);
+        exceptionToErrorCodeMap.put(StringIndexOutOfBoundsException.class, ErrorCode.INDEX_OUT_OF_BOUNDS);
         exceptionToErrorCodeMap.put(NumberFormatException.class, ErrorCode.NUMBER_FORMAT_ERROR);
         exceptionToErrorCodeMap.put(UnknownPathException.class, ErrorCode.UNKNOWN_PATH);
         exceptionToErrorCodeMap.put(NoSuchFieldException.class, ErrorCode.NO_SUCH_FIELD);
         exceptionToErrorCodeMap.put(MalformedJsonException.class, ErrorCode.MALFORMED_JSON);
+        exceptionToErrorCodeMap.put(io.jsonwebtoken.security.SecurityException.class, ErrorCode.JWT_SECURITY_ERROR);
 
         // 401 UNAUTHORIZED Errors
         exceptionToErrorCodeMap.put(AccessDeniedException.class, ErrorCode.ACCESS_DENIED);
