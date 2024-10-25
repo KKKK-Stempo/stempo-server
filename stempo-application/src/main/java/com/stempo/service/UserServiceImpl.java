@@ -1,6 +1,7 @@
 package com.stempo.service;
 
-import com.stempo.exception.AccountLockedException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.model.User;
 import com.stempo.repository.UserRepository;
 import com.stempo.util.AuthUtils;
@@ -63,7 +64,7 @@ public class UserServiceImpl implements UserService {
     public void handleAccountLock(String deviceTag) {
         User user = getUserById(deviceTag);
         if (user.isAccountLocked()) {
-            throw new AccountLockedException("Account is locked due to too many failed login attempts.");
+            throw new BaseException(ErrorCode.ACCOUNT_LOCKED);
         }
     }
 

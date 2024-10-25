@@ -5,7 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.stempo.exception.AuthenticationNotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.core.Authentication;
@@ -36,8 +37,8 @@ class AuthUtilsTest {
 
         // when, then
         assertThatThrownBy(AuthUtils::getAuthenticationInfo)
-                .isInstanceOf(AuthenticationNotFoundException.class)
-                .hasMessage("SecurityContext에서 인증 정보를 찾을 수 없습니다.");
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.AUTHENTICATION_NOT_FOUND.getDefaultMessage());
     }
 
     @Test
@@ -53,7 +54,7 @@ class AuthUtilsTest {
 
         // when, then
         assertThatThrownBy(AuthUtils::getAuthenticationInfo)
-                .isInstanceOf(AuthenticationNotFoundException.class)
+                .isInstanceOf(BaseException.class)
                 .hasMessage("인증된 사용자의 이름이 없습니다.");
     }
 

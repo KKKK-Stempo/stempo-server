@@ -5,7 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import com.stempo.dto.TokenInfo;
-import com.stempo.exception.TokenValidateException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -88,8 +89,8 @@ class JwtTokenParserTest {
 
         // when, then
         assertThatThrownBy(() -> jwtTokenParser.getAuthentication(tokenWithoutRole))
-                .isInstanceOf(TokenValidateException.class)
-                .hasMessage("권한 정보가 없는 토큰입니다.");
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.TOKEN_INVALID.getDefaultMessage());
     }
 
     @Test
@@ -148,7 +149,7 @@ class JwtTokenParserTest {
 
         // when, then
         assertThatThrownBy(() -> jwtTokenParser.parseClaims(expiredToken))
-                .isInstanceOf(TokenValidateException.class)
-                .hasMessage("만료된 토큰입니다.");
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.TOKEN_EXPIRED.getDefaultMessage());
     }
 }

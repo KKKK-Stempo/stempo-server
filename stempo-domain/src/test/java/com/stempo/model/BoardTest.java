@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.stempo.exception.PermissionDeniedException;
+import com.stempo.exception.BaseException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,7 +106,7 @@ class BoardTest {
         assertDoesNotThrow(() -> board.validateAccessPermission(admin));
 
         // 권한 없는 사용자 접근 시 예외 발생
-        PermissionDeniedException exception = assertThrows(PermissionDeniedException.class,
+        BaseException exception = assertThrows(BaseException.class,
                 () -> board.validateAccessPermission(normalUser));
         assertThat(exception.getMessage()).isEqualTo("게시글을 수정/삭제할 권한이 없습니다.");
     }
@@ -129,7 +129,7 @@ class BoardTest {
     @Test
     void 공지사항에_권한없는_사용자가_접근할_수_없다() {
         // when
-        PermissionDeniedException exception = assertThrows(PermissionDeniedException.class,
+        BaseException exception = assertThrows(BaseException.class,
                 () -> board.validateAccessPermissionForNotice(normalUser));
 
         // then

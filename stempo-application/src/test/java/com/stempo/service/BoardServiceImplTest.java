@@ -13,7 +13,7 @@ import com.stempo.dto.PagedResponseDto;
 import com.stempo.dto.request.BoardRequestDto;
 import com.stempo.dto.request.BoardUpdateRequestDto;
 import com.stempo.dto.response.BoardResponseDto;
-import com.stempo.exception.PermissionDeniedException;
+import com.stempo.exception.BaseException;
 import com.stempo.mapper.BoardDtoMapper;
 import com.stempo.model.Board;
 import com.stempo.model.BoardCategory;
@@ -96,7 +96,7 @@ class BoardServiceImplTest {
 
         // when & then
         assertThatThrownBy(() -> boardService.getBoardsByCategory(BoardCategory.SUGGESTION, Pageable.unpaged()))
-                .isInstanceOf(PermissionDeniedException.class)
+                .isInstanceOf(BaseException.class)
                 .hasMessage("건의하기는 관리자만 조회할 수 있습니다.");
     }
 

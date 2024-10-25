@@ -11,8 +11,8 @@ import com.stempo.application.JwtTokenService;
 import com.stempo.config.AesConfig;
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.AuthRequestDto;
-import com.stempo.exception.InvalidPasswordException;
-import com.stempo.exception.UserAlreadyExistsException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.model.User;
 import com.stempo.util.EncryptionUtils;
 import com.stempo.util.PasswordValidator;
@@ -86,15 +86,15 @@ class UserRegistrationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> userRegistrationService.registerUser(authRequestDto, tokenService))
-                .isInstanceOf(UserAlreadyExistsException.class)
-                .hasMessage("User already exists.");
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.USER_ALREADY_EXISTS.getDefaultMessage());
     }
 
     @Test
     void 비밀번호가_유효하지_않을_경우_예외가_발생한다() {
         // when, then
         assertThatThrownBy(() -> userRegistrationService.registerUser(authRequestDto, tokenService))
-                .isInstanceOf(InvalidPasswordException.class)
-                .hasMessage("Password does not meet the required criteria.");
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.INVALID_PASSWORD.getDefaultMessage());
     }
 }

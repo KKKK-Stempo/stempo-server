@@ -1,7 +1,8 @@
 package com.stempo.repository;
 
 import com.stempo.entity.TotpAuthenticatorEntity;
-import com.stempo.exception.NotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.mapper.TotpAuthenticatorMapper;
 import com.stempo.model.TotpAuthenticator;
 import java.util.Optional;
@@ -25,7 +26,7 @@ public class TotpAuthenticatorRepositoryImpl implements TotpAuthenticatorReposit
     public TotpAuthenticator getById(String deviceTag) {
         return repository.findById(deviceTag)
                 .map(mapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[TotpAuthenticator] deviceTag: " + deviceTag + " not found"));
+                .orElseThrow(() -> new BaseException(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
     @Override

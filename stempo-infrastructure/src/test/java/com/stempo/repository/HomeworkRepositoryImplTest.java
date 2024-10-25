@@ -1,7 +1,7 @@
 package com.stempo.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyLong;
@@ -12,7 +12,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.stempo.entity.HomeworkEntity;
-import com.stempo.exception.NotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.mapper.HomeworkMapper;
 import com.stempo.model.Homework;
 import java.util.List;
@@ -121,7 +122,9 @@ class HomeworkRepositoryImplTest {
         when(homeworkJpaRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // when, then
-        assertThrows(NotFoundException.class, () -> homeworkRepository.findByIdOrThrow(1L));
+        assertThatThrownBy(() -> homeworkRepository.findByIdOrThrow(1L))
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.RESOURCE_NOT_FOUND.getDefaultMessage());
     }
 
     @Test

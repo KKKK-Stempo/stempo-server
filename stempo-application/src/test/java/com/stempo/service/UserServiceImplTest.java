@@ -7,8 +7,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.stempo.exception.AccountLockedException;
-import com.stempo.exception.NotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.model.User;
 import com.stempo.repository.UserRepository;
 import com.stempo.util.AuthUtils;
@@ -80,12 +80,12 @@ class UserServiceImplTest {
     void 존재하지_않는_아이디로_사용자를_조회하면_예외를_던진다() {
         // given
         when(repository.findByIdOrThrow("non-existent-device-tag"))
-                .thenThrow(new NotFoundException("[User] id: non-existent-device-tag not found"));
+                .thenThrow(new BaseException(ErrorCode.RESOURCE_NOT_FOUND));
 
         // when, then
         assertThatThrownBy(() -> userService.getById("non-existent-device-tag"))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("[User] id: non-existent-device-tag not found");
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.RESOURCE_NOT_FOUND.getDefaultMessage());
         verify(repository).findByIdOrThrow("non-existent-device-tag");
     }
 
@@ -151,8 +151,8 @@ class UserServiceImplTest {
 
         // when, then
         assertThatThrownBy(() -> userService.handleAccountLock("test-device-tag"))
-                .isInstanceOf(AccountLockedException.class)
-                .hasMessage("Account is locked due to too many failed login attempts.");
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.ACCOUNT_LOCKED.getDefaultMessage());
         verify(repository).findById("test-device-tag");
     }
 

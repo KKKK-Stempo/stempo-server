@@ -1,6 +1,7 @@
 package com.stempo.model;
 
-import com.stempo.exception.PermissionDeniedException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -39,13 +40,13 @@ public class Board {
 
     public void validateAccessPermission(User user) {
         if (!(isOwner(user) || user.isAdmin())) {
-            throw new PermissionDeniedException("게시글을 수정/삭제할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "게시글을 수정/삭제할 권한이 없습니다.");
         }
     }
 
     public void validateAccessPermissionForNotice(User user) {
         if (isNotice() && !user.isAdmin()) {
-            throw new PermissionDeniedException("공지사항 관리 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "공지사항 관리 권한이 없습니다.");
         }
     }
 

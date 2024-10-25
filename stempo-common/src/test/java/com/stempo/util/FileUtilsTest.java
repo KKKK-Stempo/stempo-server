@@ -4,12 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.stempo.exception.FilePermissionException;
-import com.stempo.exception.InvalidFileAttributeException;
-import com.stempo.exception.InvalidFileNameException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -39,8 +37,8 @@ class FileUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> FileUtils.validateFilePath(filePath, tempDir.toString()))
-                .isInstanceOf(InvalidPathException.class)
-                .hasMessageContaining("Invalid file path: Path traversal detected.");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.INVALID_FILE_PATH.getDefaultMessage());
     }
 
     @Test
@@ -63,8 +61,8 @@ class FileUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> FileUtils.validateFileExists(invalidPath))
-                .isInstanceOf(InvalidPathException.class)
-                .hasMessageContaining("File does not exist");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.INVALID_FILE_PATH.getDefaultMessage());
     }
 
     @Test
@@ -127,8 +125,8 @@ class FileUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> FileUtils.ensureParentDirectoryExists(invalidDir, tempDir.toString()))
-                .isInstanceOf(InvalidPathException.class)
-                .hasMessageContaining("Invalid file path");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.INVALID_FILE_PATH.getDefaultMessage());
     }
 
     @Test
@@ -139,8 +137,8 @@ class FileUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> FileUtils.ensureParentDirectoryExists(invalidDir, tempDir.toString()))
-                .isInstanceOf(InvalidPathException.class)
-                .hasMessageContaining("Invalid file path: Path traversal detected.");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.INVALID_FILE_PATH.getDefaultMessage());
     }
 
     @Test
@@ -162,8 +160,8 @@ class FileUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> FileUtils.validateFileAttributes(fileName, disallowedExtensions))
-                .isInstanceOf(InvalidFileAttributeException.class)
-                .hasMessageContaining("Invalid file extension");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.INVALID_FILE_ATTRIBUTE.getDefaultMessage());
     }
 
     @Test
@@ -173,8 +171,8 @@ class FileUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> FileUtils.validateFilename(invalidFileName))
-                .isInstanceOf(InvalidFileNameException.class)
-                .hasMessageContaining("Invalid file name");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.INVALID_FILE_NAME.getDefaultMessage());
     }
 
     @Test
@@ -244,8 +242,8 @@ class FileUtilsTest {
         // when, then
         assertThatThrownBy(
                 () -> FileUtils.setFilePermissions(invalidFile, invalidFile.getAbsolutePath(), tempDir.toString()))
-                .isInstanceOf(FilePermissionException.class)
-                .hasMessageContaining("Failed to set file permissions");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.FILE_PERMISSION_ERROR.getDefaultMessage());
     }
 
     @Test

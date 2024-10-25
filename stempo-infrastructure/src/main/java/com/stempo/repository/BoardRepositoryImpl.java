@@ -1,7 +1,8 @@
 package com.stempo.repository;
 
 import com.stempo.entity.BoardEntity;
-import com.stempo.exception.NotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.mapper.BoardMapper;
 import com.stempo.model.Board;
 import com.stempo.model.BoardCategory;
@@ -49,7 +50,7 @@ public class BoardRepositoryImpl implements BoardRepository {
     public Board findByIdOrThrow(Long boardId) {
         return repository.findById(boardId)
                 .map(mapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[Board] id: " + boardId + " not found"));
+                .orElseThrow(() -> new BaseException(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
     @Override

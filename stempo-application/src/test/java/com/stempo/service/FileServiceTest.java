@@ -11,7 +11,8 @@ import static org.mockito.Mockito.when;
 import com.stempo.dto.PagedResponseDto;
 import com.stempo.dto.request.DeleteFileRequestDto;
 import com.stempo.dto.response.UploadedFileResponseDto;
-import com.stempo.exception.NotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.mapper.UploadedFileDtoMapper;
 import com.stempo.model.UploadedFile;
 import com.stempo.util.EncryptionUtils;
@@ -238,8 +239,8 @@ class FileServiceTest {
 
         // when, then
         assertThatThrownBy(() -> fileService.deleteFile(requestDto))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessageContaining("File does not exist or could not be deleted");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.FILE_DELETE_FAILED.getDefaultMessage());
 
         verify(uploadedFileService).getUploadedFileByUrl(url);
         verify(encryptionUtils).decrypt(encryptedFilePath);

@@ -10,7 +10,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.stempo.dto.request.RhythmRequestDto;
-import com.stempo.exception.RhythmGenerationException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.model.UploadedFile;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -185,8 +186,8 @@ class RhythmServiceImplTest {
 
                 // when, then
                 assertThatThrownBy(() -> rhythmService.createRhythm(requestDto))
-                        .isInstanceOf(RhythmGenerationException.class)
-                        .hasMessageContaining("Generated rhythm file does not exist");
+                        .isInstanceOf(BaseException.class)
+                        .hasMessageContaining(ErrorCode.RHYTHM_GENERATION_ERROR.getDefaultMessage());
 
                 verify(uploadedFileService).getUploadedFileByOriginalFileName(outputFilename);
             }

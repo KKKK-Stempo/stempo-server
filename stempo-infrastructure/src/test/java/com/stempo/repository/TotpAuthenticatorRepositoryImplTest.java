@@ -1,7 +1,7 @@
 package com.stempo.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.times;
@@ -9,7 +9,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.stempo.entity.TotpAuthenticatorEntity;
-import com.stempo.exception.NotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.mapper.TotpAuthenticatorMapper;
 import com.stempo.model.TotpAuthenticator;
 import java.util.Optional;
@@ -69,7 +70,9 @@ class TotpAuthenticatorRepositoryImplTest {
         when(totpAuthenticatorJpaRepository.findById(anyString())).thenReturn(Optional.empty());
 
         // when, then
-        assertThrows(NotFoundException.class, () -> totpAuthenticatorRepository.getById("device123"));
+        assertThatThrownBy(() -> totpAuthenticatorRepository.getById("device123"))
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.RESOURCE_NOT_FOUND.getDefaultMessage());
         verify(totpAuthenticatorJpaRepository, times(1)).findById("device123");
     }
 

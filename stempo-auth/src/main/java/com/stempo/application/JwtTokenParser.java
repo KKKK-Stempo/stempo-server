@@ -1,6 +1,7 @@
 package com.stempo.application;
 
-import com.stempo.exception.TokenValidateException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -36,7 +37,7 @@ public class JwtTokenParser {
         Claims claims = parseClaims(token);
 
         if (claims.get("role") == null) {
-            throw new TokenValidateException("권한 정보가 없는 토큰입니다.");
+            throw new BaseException(ErrorCode.TOKEN_INVALID);
         }
 
         Collection<? extends GrantedAuthority> authorities =
@@ -65,9 +66,9 @@ public class JwtTokenParser {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
-            throw new TokenValidateException("만료된 토큰입니다.");
+            throw new BaseException(ErrorCode.TOKEN_EXPIRED);
         } catch (Exception e) {
-            throw new TokenValidateException("유효하지 않은 토큰입니다.");
+            throw new BaseException(ErrorCode.TOKEN_INVALID);
         }
     }
 }

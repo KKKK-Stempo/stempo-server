@@ -1,6 +1,7 @@
 package com.stempo.service;
 
-import com.stempo.exception.ResourceNotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.model.UploadedFile;
 import com.stempo.repository.UploadedFileRepository;
 import java.util.List;
@@ -54,7 +55,7 @@ public class UploadedFileServiceImpl implements UploadedFileService {
 
         long existingFileCount = uploadedFileRepository.countByUrlIn(fileUrls);
         if (existingFileCount != fileUrls.size()) {
-            throw new ResourceNotFoundException("One or more files do not exist on the server.");
+            throw new BaseException(ErrorCode.RESOURCE_NOT_FOUND);
         }
     }
 }

@@ -3,7 +3,8 @@ package com.stempo.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.stempo.exception.InvalidFieldException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -57,8 +58,8 @@ class PaginationUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> PaginationUtils.applySorting(items, sort))
-                .isInstanceOf(InvalidFieldException.class)
-                .hasMessageContaining("Invalid field name: invalidField");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.INVALID_FIELD.getDefaultMessage());
     }
 
     @Test
