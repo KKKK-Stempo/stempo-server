@@ -34,19 +34,19 @@ public class ExceptionMapper {
 
     static {
         // 400 BAD_REQUEST Errors
-        exceptionToErrorCodeMap.put(MethodArgumentNotValidException.class, ErrorCode.METHOD_ARGUMENT_NOT_VALID);
         exceptionToErrorCodeMap.put(ConstraintViolationException.class, ErrorCode.CONSTRAINT_VIOLATION);
         exceptionToErrorCodeMap.put(HttpMessageNotReadableException.class, ErrorCode.HTTP_MESSAGE_NOT_READABLE);
-        exceptionToErrorCodeMap.put(MissingServletRequestParameterException.class, ErrorCode.MISSING_PARAMETER);
-        exceptionToErrorCodeMap.put(MethodArgumentTypeMismatchException.class, ErrorCode.TYPE_MISMATCH);
-        exceptionToErrorCodeMap.put(InvalidDataAccessApiUsageException.class, ErrorCode.INVALID_DATA_ACCESS);
-        exceptionToErrorCodeMap.put(IllegalArgumentException.class, ErrorCode.ILLEGAL_ARGUMENT);
         exceptionToErrorCodeMap.put(IllegalAccessException.class, ErrorCode.ILLEGAL_ACCESS);
-        exceptionToErrorCodeMap.put(StringIndexOutOfBoundsException.class, ErrorCode.INDEX_OUT_OF_BOUNDS);
-        exceptionToErrorCodeMap.put(NumberFormatException.class, ErrorCode.NUMBER_FORMAT_ERROR);
-        exceptionToErrorCodeMap.put(UnknownPathException.class, ErrorCode.UNKNOWN_PATH);
-        exceptionToErrorCodeMap.put(NoSuchFieldException.class, ErrorCode.NO_SUCH_FIELD);
+        exceptionToErrorCodeMap.put(IllegalArgumentException.class, ErrorCode.ILLEGAL_ARGUMENT);
+        exceptionToErrorCodeMap.put(InvalidDataAccessApiUsageException.class, ErrorCode.INVALID_DATA_ACCESS);
         exceptionToErrorCodeMap.put(MalformedJsonException.class, ErrorCode.MALFORMED_JSON);
+        exceptionToErrorCodeMap.put(MethodArgumentNotValidException.class, ErrorCode.METHOD_ARGUMENT_NOT_VALID);
+        exceptionToErrorCodeMap.put(MethodArgumentTypeMismatchException.class, ErrorCode.TYPE_MISMATCH);
+        exceptionToErrorCodeMap.put(MissingServletRequestParameterException.class, ErrorCode.MISSING_PARAMETER);
+        exceptionToErrorCodeMap.put(NoSuchFieldException.class, ErrorCode.NO_SUCH_FIELD);
+        exceptionToErrorCodeMap.put(NumberFormatException.class, ErrorCode.NUMBER_FORMAT_ERROR);
+        exceptionToErrorCodeMap.put(StringIndexOutOfBoundsException.class, ErrorCode.INDEX_OUT_OF_BOUNDS);
+        exceptionToErrorCodeMap.put(UnknownPathException.class, ErrorCode.UNKNOWN_PATH);
         exceptionToErrorCodeMap.put(io.jsonwebtoken.security.SecurityException.class, ErrorCode.JWT_SECURITY_ERROR);
 
         // 401 UNAUTHORIZED Errors
@@ -54,29 +54,29 @@ public class ExceptionMapper {
         exceptionToErrorCodeMap.put(AuthorizationDeniedException.class, ErrorCode.ACCESS_DENIED);
         exceptionToErrorCodeMap.put(AuthorizationServiceException.class, ErrorCode.ACCESS_DENIED);
         exceptionToErrorCodeMap.put(BadCredentialsException.class, ErrorCode.BAD_CREDENTIALS);
-        exceptionToErrorCodeMap.put(MalformedJwtException.class, ErrorCode.MALFORMED_JWT);
         exceptionToErrorCodeMap.put(ExpiredJwtException.class, ErrorCode.EXPIRED_JWT);
+        exceptionToErrorCodeMap.put(MalformedJwtException.class, ErrorCode.MALFORMED_JWT);
         exceptionToErrorCodeMap.put(UnsupportedJwtException.class, ErrorCode.UNSUPPORTED_JWT);
         exceptionToErrorCodeMap.put(UsernameNotFoundException.class, ErrorCode.USERNAME_NOT_FOUND);
 
         // 404 NOT_FOUND Errors
-        exceptionToErrorCodeMap.put(NoSuchElementException.class, ErrorCode.ELEMENT_NOT_FOUND);
         exceptionToErrorCodeMap.put(FileNotFoundException.class, ErrorCode.FILE_NOT_FOUND);
-        exceptionToErrorCodeMap.put(NullPointerException.class, ErrorCode.RESOURCE_NOT_FOUND);
+        exceptionToErrorCodeMap.put(NoSuchElementException.class, ErrorCode.ELEMENT_NOT_FOUND);
         exceptionToErrorCodeMap.put(NotFoundException.class, ErrorCode.RESOURCE_NOT_FOUND);
+        exceptionToErrorCodeMap.put(NullPointerException.class, ErrorCode.RESOURCE_NOT_FOUND);
 
         // 409 CONFLICT Errors
         exceptionToErrorCodeMap.put(IllegalStateException.class, ErrorCode.ILLEGAL_STATE);
 
         // 500 INTERNAL_SERVER_ERROR Errors
-        exceptionToErrorCodeMap.put(SQLException.class, ErrorCode.SQL_ERROR);
-        exceptionToErrorCodeMap.put(DataIntegrityViolationException.class, ErrorCode.DATA_INTEGRITY_ERROR);
-        exceptionToErrorCodeMap.put(TransactionSystemException.class, ErrorCode.TRANSACTION_SYSTEM_ERROR);
         exceptionToErrorCodeMap.put(ArrayIndexOutOfBoundsException.class, ErrorCode.ARRAY_INDEX_OUT_OF_BOUNDS);
-        exceptionToErrorCodeMap.put(IncorrectResultSizeDataAccessException.class, ErrorCode.INCORRECT_RESULT_SIZE);
-        exceptionToErrorCodeMap.put(IOException.class, ErrorCode.IO_ERROR);
         exceptionToErrorCodeMap.put(CompletionException.class, ErrorCode.COMPLETION_ERROR);
+        exceptionToErrorCodeMap.put(DataIntegrityViolationException.class, ErrorCode.DATA_INTEGRITY_ERROR);
+        exceptionToErrorCodeMap.put(IOException.class, ErrorCode.IO_ERROR);
+        exceptionToErrorCodeMap.put(IncorrectResultSizeDataAccessException.class, ErrorCode.INCORRECT_RESULT_SIZE);
+        exceptionToErrorCodeMap.put(SQLException.class, ErrorCode.SQL_ERROR);
         exceptionToErrorCodeMap.put(SecurityException.class, ErrorCode.SECURITY_ERROR);
+        exceptionToErrorCodeMap.put(TransactionSystemException.class, ErrorCode.TRANSACTION_SYSTEM_ERROR);
     }
 
     /**
