@@ -2,6 +2,8 @@ package com.stempo.config;
 
 import com.stempo.interceptor.ApiLoggingInterceptor;
 import jakarta.validation.constraints.NotNull;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,9 +13,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 @Configuration
 @RequiredArgsConstructor
@@ -37,7 +36,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver() {
                     @Override
-                    protected Resource getResource(@NotNull String resourcePath, @NotNull Resource location) throws IOException {
+                    protected Resource getResource(@NotNull String resourcePath, @NotNull Resource location)
+                            throws IOException {
                         Resource resource = location.createRelative(resourcePath);
                         if (resource.exists() && resource.isReadable()) {
                             return resource;
