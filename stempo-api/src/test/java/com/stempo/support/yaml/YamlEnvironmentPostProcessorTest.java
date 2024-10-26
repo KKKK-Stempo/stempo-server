@@ -82,7 +82,6 @@ class YamlEnvironmentPostProcessorTest {
         when(yamlPropertySourceLoader.load(anyString(), any(Resource.class)))
                 .thenReturn(Collections.singletonList(propertySource));
 
-        MutablePropertySources propertySources = new MutablePropertySources();
         when(environment.getPropertySources()).thenReturn(propertySources);
 
         // when
