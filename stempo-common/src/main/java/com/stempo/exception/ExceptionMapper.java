@@ -24,6 +24,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.TransactionSystemException;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -77,6 +78,7 @@ public class ExceptionMapper {
         exceptionToErrorCodeMap.put(SQLException.class, ErrorCode.SQL_ERROR);
         exceptionToErrorCodeMap.put(SecurityException.class, ErrorCode.SECURITY_ERROR);
         exceptionToErrorCodeMap.put(TransactionSystemException.class, ErrorCode.TRANSACTION_SYSTEM_ERROR);
+        exceptionToErrorCodeMap.put(UnexpectedRollbackException.class, ErrorCode.UNEXPECTED_ROLLBACK);
     }
 
     /**
