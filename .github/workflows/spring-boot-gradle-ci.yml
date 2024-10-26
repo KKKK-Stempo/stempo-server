@@ -58,14 +58,14 @@ jobs:
           echo $AUTH_TEST_YML | base64 --decode > $AUTH_TEST_DIR/$AUTH_DIR_FILE_NAME
 
       - name: Run tests with Gradle
-        run: ./gradlew test -Dspring.profiles.active=test --info --parallel
+        run: ./gradlew test -Dspring.profiles.active=test --info
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: '**/build/test-results/test'
+          path: '**/build/reports/test'
 
   build:
     runs-on: ubuntu-latest
