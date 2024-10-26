@@ -16,7 +16,6 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.SpringApplication;
@@ -43,30 +42,34 @@ class YamlEnvironmentPostProcessorTest {
     @Mock
     private YamlPropertySourceLoader yamlPropertySourceLoader;
 
-    @InjectMocks
-    private YamlEnvironmentPostProcessor yamlEnvironmentPostProcessor;
-
     private MutablePropertySources propertySources;
+
+    private YamlEnvironmentPostProcessor yamlEnvironmentPostProcessor;
 
     @BeforeEach
     void setUp() {
-        // Active profile 설정
+        yamlEnvironmentPostProcessor = new YamlEnvironmentPostProcessor(resourcePatternResolver);
+
+        // 활성 프로파일 설정
         String[] activeProfiles = new String[]{"test"};
         when(environment.getActiveProfiles()).thenReturn(activeProfiles);
 
-        // YamlPropertySourceLoader 설정
+        // 로더 설정
         ReflectionTestUtils.setField(yamlEnvironmentPostProcessor, "loader", yamlPropertySourceLoader);
 
-        // Mock MutablePropertySources 설정
+        // 모의 MutablePropertySources 설정
         propertySources = spy(new MutablePropertySources());
+        lenient().when(environment.getPropertySources()).thenReturn(propertySources);
     }
 
     @Test
     void 프로파일이_적용된_YAML_리소스를_로드한다() throws IOException {
         // given
         Resource resource = mock(Resource.class);
-        lenient().when(resource.exists()).thenReturn(true);
-        lenient().when(resource.getFilename()).thenReturn("application-test.yml");
+        when(resource.exists()).thenReturn(true);
+        when(resource.getFilename()).thenReturn("application-test.yml");
+
+        when(resourcePatternResolver.getResources(anyString())).thenReturn(new Resource[]{resource});
 
         PropertySource<?> propertySource = new PropertySource<>("application-test.yml") {
             private final Map<String, Object> source = Map.of("some.key", "some.value");
@@ -85,8 +88,6 @@ class YamlEnvironmentPostProcessorTest {
         when(yamlPropertySourceLoader.load(anyString(), any(Resource.class)))
                 .thenReturn(Collections.singletonList(propertySource));
 
-        when(environment.getPropertySources()).thenReturn(propertySources);
-
         // when
         yamlEnvironmentPostProcessor.postProcessEnvironment(environment, application);
 
@@ -95,9 +96,9 @@ class YamlEnvironmentPostProcessorTest {
     }
 
     @Test
-    void 존재하지_않는_리소스를_로드_하지_않는다() {
+    void 존재하지_않는_리소스를_로드_하지_않는다() throws IOException {
         // given
-        Resource resource = mock(Resource.class);
+        when(resourcePatternResolver.getResources(anyString())).thenReturn(new Resource[0]);
 
         // when
         yamlEnvironmentPostProcessor.postProcessEnvironment(environment, application);

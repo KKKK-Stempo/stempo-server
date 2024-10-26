@@ -1,15 +1,16 @@
 package com.stempo.support.yaml;
 
 import java.util.Map;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 @Slf4j
 public class YamlEnvironmentPostProcessor implements EnvironmentPostProcessor {
@@ -18,6 +19,17 @@ public class YamlEnvironmentPostProcessor implements EnvironmentPostProcessor {
     private static final String PROFILE_KEY = "spring.config.activate.on-profile";
 
     private final YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
+
+    @Getter
+    private final ResourcePatternResolver resourcePatternResolver;
+
+    public YamlEnvironmentPostProcessor() {
+        this.resourcePatternResolver = new PathMatchingResourcePatternResolver();
+    }
+
+    public YamlEnvironmentPostProcessor(ResourcePatternResolver resourcePatternResolver) {
+        this.resourcePatternResolver = resourcePatternResolver;
+    }
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
@@ -33,8 +45,7 @@ public class YamlEnvironmentPostProcessor implements EnvironmentPostProcessor {
     }
 
     private void loadYamlResources(ConfigurableEnvironment environment, String[] activeProfiles) throws Exception {
-        Resource[] resources = new PathMatchingResourcePatternResolver(new DefaultResourceLoader())
-                .getResources(YAML_PATTERN);
+        Resource[] resources = resourcePatternResolver.getResources(YAML_PATTERN);
 
         for (Resource resource : resources) {
             if (resource.exists()) {
