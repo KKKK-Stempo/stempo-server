@@ -1,7 +1,8 @@
 package com.stempo.repository;
 
 import com.stempo.entity.UploadedFileEntity;
-import com.stempo.exception.NotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.mapper.UploadedFileMapper;
 import com.stempo.model.UploadedFile;
 import java.util.List;
@@ -41,7 +42,7 @@ public class UploadedFileRepositoryImpl implements UploadedFileRepository {
     public UploadedFile findByUrlOrThrow(String url) {
         return repository.findByUrl(url)
                 .map(mapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[UploadedFile] url: " + url + " not found"));
+                .orElseThrow(() -> new BaseException(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
     @Override

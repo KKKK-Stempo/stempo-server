@@ -1,7 +1,8 @@
 package com.stempo.repository;
 
 import com.stempo.entity.HomeworkEntity;
-import com.stempo.exception.NotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.mapper.HomeworkMapper;
 import com.stempo.model.Homework;
 import java.util.List;
@@ -52,7 +53,7 @@ public class HomeworkRepositoryImpl implements HomeworkRepository {
     public Homework findByIdOrThrow(Long homeworkId) {
         return repository.findById(homeworkId)
                 .map(mapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[Homework] id: " + homeworkId + " not found"));
+                .orElseThrow(() -> new BaseException(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
     @Override

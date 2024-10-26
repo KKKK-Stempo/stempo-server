@@ -4,8 +4,8 @@ import com.stempo.application.JwtTokenService;
 import com.stempo.config.AesConfig;
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.AuthRequestDto;
-import com.stempo.exception.InvalidPasswordException;
-import com.stempo.exception.UserAlreadyExistsException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.model.User;
 import com.stempo.util.EncryptionUtils;
 import com.stempo.util.PasswordValidator;
@@ -41,7 +41,7 @@ public class UserRegistrationService {
 
     private void handleDuplicateUser(String deviceTag) {
         if (userService.existsById(deviceTag)) {
-            throw new UserAlreadyExistsException("User already exists.");
+            throw new BaseException(ErrorCode.USER_ALREADY_EXISTS);
         }
     }
 
@@ -52,7 +52,7 @@ public class UserRegistrationService {
 
     private void validatePassword(String password, String deviceTag) {
         if (!StringUtils.isEmpty(password) && !passwordValidator.isValid(password, deviceTag)) {
-            throw new InvalidPasswordException("Password does not meet the required criteria.");
+            throw new BaseException(ErrorCode.INVALID_PASSWORD);
         }
     }
 

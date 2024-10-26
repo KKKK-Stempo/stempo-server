@@ -4,7 +4,8 @@ package com.stempo.service;
 import com.stempo.dto.PagedResponseDto;
 import com.stempo.dto.request.DeleteFileRequestDto;
 import com.stempo.dto.response.UploadedFileResponseDto;
-import com.stempo.exception.NotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.mapper.UploadedFileDtoMapper;
 import com.stempo.model.UploadedFile;
 import com.stempo.util.EncryptionUtils;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FileService {
@@ -83,7 +86,8 @@ public class FileService {
         boolean deleted = fileHandler.deleteFile(filePath);
 
         if (!deleted) {
-            throw new NotFoundException("File does not exist or could not be deleted");
+            log.error("File does not exist or could not be deleted: {}", filePath);
+            throw new BaseException(ErrorCode.FILE_DELETE_FAILED);
         }
 
         uploadedFileService.deleteUploadedFile(uploadedFile);

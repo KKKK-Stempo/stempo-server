@@ -1,14 +1,15 @@
 package com.stempo.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.stempo.entity.UploadedFileEntity;
-import com.stempo.exception.NotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.mapper.UploadedFileMapper;
 import com.stempo.model.UploadedFile;
 import java.time.LocalDateTime;
@@ -133,8 +134,10 @@ class UploadedFileRepositoryImplTest {
                 Optional.empty());
 
         // when, then
-        assertThrows(NotFoundException.class,
-                () -> uploadedFileRepository.findByUrlOrThrow("http://localhost/uploads/files/savedTestFile.txt"));
+        assertThatThrownBy(
+                () -> uploadedFileRepository.findByUrlOrThrow("http://localhost/uploads/files/savedTestFile.txt"))
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.RESOURCE_NOT_FOUND.getDefaultMessage());
     }
 
     @Test

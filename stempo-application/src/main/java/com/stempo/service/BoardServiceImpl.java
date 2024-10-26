@@ -4,7 +4,8 @@ import com.stempo.dto.PagedResponseDto;
 import com.stempo.dto.request.BoardRequestDto;
 import com.stempo.dto.request.BoardUpdateRequestDto;
 import com.stempo.dto.response.BoardResponseDto;
-import com.stempo.exception.PermissionDeniedException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.mapper.BoardDtoMapper;
 import com.stempo.model.Board;
 import com.stempo.model.BoardCategory;
@@ -70,7 +71,7 @@ public class BoardServiceImpl implements BoardService {
     private void validateAccessPermissionForSuggestion(BoardCategory category) {
         User user = userService.getCurrentUser();
         if (category.equals(BoardCategory.SUGGESTION) && !user.isAdmin()) {
-            throw new PermissionDeniedException("건의하기는 관리자만 조회할 수 있습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "건의하기는 관리자만 조회할 수 있습니다.");
         }
     }
 }

@@ -7,7 +7,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.stempo.exception.ResourceNotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.model.UploadedFile;
 import com.stempo.repository.UploadedFileRepository;
 import java.util.List;
@@ -131,8 +132,8 @@ class UploadedFileServiceImplTest {
 
         // when, then
         assertThatThrownBy(() -> uploadedFileService.verifyFilesExist(fileUrls))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("One or more files do not exist on the server.");
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.RESOURCE_NOT_FOUND.getDefaultMessage());
         verify(uploadedFileRepository).countByUrlIn(fileUrls);
     }
 

@@ -13,13 +13,15 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class ApiLoggingInterceptor implements HandlerInterceptor {
 
     @Override
-    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
+    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response,
+            @NotNull Object handler) {
         request.setAttribute("startTime", System.currentTimeMillis());
         return true;
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, @NotNull Object handler, Exception ex) {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, @NotNull Object handler,
+            Exception ex) {
         ApiLogger.logRequestDuration(request, response, ex);
     }
 }

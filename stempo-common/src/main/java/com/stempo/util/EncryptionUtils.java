@@ -1,8 +1,8 @@
 package com.stempo.util;
 
 import com.stempo.config.AesConfig;
-import com.stempo.exception.DecryptionException;
-import com.stempo.exception.EncryptionException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -41,7 +41,7 @@ public class EncryptionUtils {
      *
      * @param strToEncrypt 암호화할 문자열.
      * @return Base64 형식으로 인코딩된 암호화된 문자열.
-     * @throws EncryptionException 암호화 중 오류가 발생할 경우.
+     * @throws BaseException 암호화 중 오류가 발생할 경우.
      */
     public String encrypt(String strToEncrypt) {
         try {
@@ -54,13 +54,13 @@ public class EncryptionUtils {
             byte[] combined = concat(iv, cipherText);
             return Base64.getEncoder().encodeToString(combined);
         } catch (InvalidKeyException e) {
-            throw new EncryptionException("Invalid key length.");
+            throw new BaseException(ErrorCode.ENCRYPTION_ERROR, "유효하지 않은 키 길이입니다.");
         } catch (IllegalBlockSizeException e) {
-            throw new EncryptionException("Encryption block size error.");
+            throw new BaseException(ErrorCode.ENCRYPTION_ERROR, "암호화 블록 크기 오류가 발생했습니다.");
         } catch (BadPaddingException e) {
-            throw new EncryptionException("Bad padding.");
+            throw new BaseException(ErrorCode.ENCRYPTION_ERROR, "잘못된 패딩이 감지되었습니다.");
         } catch (Exception e) {
-            throw new EncryptionException("An error occurred during encryption.");
+            throw new BaseException(ErrorCode.ENCRYPTION_ERROR, "암호화 과정 중 오류가 발생했습니다.");
         }
     }
 
@@ -69,7 +69,7 @@ public class EncryptionUtils {
      *
      * @param strToDecrypt 복호화할 Base64 형식의 암호화된 문자열.
      * @return 복호화된 문자열.
-     * @throws DecryptionException 복호화 중 오류가 발생할 경우.
+     * @throws BaseException 복호화 중 오류가 발생할 경우.
      */
     public String decrypt(String strToDecrypt) {
         try {
@@ -83,13 +83,13 @@ public class EncryptionUtils {
             byte[] decryptedText = cipher.doFinal(cipherText);
             return new String(decryptedText, StandardCharsets.UTF_8);
         } catch (InvalidKeyException e) {
-            throw new DecryptionException("Invalid key length.");
+            throw new BaseException(ErrorCode.DECRYPTION_ERROR, "유효하지 않은 키 길이입니다.");
         } catch (IllegalBlockSizeException e) {
-            throw new DecryptionException("Decryption block size error.");
+            throw new BaseException(ErrorCode.DECRYPTION_ERROR, "암호화 블록 크기 오류가 발생했습니다.");
         } catch (BadPaddingException e) {
-            throw new DecryptionException("Bad padding.");
+            throw new BaseException(ErrorCode.DECRYPTION_ERROR, "잘못된 패딩이 감지되었습니다.");
         } catch (Exception e) {
-            throw new DecryptionException("An error occurred during decryption.");
+            throw new BaseException(ErrorCode.DECRYPTION_ERROR, "암호화 과정 중 오류가 발생했습니다.");
         }
     }
 
@@ -99,7 +99,7 @@ public class EncryptionUtils {
      * @param strToEncrypt 암호화할 문자열.
      * @param uniqueValue  IV를 생성할 고유 값 (예: deviceTag).
      * @return Base64 형식으로 인코딩된 암호화된 문자열.
-     * @throws EncryptionException 암호화 중 오류가 발생할 경우.
+     * @throws BaseException 암호화 중 오류가 발생할 경우.
      */
     public String encryptWithHashedIV(String strToEncrypt, String uniqueValue) {
         try {
@@ -111,7 +111,7 @@ public class EncryptionUtils {
             byte[] cipherText = cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(cipherText);
         } catch (Exception e) {
-            throw new EncryptionException("해싱된 IV로 암호화하는 중 오류가 발생했습니다.");
+            throw new BaseException(ErrorCode.ENCRYPTION_ERROR, "해싱된 IV로 암호화하는 중 오류가 발생했습니다.");
         }
     }
 
@@ -121,7 +121,7 @@ public class EncryptionUtils {
      * @param strToDecrypt 복호화할 Base64 형식의 암호화된 문자열.
      * @param uniqueValue  IV를 생성한 고유 값
      * @return 복호화된 문자열.
-     * @throws DecryptionException 복호화 중 오류가 발생할 경우.
+     * @throws BaseException 복호화 중 오류가 발생할 경우.
      */
     public String decryptWithHashedIV(String strToDecrypt, String uniqueValue) {
         try {
@@ -134,7 +134,7 @@ public class EncryptionUtils {
             byte[] decryptedText = cipher.doFinal(cipherText);
             return new String(decryptedText, StandardCharsets.UTF_8);
         } catch (Exception e) {
-            throw new DecryptionException("해싱된 IV로 복호화하는 중 오류가 발생했습니다.");
+            throw new BaseException(ErrorCode.DECRYPTION_ERROR, "해싱된 IV로 복호화하는 중 오류가 발생했습니다.");
         }
     }
 
@@ -151,7 +151,7 @@ public class EncryptionUtils {
             String decryptedValue2 = decrypt(encryptedValue2);
 
             return decryptedValue1.equals(decryptedValue2);
-        } catch (DecryptionException e) {
+        } catch (BaseException e) {
             return false;
         }
     }
@@ -161,7 +161,7 @@ public class EncryptionUtils {
      *
      * @param uniqueValue IV로 변환할 고유 값 (예: deviceTag).
      * @return 해시된 고유 값으로부터 유도된 IV를 나타내는 byte 배열.
-     * @throws EncryptionException 해싱 알고리즘이 사용 불가능할 경우.
+     * @throws BaseException 해싱 알고리즘이 사용 불가능할 경우.
      */
     public byte[] generateIVFromUniqueValue(String uniqueValue) {
         try {
@@ -169,7 +169,7 @@ public class EncryptionUtils {
             byte[] hash = digest.digest(uniqueValue.getBytes(StandardCharsets.UTF_8));
             return Arrays.copyOf(hash, ivLengthBytes);
         } catch (NoSuchAlgorithmException e) {
-            throw new EncryptionException("고유 값에서 IV를 생성하는 중 오류가 발생했습니다.");
+            throw new BaseException(ErrorCode.ENCRYPTION_ERROR, "고유 값에서 IV를 생성하는 중 오류가 발생했습니다.");
         }
     }
 

@@ -2,6 +2,7 @@ package com.stempo.dto;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.stempo.exception.BaseException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,9 +21,16 @@ public class ErrorResponse<T> {
     @Schema(description = "에러 메시지(예외명)", example = "NullPointerException")
     private String errorMessage;
 
+    public static <T> ErrorResponse<T> failure(BaseException e) {
+        String exceptionName = e.getErrorCode().name();
+        return ErrorResponse.<T>builder()
+                .errorMessage(exceptionName)
+                .build();
+    }
+
     public static <T> ErrorResponse<T> failure(Exception e) {
         String exceptionName = e.getClass().getSimpleName();
-        return ErrorResponse.<T> builder()
+        return ErrorResponse.<T>builder()
                 .errorMessage(exceptionName)
                 .build();
     }

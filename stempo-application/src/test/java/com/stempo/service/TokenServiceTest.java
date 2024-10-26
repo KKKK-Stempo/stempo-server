@@ -10,7 +10,8 @@ import static org.mockito.Mockito.when;
 
 import com.stempo.application.JwtTokenService;
 import com.stempo.dto.TokenInfo;
-import com.stempo.exception.TokenForgeryException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.model.Role;
 import com.stempo.model.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -82,8 +83,8 @@ class TokenServiceTest {
 
         // when, then
         assertThatThrownBy(() -> tokenServiceImpl.reissueToken(request))
-                .isInstanceOf(TokenForgeryException.class)
-                .hasMessage("Invalid refresh token.");
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.TOKEN_FORGERY.getDefaultMessage());
 
         verify(tokenService).resolveToken(request);
         verify(tokenService).isRefreshToken(invalidRefreshToken);
@@ -102,8 +103,8 @@ class TokenServiceTest {
 
         // when, then
         assertThatThrownBy(() -> tokenServiceImpl.reissueToken(request))
-                .isInstanceOf(TokenForgeryException.class)
-                .hasMessage("Non-existent user token.");
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.TOKEN_INVALID.getDefaultMessage());
 
         verify(tokenService).resolveToken(request);
         verify(tokenService).isRefreshToken(refreshToken);

@@ -1,14 +1,15 @@
 package com.stempo.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.stempo.entity.UserEntity;
-import com.stempo.exception.NotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.mapper.UserMapper;
 import com.stempo.model.Role;
 import com.stempo.model.User;
@@ -90,7 +91,9 @@ class UserRepositoryImplTest {
         when(userJpaRepository.findById("device123")).thenReturn(Optional.empty());
 
         // when, then
-        assertThrows(NotFoundException.class, () -> userRepository.findByIdOrThrow("device123"));
+        assertThatThrownBy(() -> userRepository.findByIdOrThrow("device123"))
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.RESOURCE_NOT_FOUND.getDefaultMessage());
     }
 
     @Test

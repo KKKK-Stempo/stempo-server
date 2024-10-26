@@ -2,7 +2,8 @@ package com.stempo.service;
 
 import com.stempo.application.JwtTokenService;
 import com.stempo.dto.TokenInfo;
-import com.stempo.exception.TokenForgeryException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class TokenService {
 
     private void validateRefreshToken(String refreshToken) {
         if (!tokenService.isRefreshToken(refreshToken)) {
-            throw new TokenForgeryException("Invalid refresh token.");
+            throw new BaseException(ErrorCode.TOKEN_FORGERY);
         }
     }
 
@@ -39,6 +40,6 @@ public class TokenService {
     private User getTokenUserInfo(Authentication authentication) {
         String id = authentication.getName();
         return userService.findById(id)
-                .orElseThrow(() -> new TokenForgeryException("Non-existent user token."));
+                .orElseThrow(() -> new BaseException(ErrorCode.TOKEN_INVALID));
     }
 }

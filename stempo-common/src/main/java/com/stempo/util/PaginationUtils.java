@@ -1,12 +1,15 @@
 package com.stempo.util;
 
-import com.stempo.exception.InvalidFieldException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import java.util.Comparator;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class PaginationUtils {
 
@@ -92,7 +95,8 @@ public class PaginationUtils {
             field.setAccessible(true);
             return field.get(item);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new InvalidFieldException("Invalid field name: " + fieldName);
+            log.error("Invalid field name: {}", fieldName);
+            throw new BaseException(ErrorCode.INVALID_FIELD);
         }
     }
 

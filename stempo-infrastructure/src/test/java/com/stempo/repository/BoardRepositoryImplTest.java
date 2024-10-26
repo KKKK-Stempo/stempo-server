@@ -1,14 +1,15 @@
 package com.stempo.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.stempo.entity.BoardEntity;
-import com.stempo.exception.NotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.mapper.BoardMapper;
 import com.stempo.model.Board;
 import com.stempo.model.BoardCategory;
@@ -138,7 +139,9 @@ class BoardRepositoryImplTest {
         when(boardJpaRepository.findById(1L)).thenReturn(Optional.empty());
 
         // when, then
-        assertThrows(NotFoundException.class, () -> boardRepository.findByIdOrThrow(1L));
+        assertThatThrownBy(() -> boardRepository.findByIdOrThrow(1L))
+                .isInstanceOf(BaseException.class)
+                .hasMessage(ErrorCode.RESOURCE_NOT_FOUND.getDefaultMessage());
     }
 
     @Test

@@ -4,7 +4,7 @@ import com.stempo.application.JwtTokenService;
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.AuthRequestDto;
 import com.stempo.dto.request.TwoFactorAuthenticationRequestDto;
-import com.stempo.exception.InvalidPasswordException;
+import com.stempo.exception.BaseException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional(noRollbackFor = {BadCredentialsException.class, InvalidPasswordException.class})
+    @Transactional(noRollbackFor = {BadCredentialsException.class, BaseException.class})
     public Object login(AuthRequestDto requestDto) {
         return new LoginCommand(authenticationService, requestDto, jwtTokenService, totpAuthenticatorService).execute();
     }

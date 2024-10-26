@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.stempo.config.AesConfig;
-import com.stempo.exception.DecryptionException;
+import com.stempo.exception.BaseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +57,7 @@ class EncryptionUtilsTest {
 
         // then
         assertThatThrownBy(() -> encryptionUtils.decryptWithHashedIV(encryptedText, differentUniqueValue))
-                .isInstanceOf(DecryptionException.class);
+                .isInstanceOf(BaseException.class);
     }
 
     @Test
@@ -84,8 +84,8 @@ class EncryptionUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> encryptionUtils.decrypt(invalidEncryptedText))
-                .isInstanceOf(DecryptionException.class)
-                .hasMessageContaining("Bad padding");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining("잘못된 패딩이 감지되었습니다.");
     }
 
     @Test

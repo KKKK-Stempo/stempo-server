@@ -3,8 +3,8 @@ package com.stempo.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.stempo.exception.InvalidFileAttributeException;
-import com.stempo.exception.InvalidFileNameException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -85,8 +85,8 @@ class FileHandlerTest {
 
         // then
         assertThatThrownBy(() -> fileHandler.saveFile(multipartFile, category))
-                .isInstanceOf(InvalidFileNameException.class)
-                .hasMessageContaining("Invalid file name");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.INVALID_FILE_NAME.getDefaultMessage());
     }
 
     @Test
@@ -103,8 +103,8 @@ class FileHandlerTest {
 
         // then
         assertThatThrownBy(() -> fileHandler.saveFile(multipartFile, category))
-                .isInstanceOf(InvalidFileAttributeException.class)
-                .hasMessageContaining("Invalid file extension");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.INVALID_FILE_ATTRIBUTE.getDefaultMessage());
     }
 
     @Test

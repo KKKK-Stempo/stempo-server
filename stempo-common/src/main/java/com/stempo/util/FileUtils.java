@@ -1,9 +1,7 @@
 package com.stempo.util;
 
-import com.stempo.exception.DirectoryCreationException;
-import com.stempo.exception.FilePermissionException;
-import com.stempo.exception.InvalidFileAttributeException;
-import com.stempo.exception.InvalidFileNameException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,8 +12,10 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 
+@Slf4j
 public class FileUtils {
 
     /**
@@ -24,7 +24,7 @@ public class FileUtils {
      * @param filePath      검증할 파일 경로
      * @param baseDirectory 기본 디렉토리
      * @return 정상적인 파일 경로일 경우 Path 객체를 반환
-     * @throws InvalidPathException 잘못된 경로일 경우 발생
+     * @throws BaseException 잘못된 경로일 경우 발생
      */
     public static Path validateFilePath(String filePath, String baseDirectory) throws InvalidPathException {
         Path baseDir = Paths.get(baseDirectory).normalize().toAbsolutePath();
@@ -32,7 +32,8 @@ public class FileUtils {
 
         // 경로가 기본 디렉토리 내부에 있는지 확인
         if (!resolvedPath.startsWith(baseDir)) {
-            throw new InvalidPathException(filePath, "Invalid file path: Path traversal detected.");
+            log.info("Invalid file path: Path traversal detected: {}", filePath);
+            throw new BaseException(ErrorCode.INVALID_FILE_PATH);
         }
         return resolvedPath;
     }
@@ -41,11 +42,12 @@ public class FileUtils {
      * 파일이 존재하는지 확인합니다. 파일이 존재하지 않으면 예외를 발생시킵니다.
      *
      * @param filePath 검증할 파일 경로
-     * @throws InvalidPathException 파일이 존재하지 않는 경우 발생
+     * @throws BaseException 파일이 존재하지 않는 경우 발생
      */
     public static void validateFileExists(Path filePath) throws InvalidPathException {
         if (!filePath.toFile().exists()) {
-            throw new InvalidPathException(filePath.toString(), "File does not exist: " + filePath);
+            log.info("File does not exist: {}", filePath);
+            throw new BaseException(ErrorCode.INVALID_FILE_PATH);
         }
     }
 
@@ -70,7 +72,8 @@ public class FileUtils {
         File parentDir = safePath.getParent().toFile();
         if (!parentDir.exists()) {
             if (!parentDir.mkdirs()) {
-                throw new DirectoryCreationException("Failed to create directory: " + parentDir.getAbsolutePath());
+                log.error("Failed to create directory: {}", parentDir.getAbsolutePath());
+                throw new BaseException(ErrorCode.DIRECTORY_CREATION_ERROR);
             }
         }
     }
@@ -87,7 +90,8 @@ public class FileUtils {
         String extension = FilenameUtils.getExtension(originalFilename);
         validateFilename(originalFilename);
         if (!validateExtension(extension, disallowExtensions)) {
-            throw new InvalidFileAttributeException("Invalid file extension: " + extension);
+            log.info("Invalid file extension: {}", extension);
+            throw new BaseException(ErrorCode.INVALID_FILE_ATTRIBUTE);
         }
     }
 
@@ -101,14 +105,15 @@ public class FileUtils {
      * </ul>
      *
      * @param fileName 검증할 파일명
-     * @throws InvalidFileNameException 유효하지 않은 파일명일 경우 발생
+     * @throws BaseException 유효하지 않은 파일명일 경우 발생
      */
     protected static void validateFilename(String fileName) {
         if (fileName == null || fileName.trim().isEmpty()) {
             return;
         }
         if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
-            throw new InvalidFileNameException("Invalid file name: " + fileName);
+            log.info("Invalid file name: {}", fileName);
+            throw new BaseException(ErrorCode.INVALID_FILE_NAME);
         }
     }
 
@@ -128,7 +133,7 @@ public class FileUtils {
      *
      * @param file     파일 객체
      * @param savePath 파일 경로
-     * @throws FilePermissionException 파일 권한 설정에 실패한 경우 발생
+     * @throws BaseException 파일 권한 설정에 실패한 경우 발생
      */
     public static void setFilePermissions(File file, String savePath, String baseDirectory) {
         try {
@@ -141,8 +146,8 @@ public class FileUtils {
                 setReadOnlyPermissionsUnix(savePath);
             }
         } catch (Exception e) {
-            throw new FilePermissionException(
-                    "Failed to set file permissions: " + LogSanitizerUtils.sanitizeForLog(savePath));
+            log.error("Failed to set file permissions: {}", LogSanitizerUtils.sanitizeForLog(savePath));
+            throw new BaseException(ErrorCode.FILE_PERMISSION_ERROR);
         }
     }
 
@@ -151,12 +156,12 @@ public class FileUtils {
      *
      * @param file     파일 객체
      * @param savePath 파일 경로
-     * @throws FilePermissionException 파일 권한 설정에 실패한 경우 발생
+     * @throws BaseException 파일 권한 설정에 실패한 경우 발생
      */
     private static void setReadOnlyPermissionsWindows(File file, String savePath) {
         if (!file.setReadOnly()) {
-            throw new FilePermissionException(
-                    "Failed to set file read-only: " + LogSanitizerUtils.sanitizeForLog(savePath));
+            log.error("Failed to set file read-only: {}", LogSanitizerUtils.sanitizeForLog(savePath));
+            throw new BaseException(ErrorCode.FILE_PERMISSION_ERROR);
         }
     }
 

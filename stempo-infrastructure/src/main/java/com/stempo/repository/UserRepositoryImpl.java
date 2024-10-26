@@ -1,7 +1,8 @@
 package com.stempo.repository;
 
 import com.stempo.entity.UserEntity;
-import com.stempo.exception.NotFoundException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.mapper.UserMapper;
 import com.stempo.model.User;
 import java.util.Optional;
@@ -32,7 +33,7 @@ public class UserRepositoryImpl implements UserRepository {
     public User findByIdOrThrow(String deviceTag) {
         return repository.findById(deviceTag)
                 .map(mapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[User] id: " + deviceTag + " not found"));
+                .orElseThrow(() -> new BaseException(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
     @Override

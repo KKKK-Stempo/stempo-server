@@ -1,7 +1,7 @@
 package com.stempo.util;
 
-import com.stempo.exception.AuthenticationNotFoundException;
-import com.stempo.exception.InvalidPrincipalException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -15,7 +15,7 @@ public class AuthUtils {
         if (principal instanceof User) {
             return (User) principal;
         } else {
-            throw new InvalidPrincipalException("인증 정보가 유효하지 않습니다. Principal이 User 타입이 아닙니다.");
+            throw new BaseException(ErrorCode.INVALID_PRINCIPAL);
         }
     }
 
@@ -26,10 +26,10 @@ public class AuthUtils {
     private static Authentication getAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
-            throw new AuthenticationNotFoundException("SecurityContext에서 인증 정보를 찾을 수 없습니다.");
+            throw new BaseException(ErrorCode.AUTHENTICATION_NOT_FOUND);
         }
         if (authentication.getName() == null) {
-            throw new AuthenticationNotFoundException("인증된 사용자의 이름이 없습니다.");
+            throw new BaseException(ErrorCode.AUTHENTICATION_NOT_FOUND, "인증된 사용자의 이름이 없습니다.");
         }
         return authentication;
     }

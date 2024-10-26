@@ -3,8 +3,8 @@ package com.stempo.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.stempo.exception.InvalidFieldException;
-import com.stempo.exception.SortingArgumentException;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -44,8 +44,8 @@ class PageableUtilsTest {
         // when, then
         assertThatThrownBy(
                 () -> PageableUtils.createPageable(page, size, sortByList, sortDirectionList, TestDomain.class))
-                .isInstanceOf(InvalidFieldException.class)
-                .hasMessageContaining("invalidField is not a valid column.");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.INVALID_FIELD.getDefaultMessage());
     }
 
     @Test
@@ -59,8 +59,8 @@ class PageableUtilsTest {
         // when, then
         assertThatThrownBy(
                 () -> PageableUtils.createPageable(page, size, sortByList, sortDirectionList, TestDomain.class))
-                .isInstanceOf(SortingArgumentException.class)
-                .hasMessageContaining("invalidDirection is not a valid sorting direction.");
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.SORTING_ARGUMENT_ERROR.getDefaultMessage());
     }
 
     @Test
@@ -74,7 +74,8 @@ class PageableUtilsTest {
         // when, then
         assertThatThrownBy(
                 () -> PageableUtils.createPageable(page, size, sortByList, sortDirectionList, TestDomain.class))
-                .isInstanceOf(SortingArgumentException.class);
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(ErrorCode.SORTING_ARGUMENT_ERROR.getDefaultMessage());
     }
 
     static class TestDomain {
