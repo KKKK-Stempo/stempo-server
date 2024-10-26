@@ -3,6 +3,7 @@ package com.stempo.support.yaml;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -64,6 +65,8 @@ class YamlEnvironmentPostProcessorTest {
     void 프로파일이_적용된_YAML_리소스를_로드한다() throws IOException {
         // given
         Resource resource = mock(Resource.class);
+        lenient().when(resource.exists()).thenReturn(true);
+        lenient().when(resource.getFilename()).thenReturn("application-test.yml");
 
         PropertySource<?> propertySource = new PropertySource<>("application-test.yml") {
             private final Map<String, Object> source = Map.of("some.key", "some.value");
