@@ -1,6 +1,6 @@
 package com.stempo.support.yaml;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -89,7 +89,7 @@ class YamlEnvironmentPostProcessorTest {
         yamlEnvironmentPostProcessor.postProcessEnvironment(environment, application);
 
         // then
-        assertTrue(propertySources.contains("application-test.yml"));
+        assertThat(propertySources.contains("application-test.yml")).isTrue();
     }
 
     @Test
