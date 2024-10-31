@@ -9,7 +9,6 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.validation.ConstraintViolationException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletionException;
@@ -22,6 +21,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDecision;
@@ -69,18 +69,23 @@ class ExceptionMapperTest {
                 ExceptionMapper.getErrorCode(new io.jsonwebtoken.security.SecurityException("")));
 
         // 401 UNAUTHORIZED Errors
-        assertEquals(ErrorCode.ACCESS_DENIED, ExceptionMapper.getErrorCode(new AccessDeniedException("")));
-
-        AuthorizationDecision decision = new AuthorizationDecision(false);
-        assertEquals(ErrorCode.ACCESS_DENIED,
-                ExceptionMapper.getErrorCode(new AuthorizationDeniedException("권한 거부", decision)));
-
-        assertEquals(ErrorCode.ACCESS_DENIED, ExceptionMapper.getErrorCode(new AuthorizationServiceException("")));
         assertEquals(ErrorCode.BAD_CREDENTIALS, ExceptionMapper.getErrorCode(new BadCredentialsException("")));
         assertEquals(ErrorCode.EXPIRED_JWT, ExceptionMapper.getErrorCode(new ExpiredJwtException(null, null, "")));
         assertEquals(ErrorCode.MALFORMED_JWT, ExceptionMapper.getErrorCode(new MalformedJwtException("")));
         assertEquals(ErrorCode.UNSUPPORTED_JWT, ExceptionMapper.getErrorCode(new UnsupportedJwtException("")));
         assertEquals(ErrorCode.USERNAME_NOT_FOUND, ExceptionMapper.getErrorCode(new UsernameNotFoundException("")));
+
+        // 403 FORBIDDEN Errors
+        assertEquals(ErrorCode.ACCESS_DENIED, ExceptionMapper.getErrorCode(new AccessDeniedException("")));
+        assertEquals(ErrorCode.FILE_ACCESS_DENIED,
+                ExceptionMapper.getErrorCode(new java.nio.file.AccessDeniedException("")));
+
+        AuthorizationDecision decision = new AuthorizationDecision(false);
+        assertEquals(ErrorCode.AUTHORIZATION_DENIED,
+                ExceptionMapper.getErrorCode(new AuthorizationDeniedException("권한 거부", decision)));
+
+        assertEquals(ErrorCode.AUTHORIZATION_SERVICE_ERROR,
+                ExceptionMapper.getErrorCode(new AuthorizationServiceException("")));
 
         // 404 NOT_FOUND Errors
         assertEquals(ErrorCode.FILE_NOT_FOUND, ExceptionMapper.getErrorCode(new FileNotFoundException()));

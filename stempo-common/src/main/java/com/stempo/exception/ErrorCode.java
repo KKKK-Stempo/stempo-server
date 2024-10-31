@@ -29,7 +29,6 @@ public enum ErrorCode {
     UNKNOWN_PATH(HttpStatus.BAD_REQUEST, "쿼리의 경로가 잘못되었습니다."),
 
     // 401 UNAUTHORIZED Errors
-    ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "접근이 거부되었습니다."),
     AUTHENTICATION_NOT_FOUND(HttpStatus.UNAUTHORIZED, "인증 정보를 찾을 수 없습니다."),
     BAD_CREDENTIALS(HttpStatus.UNAUTHORIZED, "잘못된 인증 정보입니다."),
     EXPIRED_JWT(HttpStatus.UNAUTHORIZED, "JWT 토큰이 만료되었습니다."),
@@ -42,6 +41,10 @@ public enum ErrorCode {
     USERNAME_NOT_FOUND(HttpStatus.UNAUTHORIZED, "사용자 이름을 찾을 수 없습니다."),
 
     // 403 FORBIDDEN Errors
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
+    AUTHORIZATION_DENIED(HttpStatus.FORBIDDEN, "권한이 거부되었습니다."),
+    AUTHORIZATION_SERVICE_ERROR(HttpStatus.FORBIDDEN, "권한 서비스 오류가 발생했습니다."),
+    FILE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "파일 접근이 거부되었습니다."),
     PERMISSION_DENIED(HttpStatus.FORBIDDEN, "권한이 거부되었습니다."),
 
     // 404 NOT_FOUND Errors

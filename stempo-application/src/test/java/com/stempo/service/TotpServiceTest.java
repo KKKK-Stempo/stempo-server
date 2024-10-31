@@ -89,7 +89,7 @@ class TotpServiceTest {
         // when, then
         assertThatThrownBy(() -> totpService.authenticate(requestDto, tokenService))
                 .isInstanceOf(BadCredentialsException.class)
-                .hasMessage("Invalid TOTP code.");
+                .hasMessage("잘못된 TOTP 코드입니다.");
 
         verify(userService).handleAccountLock(encryptedDeviceTag);
         verify(authenticatorService).isAuthenticatorValid(encryptedDeviceTag, requestDto.getTotp());
