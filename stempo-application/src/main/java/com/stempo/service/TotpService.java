@@ -39,7 +39,7 @@ public class TotpService {
         userService.handleAccountLock(deviceTag);
         if (!authenticatorService.isAuthenticatorValid(deviceTag, totp)) {
             userService.handleFailedLogin(deviceTag);
-            throw new BadCredentialsException("Invalid TOTP code.");
+            throw new BadCredentialsException("잘못된 TOTP 코드입니다.");
         }
     }
 

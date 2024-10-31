@@ -119,5 +119,4 @@ public class RecordServiceImpl implements RecordService {
         }
         return consecutiveDays;
     }
-
 }

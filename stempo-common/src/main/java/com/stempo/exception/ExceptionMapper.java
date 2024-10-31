@@ -7,7 +7,6 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.validation.ConstraintViolationException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +18,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -51,14 +51,17 @@ public class ExceptionMapper {
         exceptionToErrorCodeMap.put(io.jsonwebtoken.security.SecurityException.class, ErrorCode.JWT_SECURITY_ERROR);
 
         // 401 UNAUTHORIZED Errors
-        exceptionToErrorCodeMap.put(AccessDeniedException.class, ErrorCode.ACCESS_DENIED);
-        exceptionToErrorCodeMap.put(AuthorizationDeniedException.class, ErrorCode.ACCESS_DENIED);
-        exceptionToErrorCodeMap.put(AuthorizationServiceException.class, ErrorCode.ACCESS_DENIED);
         exceptionToErrorCodeMap.put(BadCredentialsException.class, ErrorCode.BAD_CREDENTIALS);
         exceptionToErrorCodeMap.put(ExpiredJwtException.class, ErrorCode.EXPIRED_JWT);
         exceptionToErrorCodeMap.put(MalformedJwtException.class, ErrorCode.MALFORMED_JWT);
         exceptionToErrorCodeMap.put(UnsupportedJwtException.class, ErrorCode.UNSUPPORTED_JWT);
         exceptionToErrorCodeMap.put(UsernameNotFoundException.class, ErrorCode.USERNAME_NOT_FOUND);
+
+        // 403 FORBIDDEN Errors
+        exceptionToErrorCodeMap.put(AccessDeniedException.class, ErrorCode.ACCESS_DENIED);
+        exceptionToErrorCodeMap.put(java.nio.file.AccessDeniedException.class, ErrorCode.FILE_ACCESS_DENIED);
+        exceptionToErrorCodeMap.put(AuthorizationDeniedException.class, ErrorCode.AUTHORIZATION_DENIED);
+        exceptionToErrorCodeMap.put(AuthorizationServiceException.class, ErrorCode.AUTHORIZATION_SERVICE_ERROR);
 
         // 404 NOT_FOUND Errors
         exceptionToErrorCodeMap.put(FileNotFoundException.class, ErrorCode.FILE_NOT_FOUND);
