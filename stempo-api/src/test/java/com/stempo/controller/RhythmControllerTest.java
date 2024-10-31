@@ -44,10 +44,12 @@ public class RhythmControllerTest {
 
         String expectedFilePath = "/resources/files/rhythm_120_4_bpm.wav";
 
-        when(rhythmService.createRhythm(any(RhythmRequestDto.class))).thenReturn(expectedFilePath);
+        when(rhythmService.createRhythm(any(RhythmRequestDto.class)))
+                .thenReturn(expectedFilePath);
 
         // when
-        mockMvc.perform(post("/api/v1/rhythm").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post("/api/v1/rhythm")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 // then
                 .andExpect(status().isOk())
@@ -64,7 +66,8 @@ public class RhythmControllerTest {
         requestDto.setBit(4);
 
         // when
-        mockMvc.perform(post("/api/v1/rhythm").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post("/api/v1/rhythm")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 // then
                 .andExpect(status().isBadRequest())
@@ -80,7 +83,8 @@ public class RhythmControllerTest {
         requestDto.setBit(4);
 
         // when
-        mockMvc.perform(post("/api/v1/rhythm").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post("/api/v1/rhythm")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 // then
                 .andExpect(status().isUnauthorized());
