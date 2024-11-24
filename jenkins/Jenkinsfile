@@ -269,6 +269,9 @@ def loadEnvironmentVariables(String configFile) {
     env.PORT_A = config.spring.'port-a'.toString()
     env.PORT_B = config.spring.'port-b'.toString()
 
+    env.WHITELIST_ADMIN_USERNAME = config.admin.username
+    env.WHITELIST_ADMIN_PASSWORD = config.admin.password
+
     env.DOCKERFILE_PATH = "${env.WORKSPACE}${config.docker.'dockerfile-path'}"
     env.NGINX_CONTAINER_NAME = config.docker.'nginx-container-name'
     env.MARIA_DB_CONTAINER_NAME = config.docker.'mariadb-container-name'
@@ -415,7 +418,8 @@ def performHealthCheck() {
         def elapsed = (System.currentTimeMillis() - start_time) / 1000
         echo "Checking health... ${elapsed} seconds elapsed."
         def status = sh(
-            script: """curl -s http://${PUBLIC_IP}:${env.NEW_PORT}${env.ACTUATOR_PATH} | grep 'UP'""",
+            script: """curl -s -u ${env.WHITELIST_ADMIN_USERNAME}:${env.WHITELIST_ADMIN_PASSWORD} \
+                http://${PUBLIC_IP}:${env.NEW_PORT}/actuator/health | grep 'UP'""",
             returnStatus: true
         )
         if (status == 0) {
