@@ -1,27 +1,29 @@
-# 1. Gradle 8.11.1 기반 빌드 이미지 생성
+# 1. 빌드 단계
 FROM gradle:8.11.1-jdk21 AS build
 WORKDIR /app
 
-# build.gradle.kts와 settings.gradle, buildSrc 디렉토리를 복사하여 의존성 설치 준비
+# Gradle 설정 파일 및 buildSrc 복사 후 의존성 설치
 COPY build.gradle.kts settings.gradle /app/
 COPY buildSrc /app/buildSrc
-
-# 의존성 캐싱을 위해 먼저 의존성만 설치 (빌드 전에 캐시 활용)
 RUN gradle dependencies --parallel --stacktrace
 
-# 소스 파일을 모두 복사한 후 애플리케이션 빌드
+# 소스 코드 복사 및 애플리케이션 빌드
 COPY . /app
-RUN gradle build --parallel --stacktrace
+RUN gradle bootJar --no-daemon --build-cache --stacktrace
 
-# 2. 런타임용 이미지 생성
-FROM openjdk:21-jdk-slim
+# Layered JAR에서 레이어 추출
+RUN java -Djarmode=layertools -jar /app/stempo-api/build/libs/stempo-api.jar extract
+
+# 2. 런타임 단계
+FROM openjdk:21-jre-slim AS runtime
 WORKDIR /app
 
-# 빌드 단계에서 생성된 JAR 파일을 런타임 이미지로 복사
-COPY --from=build /app/stempo-api/build/libs/stempo-api.jar stempo-api.jar
+# 추출된 레이어 복사
+COPY --from=build /app/dependencies/ ./
+COPY --from=build /app/spring-boot-loader/ ./
+COPY --from=build /app/snapshot-dependencies/ ./
+COPY --from=build /app/application/ ./
 
-# 애플리케이션이 실행될 포트 설정 (8080)
+# 포트 설정 및 애플리케이션 실행
 EXPOSE 8080
-
-# 스프링 프로파일을 prod로 설정하고 JAR 파일 실행
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "stempo-api.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "org.springframework.boot.loader.JarLauncher"]
