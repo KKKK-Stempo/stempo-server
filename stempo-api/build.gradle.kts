@@ -1,8 +1,17 @@
-tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
+tasks.named<BootJar>("bootJar") {
     enabled = true
+
+    layered {
+        enabled = true
+    }
+
     archiveBaseName.set(project.name)
     archiveVersion.set("${project.version}")
     archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
+
+    mainClass.set("com.stempo.ApiApplication")
 }
 
 dependencies {
