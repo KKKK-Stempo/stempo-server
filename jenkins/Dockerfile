@@ -26,4 +26,4 @@ COPY --from=build /app/application/ ./
 
 # 포트 설정 및 애플리케이션 실행
 EXPOSE 8080
-ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "org.springframework.boot.loader.launch.JarLauncher"]
