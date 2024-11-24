@@ -15,7 +15,7 @@ RUN gradle bootJar --no-daemon --build-cache --stacktrace
 RUN java -Djarmode=layertools -jar /app/stempo-api/build/libs/stempo-api.jar extract
 
 # 2. 런타임 단계
-FROM openjdk:21-jre-slim AS runtime
+FROM eclipse-temurin:21-jre AS runtime
 WORKDIR /app
 
 # 추출된 레이어 복사
