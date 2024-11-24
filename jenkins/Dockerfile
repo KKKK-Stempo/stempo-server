@@ -1,5 +1,5 @@
-# 1. Gradle 8.10.2 기반 빌드 이미지 생성
-FROM gradle:8.10.2-jdk21 AS build
+# 1. Gradle 8.11.1 기반 빌드 이미지 생성
+FROM gradle:8.11.1-jdk21 AS build
 WORKDIR /app
 
 # build.gradle.kts와 settings.gradle, buildSrc 디렉토리를 복사하여 의존성 설치 준비
