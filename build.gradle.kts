@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
 	id("java")
 	id("org.springframework.boot") version Versions.springBoot
@@ -37,7 +39,7 @@ allprojects {
 		enabled = true
 	}
 
-	tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+	tasks.named<BootJar>("bootJar") {
 		enabled = false
 	}
 
