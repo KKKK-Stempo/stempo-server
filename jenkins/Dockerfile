@@ -20,7 +20,7 @@ RUN java -XX:ArchiveClassesAtExit=stempo-cds.jsa \
     -jar stempo-api/build/libs/stempo-api.jar
 
 # 2. 런타임 단계
-FROM eclipse-temurin:21-jre AS runtime
+FROM bellsoft/liberica-runtime-container:jre-21-cds-slim-musl AS runtime
 WORKDIR /app
 
 # 추출된 레이어 복사
