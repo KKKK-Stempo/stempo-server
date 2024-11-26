@@ -16,9 +16,9 @@ RUN java -Djarmode=layertools -jar stempo-api/build/libs/stempo-api.jar extract
 
 # CDS 아카이브 생성
 RUN java -XX:ArchiveClassesAtExit=stempo-cds.jsa \
-    -Dspring.profiles.active=prod \
-    -Dspring.context.exit=onRefresh \
-    -jar stempo-api/build/libs/stempo-api.jar
+        -Dspring.profiles.active=cds \
+        -Dspring.context.exit=onRefresh \
+        -jar stempo-api/build/libs/stempo-api.jar
 
 # 2. 런타임 단계
 FROM bellsoft/liberica-runtime-container:jre-21-cds-slim-musl AS runtime
