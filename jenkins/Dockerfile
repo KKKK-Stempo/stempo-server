@@ -12,11 +12,11 @@ COPY . .
 RUN gradle bootJar --no-daemon --build-cache --stacktrace
 
 # Layered JAR에서 레이어 추출
-RUN java -Djarmode=tools -jar stempo-api/build/libs/stempo-api.jar extract
+RUN java -Djarmode=layertools -jar stempo-api/build/libs/stempo-api.jar extract
 
 # CDS 아카이브 생성
 RUN java -XX:ArchiveClassesAtExit=stempo-cds.jsa \
-    -Dspring.datasource.initialization-mode=never \
+    -Dspring.profiles.active=prod \
     -Dspring.context.exit=onRefresh \
     -jar stempo-api/build/libs/stempo-api.jar
 
