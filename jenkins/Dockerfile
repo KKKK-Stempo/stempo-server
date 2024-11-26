@@ -1,6 +1,15 @@
 # 1. 빌드 단계
-FROM gradle:8.11.1-jdk21 AS build
+FROM bellsoft/liberica-openjdk-alpine-musl:21.0.5-cds AS build
 WORKDIR /app
+
+# Gradle 설치
+ENV GRADLE_VERSION=8.11.1
+RUN apk add --no-cache curl unzip bash && \
+    curl -fsSL https://downloads.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -o gradle.zip && \
+    unzip gradle.zip && \
+    rm gradle.zip && \
+    mv gradle-${GRADLE_VERSION} /opt/gradle && \
+    ln -s /opt/gradle/bin/gradle /usr/local/bin/gradle
 
 # Gradle 설정 파일 및 buildSrc 복사 후 의존성 설치
 COPY build.gradle.kts settings.gradle /app/
@@ -21,7 +30,7 @@ RUN java -XX:ArchiveClassesAtExit=stempo-cds.jsa \
         -jar stempo-api/build/libs/stempo-api.jar
 
 # 2. 런타임 단계
-FROM bellsoft/liberica-runtime-container:jre-21-cds-slim-musl AS runtime
+FROM bellsoft/liberica-openjdk-alpine-musl:21.0.5-cds AS runtime
 WORKDIR /app
 
 # 추출된 레이어 복사
