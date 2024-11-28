@@ -18,30 +18,14 @@ COPY . /app
 # 애플리케이션 빌드
 RUN ./gradlew bootJar --no-daemon --build-cache --stacktrace
 
-# 2. CDS 아카이브 생성 단계
-FROM bellsoft/liberica-runtime-container:jre-21-cds-slim-musl AS cds
-WORKDIR /app
-
-# 빌드된 JAR 파일 복사
-COPY --from=build /app/stempo-api/build/libs/stempo-api.jar /app/stempo-api.jar
-
-# CDS 아카이브 생성
-RUN java -XX:ArchiveClassesAtExit=./stempo-cds.jsa \
-         -Dspring.profiles.active=cds \
-         -Dspring.context.exit=onRefresh \
-         -jar stempo-api.jar
-
-# 3. 런타임 단계
+# 2. 런타임 단계
 FROM bellsoft/liberica-runtime-container:jre-21-cds-slim-musl
 WORKDIR /app
 
 # 빌드된 JAR 파일 복사
 COPY --from=build /app/stempo-api/build/libs/stempo-api.jar /app/stempo-api.jar
 
-# CDS 아카이브 파일 복사
-COPY --from=cds /app/stempo-cds.jsa ./
-
 # 포트 설정 및 애플리케이션 실행
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-XX:SharedArchiveFile=stempo-cds.jsa", "-Dspring.profiles.active=prod", "-jar", "stempo-api.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "stempo-api.jar"]
