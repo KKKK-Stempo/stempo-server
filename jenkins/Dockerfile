@@ -38,4 +38,5 @@ COPY --from=build /app/stempo-cds.jsa ./
 
 # 포트 설정 및 애플리케이션 실행
 EXPOSE 8080
-ENTRYPOINT ["java", "-XX:SharedArchiveFile=stempo-cds.jsa", "-Dspring.profiles.active=prod", "-jar", "./stempo-api/build/libs/stempo-api.jar"]
+#ENTRYPOINT ["java", "-XX:SharedArchiveFile=stempo-cds.jsa", "-Dspring.profiles.active=prod", "-jar", "./stempo-api/build/libs/stempo-api.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "./stempo-api/build/libs/stempo-api.jar"]
