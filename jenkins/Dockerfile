@@ -35,7 +35,7 @@ WORKDIR /app
 COPY --from=build /app/stempo-api/build/libs/stempo-api.jar ./stempo-api/build/libs/stempo-api.jar
 
 # CDS 아카이브 파일 복사
-COPY --from=build /app/stempo-cds.jsa ./
+#COPY --from=build /app/stempo-cds.jsa ./
 
 # 포트 설정 및 애플리케이션 실행
 EXPOSE 8080
