@@ -48,15 +48,15 @@ RUN java -XX:ArchiveClassesAtExit=./stempo-cds.jsa \
          org.springframework.boot.loader.launch.JarLauncher
 
 
-# 4. 런타임 단계 \
+# 4. 런타임 단계
 FROM bellsoft/liberica-runtime-container:jre-21-cds-slim-musl
 WORKDIR /app
 
 # 빌드 단계에서 생성된 레이어 복사
-COPY --from=cds /app/dependencies/ ./
-COPY --from=cds /app/spring-boot-loader/ ./
-COPY --from=cds /app/snapshot-dependencies/ ./
-COPY --from=cds /app/application/ ./
+COPY --from=extract /app/dependencies/ ./
+COPY --from=extract /app/spring-boot-loader/ ./
+COPY --from=extract /app/snapshot-dependencies/ ./
+COPY --from=extract /app/application/ ./
 
 # CDS 아카이브 파일 복사
 COPY --from=cds /app/stempo-cds.jsa ./
