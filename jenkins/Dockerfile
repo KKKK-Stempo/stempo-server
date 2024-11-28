@@ -45,7 +45,7 @@ RUN java -XX:ArchiveClassesAtExit=./stempo-cds.jsa \
          -Dspring.aot.enabled=true \
          -Dspring.profiles.active=cds \
          -Dspring.context.exit=onRefresh \
-         org.springframework.boot.loader.JarLauncher
+         org.springframework.boot.loader.launch.JarLauncher
 
 
 # 4. 런타임 단계 \
@@ -63,4 +63,4 @@ COPY --from=cds /app/stempo-cds.jsa ./
 
 # 포트 설정 및 애플리케이션 실행
 EXPOSE 8080
-ENTRYPOINT ["java", "-XX:SharedArchiveFile=stempo-cds.jsa", "-Dspring.aot.enabled=true", "-Dspring.profiles.active=prod", "org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT ["java", "-XX:SharedArchiveFile=stempo-cds.jsa", "-Dspring.aot.enabled=true", "-Dspring.profiles.active=prod", "org.springframework.boot.loader.launch.JarLauncher"]
