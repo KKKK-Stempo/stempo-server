@@ -1,5 +1,5 @@
 # 1. 빌드 단계
-FROM bellsoft/liberica-openjdk-alpine-musl:21.0.5 AS build
+FROM bellsoft/liberica-runtime-container:jdk-21-cds-slim-musl AS build
 WORKDIR /app
 
 # Gradle Wrapper 복사 및 실행 권한 부여
