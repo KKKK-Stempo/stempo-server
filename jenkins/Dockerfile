@@ -27,7 +27,7 @@ WORKDIR /app
 COPY --from=build /app/stempo-api/build/libs/stempo-api.jar /app/stempo-api.jar
 
 # Layered JAR 추출
-RUN java -Djarmode=layertools -jar /app/stempo-api.jar extract
+RUN java -Djarmode=tools -jar /app/stempo-api.jar extract --layers --launcher
 
 
 # 3. CDS 아카이브 생성 단계
