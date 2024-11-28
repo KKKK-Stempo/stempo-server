@@ -12,7 +12,7 @@ RUN apk add --no-cache curl unzip bash && \
     ln -s /opt/gradle/bin/gradle /usr/local/bin/gradle
 
 # Gradle 설정 파일 및 buildSrc 복사 후 의존성 설치
-COPY build.gradle.kts settings.gradle /app/
+COPY build.gradle.kts settings.gradle.kts /app/
 COPY buildSrc /app/buildSrc
 RUN gradle dependencies --parallel --stacktrace
 
@@ -20,14 +20,17 @@ RUN gradle dependencies --parallel --stacktrace
 COPY . /app
 RUN gradle bootJar --no-daemon --build-cache --stacktrace
 
+# JAR 파일 경로 확인 및 출력
+RUN echo "JAR 파일 위치:" && find /app -name "*.jar"
+
 # Layered JAR에서 레이어 추출
-RUN java -Djarmode=layertools -jar /app/stempo-api/build/libs/stempo-api.jar extract
+RUN java -Djarmode=layertools -jar $(find /app -name "stempo-api*.jar") extract
 
 # CDS 아카이브 생성
-RUN java -XX:ArchiveClassesAtExit=stempo-cds.jsa \
-        -Dspring.profiles.active=cds \
-        -Dspring.context.exit=onRefresh \
-        -jar stempo-api/build/libs/stempo-api.jar
+RUN java -XX:ArchiveClassesAtExit=/app/stempo-cds.jsa \
+         -Dspring.profiles.active=cds \
+         -Dspring.context.exit=onRefresh \
+         -jar $(find /app -name "stempo-api*.jar")
 
 # 2. 런타임 단계
 FROM bellsoft/liberica-openjdk-alpine-musl:21.0.5-cds AS runtime
@@ -44,4 +47,7 @@ COPY --from=build /app/stempo-cds.jsa ./
 
 # 포트 설정 및 애플리케이션 실행
 EXPOSE 8080
-ENTRYPOINT ["java", "-XX:SharedArchiveFile=stempo-cds.jsa", "-Dspring.profiles.active=prod", "org.springframework.boot.loader.launch.JarLauncher"]
+ENTRYPOINT ["java",
+            "-XX:SharedArchiveFile=stempo-cds.jsa",
+            "-Dspring.profiles.active=prod",
+            "org.springframework.boot.loader.launch.JarLauncher"]
