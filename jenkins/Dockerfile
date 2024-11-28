@@ -12,7 +12,7 @@ RUN apk add --no-cache curl unzip bash && \
     ln -s /opt/gradle/bin/gradle /usr/local/bin/gradle
 
 # Gradle 설정 파일 및 buildSrc 복사 후 의존성 설치
-COPY build.gradle.kts settings.gradle.kts /app/
+COPY build.gradle.kts settings.gradle /app/
 COPY buildSrc /app/buildSrc
 RUN gradle dependencies --parallel --stacktrace
 
