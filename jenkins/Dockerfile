@@ -20,7 +20,7 @@ RUN ./gradlew bootJar -Pspring.aot.enabled=true --no-daemon --build-cache --stac
 
 
 # 2. Layered JAR 추출 단계
-FROM bellsoft/liberica-runtime-container:jdk-21-cds-slim-musl AS extract
+FROM bellsoft/liberica-runtime-container:jre-21-cds-musl AS extract
 WORKDIR /app
 
 # 빌드된 JAR 파일 복사
@@ -31,7 +31,7 @@ RUN java -Djarmode=layertools -jar /app/stempo-api.jar extract
 
 
 # 3. CDS 아카이브 생성 단계
-FROM bellsoft/liberica-runtime-container:jre-21-cds-slim-musl AS cds
+FROM bellsoft/liberica-runtime-container:jre-21-cds-musl AS cds
 WORKDIR /app
 
 # Layered JAR 복사
