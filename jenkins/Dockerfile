@@ -21,10 +21,10 @@ COPY . /app
 RUN gradle bootJar --no-daemon --build-cache --stacktrace
 
 # CDS 아카이브 생성
-RUN java -XX:ArchiveClassesAtExit=stempo-cds.jsa \
+RUN java -XX:ArchiveClassesAtExit=/app/stempo-cds.jsa \
          -Dspring.profiles.active=cds \
          -Dspring.context.exit=onRefresh \
-         -jar stempo-api/build/libs/stempo-api.jar
+         -jar /app/stempo-api/build/libs/stempo-api.jar
 
 # 2. 런타임 단계
 FROM bellsoft/liberica-openjdk-alpine-musl:21.0.5-cds
