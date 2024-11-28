@@ -18,13 +18,14 @@ RUN gradle dependencies --parallel --stacktrace
 
 # 소스 코드 복사 및 애플리케이션 빌드
 COPY . /app
-RUN gradle bootJar --no-daemon --build-cache --stacktrace
+RUN gradle bootJar -Pspring.aot.enabled=true --no-daemon --build-cache --stacktrace
 
 # CDS 아카이브 생성
-RUN java -XX:ArchiveClassesAtExit=/app/stempo-cds.jsa \
-         -Dspring.profiles.active=cds \
-         -Dspring.context.exit=onRefresh \
-         -jar stempo-api/build/libs/stempo-api.jar
+#RUN java -XX:ArchiveClassesAtExit=/app/stempo-cds.jsa \
+#         -Dspring.aot.enabled=true \
+#         -Dspring.profiles.active=cds \
+#         -Dspring.context.exit=onRefresh \
+#         -jar stempo-api/build/libs/stempo-api.jar
 
 # 2. 런타임 단계
 FROM bellsoft/liberica-openjdk-alpine-musl:21.0.5-cds
@@ -38,5 +39,5 @@ COPY --from=build /app/stempo-cds.jsa ./
 
 # 포트 설정 및 애플리케이션 실행
 EXPOSE 8080
-#ENTRYPOINT ["java", "-XX:SharedArchiveFile=stempo-cds.jsa", "-Dspring.profiles.active=prod", "-jar", "./stempo-api/build/libs/stempo-api.jar"]
-ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "./stempo-api/build/libs/stempo-api.jar"]
+#ENTRYPOINT ["java", "-XX:SharedArchiveFile=stempo-cds.jsa", "-Dspring.aot.enabled=true", "-Dspring.profiles.active=prod", "-jar", "./stempo-api/build/libs/stempo-api.jar"]
+ENTRYPOINT ["java", "-Dspring.aot.enabled=true", "-Dspring.profiles.active=prod", "-jar", "./stempo-api/build/libs/stempo-api.jar"]
