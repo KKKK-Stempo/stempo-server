@@ -1,7 +1,10 @@
+import org.springframework.boot.gradle.tasks.aot.ProcessAot
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 tasks.named<BootJar>("bootJar") {
     enabled = true
+
+    dependsOn("processAot")
 
     layered {
         enabled = true
@@ -12,6 +15,11 @@ tasks.named<BootJar>("bootJar") {
     archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
 
     mainClass.set("com.stempo.ApiApplication")
+}
+
+tasks.named<ProcessAot>("processAot") {
+    enabled = true
+    dependsOn("classes")
 }
 
 dependencies {
