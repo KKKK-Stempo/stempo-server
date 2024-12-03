@@ -1,0 +1,25 @@
+spring.config.activate.on-profile: test
+
+logging:
+  level:
+    org.springframework: info
+
+# Validation Message Source
+spring:
+  messages:
+    basename: messages
+
+#File Upload
+resource:
+  file:
+    url: /test/resources/files
+    path: ${user.dir}/test-cloud
+    disallow-extension: php, php3, php4, php5, phtml, inc, jsp, jsf, asp, asa, cds, cer, aspx, asax, ascx, ashx, asmx, axd, config, cs, csproj, licx, rem, resources, resx, soap, vb, vbproj, vsdisco, webinfo, dll, exe, bat, cmd, sh, vbs, js, jar, py, ps1, com, msi, html, htm, phps, cgi, jspf, jspx
+
+security:
+  # AES symmetric key
+  aes:
+    key: test-key-for-aes-32-characters
+    iv-length-bytes: 12
+    gcm-tag-length-bits: 128
+    device-tag-secret-key: test-device-tag-secret-key-for-128-bits
