@@ -32,8 +32,11 @@ public class EncryptionUtils {
     }
 
     public static EncryptionUtils create(AesConfig aesConfig) {
-        return new EncryptionUtils(aesConfig.getSecretKey(), aesConfig.getIvLengthBytes(),
-                aesConfig.getGcmTagLengthBits());
+        return new EncryptionUtils(
+                aesConfig.getSecretKey(),
+                aesConfig.getIvLengthBytes(),
+                aesConfig.getGcmTagLengthBits()
+        );
     }
 
     /**
