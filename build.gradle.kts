@@ -28,6 +28,8 @@ allprojects {
     group = "com.stempo"
     version = "0.0.1"
 
+    ext["springConfigLocation"] = "${rootProject.projectDir}/config/"
+
     apply(plugin = "java")
 
     java {
@@ -77,5 +79,9 @@ allprojects {
 
     tasks.named<Test>("test") {
         useJUnitPlatform()
+    }
+
+    tasks.withType<JavaExec> {
+        ext["springConfigLocation"]?.let { systemProperty("spring.config.additional-location", it) }
     }
 }
