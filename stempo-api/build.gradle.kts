@@ -6,6 +6,11 @@ tasks.named<BootJar>("bootJar") {
 
     dependsOn("processAot")
 
+    // JAR 파일에 config 디렉토리 추가
+    from("${rootProject.projectDir}/config") {
+        into("config")
+    }
+
     layered {
         enabled = true
     }
