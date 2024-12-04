@@ -1,0 +1,45 @@
+name: "Setup Java and Gradlew"
+description: "Sets up Java environment, restores JDK cache, and prepares Gradlew"
+
+inputs:
+  java-distribution:
+    description: "Java distribution to set up"
+    required: true
+    type: string
+  java-version:
+    description: "Java version to set up (8, 11, 16, 17, 21)"
+    required: true
+    type: string
+  java-package:
+    description: "Java package type (jdk, jre, jdk+fx, jre+fx)"
+    required: false
+    default: "jdk"
+    type: string
+outputs: {}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Restore JDK Cache
+      uses: actions/cache@v4
+      with:
+        path: /opt/hostedtoolcache/Java_${{ inputs.java-distribution }}_${{ inputs.java-package }}
+        key: java-${{ inputs.java-distribution }}-${{ inputs.java-version }}-${{ inputs.java-package }}-${{ runner.os }}
+        restore-keys: |
+          java-${{ inputs.java-distribution }}-${{ inputs.java-version }}-
+          java-${{ inputs.java-distribution }}-
+
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: ${{ inputs.java-distribution }}
+        java-version: ${{ inputs.java-version }}
+        java-package: ${{ inputs.java-package }}
+        cache: gradle
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+      shell: bash

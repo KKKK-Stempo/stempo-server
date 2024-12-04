@@ -8,26 +8,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Restore JDK Cache
-        uses: actions/cache@v4
+      - name: Setup Java and Gradlew
+        uses: ./.github/actions/setup-java-and-gradlew
         with:
-          path: /opt/hostedtoolcache/Java_Liberica_jdk
-          key: liberica-jdk-${{ runner.os }}
-          restore-keys: liberica-jdk-
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'liberica'
+          java-distribution: 'liberica'
           java-version: '21'
           java-package: 'jdk'
-          cache: gradle
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
 
       - name: Write Application Configuration
         run: |
