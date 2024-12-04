@@ -20,10 +20,18 @@ outputs: {}
 runs:
   using: "composite"
   steps:
+    - name: Convert Java Distribution to Proper Case
+      id: convert
+      run: |
+        DISTRIBUTION="${{ inputs.java-distribution }}"
+        DISTRIBUTION_CAPITALIZED="$(echo "${DISTRIBUTION:0:1}" | tr '[:lower:]' '[:upper:]')${DISTRIBUTION:1}"
+        echo "DISTRIBUTION_CAPITALIZED=$DISTRIBUTION_CAPITALIZED" >> $GITHUB_ENV
+      shell: bash
+
     - name: Restore JDK Cache
       uses: actions/cache@v4
       with:
-        path: /opt/hostedtoolcache/Java_${{ inputs.java-distribution }}_${{ inputs.java-package }}
+        path: /opt/hostedtoolcache/Java_${{ env.DISTRIBUTION_CAPITALIZED }}_${{ inputs.java-package }}
         key: java-${{ inputs.java-distribution }}-${{ inputs.java-version }}-${{ inputs.java-package }}-${{ runner.os }}
         restore-keys: |
           java-${{ inputs.java-distribution }}-${{ inputs.java-version }}-
