@@ -8,6 +8,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Call Common Setup
         uses: ./.github/workflows/setup-common.yml
         with:
@@ -30,6 +33,9 @@ jobs:
     needs: test
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Write Application Configuration
         run: |
           mkdir -p config
