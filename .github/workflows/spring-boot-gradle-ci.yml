@@ -11,12 +11,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Call Common Setup
-        uses: ./.github/workflows/setup-common.yml
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
-          java-distribution: 'liberica'
+          distribution: 'liberica'
           java-version: '21'
           java-package: 'jdk'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
       - name: Run tests with Gradle
         run: ./gradlew test -Dspring.profiles.active=test --info --parallel
@@ -36,17 +40,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'liberica'
+          java-version: '21'
+          java-package: 'jdk'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
       - name: Write Application Configuration
         run: |
           mkdir -p config
           echo "${{ secrets.APPLICATION_YAML }}" | base64 --decode > config/application.yml
-
-      - name: Call Common Setup
-        uses: ./.github/workflows/setup-common.yml
-        with:
-          java-distribution: 'liberica'
-          java-version: '21'
-          java-package: 'jdk'
 
       - name: Build with Gradle
         run: ./gradlew assemble --info --parallel
