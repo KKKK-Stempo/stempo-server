@@ -1,4 +1,4 @@
-name: Spring Boot Gradle CI
+name: CI for Spring Boot with Gradle
 
 on:
   pull_request:
