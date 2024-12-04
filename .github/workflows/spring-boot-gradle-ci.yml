@@ -33,6 +33,9 @@ jobs:
     needs: test
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Call Common Setup
         uses: ./.github/actions/setup-common
         with:
