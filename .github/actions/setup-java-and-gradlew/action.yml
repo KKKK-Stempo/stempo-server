@@ -20,19 +20,23 @@ outputs: {}
 runs:
   using: "composite"
   steps:
-    - name: Convert Java Distribution to Proper Case
-      id: convert
+    - name: Prepare Cache Key Variables
+      id: prepare-cache-key
       run: |
         DISTRIBUTION="${{ inputs.java-distribution }}"
+        VERSION="${{ inputs.java-version }}"
+        PACKAGE="${{ inputs.java-package }}"
         DISTRIBUTION_CAPITALIZED="$(echo "${DISTRIBUTION:0:1}" | tr '[:lower:]' '[:upper:]')${DISTRIBUTION:1}"
-        echo "DISTRIBUTION_CAPITALIZED=$DISTRIBUTION_CAPITALIZED" >> $GITHUB_ENV
+        CACHE_PATH="/opt/hostedtoolcache/Java_${DISTRIBUTION_CAPITALIZED}_${PACKAGE}/${VERSION}*"
+        echo "CACHE_KEY=java-${DISTRIBUTION}-${VERSION}-${PACKAGE}-${{ runner.os }}" >> $GITHUB_ENV
+        echo "CACHE_PATH=${CACHE_PATH}" >> $GITHUB_ENV
       shell: bash
 
     - name: Restore JDK Cache
       uses: actions/cache@v4
       with:
-        path: /opt/hostedtoolcache/Java_${{ env.DISTRIBUTION_CAPITALIZED }}_${{ inputs.java-package }}
-        key: java-${{ inputs.java-distribution }}-${{ inputs.java-version }}-${{ inputs.java-package }}-${{ runner.os }}
+        path: ${{ env.CACHE_PATH }}
+        key: ${{ env.CACHE_KEY }}
         restore-keys: |
           java-${{ inputs.java-distribution }}-${{ inputs.java-version }}-
           java-${{ inputs.java-distribution }}-
