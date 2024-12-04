@@ -36,11 +36,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create Config Directory
-        run: mkdir -p config
-
-      - name: Write Application Configuration
-        run: echo "${{ secrets.APPLICATION_YAML }}" > config/application.yml
+      - name: Write Test Configuration
+        run: |
+          mkdir -p config
+          cat <<EOF > config/application.yml
+          ${{ secrets.APPLICATION_YAML }}
+          EOF
 
       - name: Call Common Setup
         uses: ./.github/actions/setup-common
