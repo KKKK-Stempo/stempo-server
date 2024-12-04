@@ -27,26 +27,15 @@ runs:
         VERSION="${{ inputs.java-version }}"
         PACKAGE="${{ inputs.java-package }}"
         DISTRIBUTION_CAPITALIZED="$(echo "${DISTRIBUTION:0:1}" | tr '[:lower:]' '[:upper:]')${DISTRIBUTION:1}"
-
-        if [ -d "/opt/hostedtoolcache/Java_${DISTRIBUTION_CAPITALIZED}_${PACKAGE}/" ]; then
-          CACHE_PATH=$(find /opt/hostedtoolcache/Java_${DISTRIBUTION_CAPITALIZED}_${PACKAGE}/ -type d -regex ".*/${VERSION}.*/x64" | sort -V | tail -n 1)
-          if [ -z "${CACHE_PATH}" ]; then
-            echo "No valid cache directory found for Java ${VERSION}. Continuing without cache."
-            CACHE_PATH=""
-          fi
-        else
-          echo "Java directory not found. Continuing without cache."
-          CACHE_PATH=""
-        fi
-
-        CACHE_KEY="java-${DISTRIBUTION}-${VERSION}-${PACKAGE}-${{ runner.os }}"
-
+        
+        CACHE_PATH="/opt/hostedtoolcache/Java_${DISTRIBUTION_CAPITALIZED}_${PACKAGE}/${VERSION}*/x64"
+        CACHE_KEY="java-${DISTRIBUTION}-${VERSION}-${PACKAGE}"
+        
         echo "CACHE_PATH=${CACHE_PATH}" >> $GITHUB_ENV
         echo "CACHE_KEY=${CACHE_KEY}" >> $GITHUB_ENV
       shell: bash
 
     - name: Restore JDK Cache
-      if: env.CACHE_PATH != ''
       uses: actions/cache@v4
       with:
         path: ${{ env.CACHE_PATH }}
