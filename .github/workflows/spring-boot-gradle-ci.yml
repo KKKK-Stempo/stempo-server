@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Call Common Setup
-        uses: ./.github/actions/setup-common
+        uses: ./.github/workflows/setup-common.yml
         with:
           java-distribution: 'liberica'
           java-version: '21'
@@ -36,7 +36,7 @@ jobs:
           echo "${{ secrets.APPLICATION_YAML }}" | base64 --decode > config/application.yml
 
       - name: Call Common Setup
-        uses: ./.github/actions/setup-common
+        uses: ./.github/workflows/setup-common.yml
         with:
           java-distribution: 'liberica'
           java-version: '21'
