@@ -41,7 +41,7 @@ jobs:
         with:
           java-distribution: 'liberica'
           java-version: '21'
-          java-package: 'jre'
+          java-package: 'jdk'
 
       - name: Build with Gradle
         run: ./gradlew assemble --info --parallel
