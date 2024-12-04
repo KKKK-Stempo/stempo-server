@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Call Common Setup
-        uses: ./.github/workflows/setup-common.yml
+        uses: ./.github/actions/setup-common
         with:
           java-distribution: 'liberica'
           java-version: '21'
@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Call Common Setup
-        uses: ./.github/workflows/setup-common.yml
+        uses: ./.github/actions/setup-common
         with:
           java-distribution: 'liberica'
           java-version: '21'
