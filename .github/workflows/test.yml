@@ -18,6 +18,7 @@ jobs:
           java-version: '21'
           java-package: 'jdk'
           cache: gradle
+          check-latest: false
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
