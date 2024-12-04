@@ -1,33 +1,31 @@
-name: Setup Common
+name: 'Setup Common'
+description: 'Setup common environment for CI/CD'
 
-on:
-  workflow_call:
-    inputs:
-      java-distribution:
-        required: true
-        type: string
-      java-version:
-        required: true
-        type: string
-      java-package:
-        type: string
-        default: 'jdk'
+inputs:
+  java-distribution:
+    description: 'Java distribution to set up'
+    required: true
+    type: string
+  java-version:
+    description: 'Java version to set up'
+    required: true
+    type: string
+  java-package:
+    description: 'Java package type (jdk, jre, jdk+fx, jre+fx)'
+    required: false
+    default: 'jdk'
+    type: string
 
-jobs:
-  setup:
-    runs-on: ubuntu-latest
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: ${{ inputs.java-distribution }}
+        java-version: ${{ inputs.java-version }}
+        java-package: ${{ inputs.java-package }}
+        cache: gradle
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: ${{ inputs.java-distribution }}
-          java-version: ${{ inputs.java-version }}
-          java-package: ${{ inputs.java-package }}
-          cache: gradle
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
