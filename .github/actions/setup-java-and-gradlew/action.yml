@@ -27,7 +27,7 @@ runs:
         VERSION="${{ inputs.java-version }}"
         PACKAGE="${{ inputs.java-package }}"
         DISTRIBUTION_CAPITALIZED="$(echo "${DISTRIBUTION:0:1}" | tr '[:lower:]' '[:upper:]')${DISTRIBUTION:1}"
-        CACHE_PATH="/opt/hostedtoolcache/Java_${DISTRIBUTION_CAPITALIZED}_${PACKAGE}/${VERSION}.*/x64"
+        CACHE_PATH=$(find /opt/hostedtoolcache/Java_${DISTRIBUTION_CAPITALIZED}_${PACKAGE}/${VERSION} -type d -path "*/x64" | head -n 1)
         CACHE_KEY="java-${DISTRIBUTION}-${VERSION}-${PACKAGE}-${{ runner.os }}"
         echo "CACHE_PATH=${CACHE_PATH}" >> $GITHUB_ENV
         echo "CACHE_KEY=${CACHE_KEY}" >> $GITHUB_ENV
