@@ -20,29 +20,12 @@ outputs: {}
 runs:
   using: "composite"
   steps:
-    - name: Prepare Cache Key Variables
-      id: prepare-cache-key
-      run: |
-        DISTRIBUTION="${{ inputs.java-distribution }}"
-        VERSION="${{ inputs.java-version }}"
-        PACKAGE="${{ inputs.java-package }}"
-        DISTRIBUTION_CAPITALIZED="$(echo "${DISTRIBUTION:0:1}" | tr '[:lower:]' '[:upper:]')${DISTRIBUTION:1}"
-        
-        CACHE_PATH="/opt/hostedtoolcache/Java_${DISTRIBUTION_CAPITALIZED}_${PACKAGE}"
-        CACHE_KEY="java-${DISTRIBUTION}-${VERSION}-${PACKAGE}-${{ runner.os }}"
-        
-        echo "CACHE_PATH=${CACHE_PATH}" >> $GITHUB_ENV
-        echo "CACHE_KEY=${CACHE_KEY}" >> $GITHUB_ENV
-      shell: bash
-
     - name: Restore JDK Cache
       uses: actions/cache@v4
       with:
-        path: ${{ env.CACHE_PATH }}
-        key: ${{ env.CACHE_KEY }}
-        restore-keys: |
-          java-${{ inputs.java-distribution }}-${{ inputs.java-version }}-
-          java-${{ inputs.java-distribution }}-
+        path: /opt/hostedtoolcache/Java_Liberica_jdk
+        key: liberica-jdk-${{ runner.os }}
+        restore-keys: liberica-jdk-
 
     - name: Set up Java
       uses: actions/setup-java@v4
