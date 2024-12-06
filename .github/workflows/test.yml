@@ -37,7 +37,7 @@ jobs:
       - name: Test Reporter
         id: reporter
         uses: dorny/test-reporter@v1
-        if: success() || failure()
+        if: always()
         with:
           name: Spring Boot Tests
           path: '**/build/test-results/test/*.xml'
@@ -50,6 +50,7 @@ jobs:
           fail-on-empty: true
 
       - name: Compute Metrics
+        if: always()
         run: |
           total=$(( ${PASSED:-0} + ${FAILED:-0} + ${SKIPPED:-0} ))
           time_in_seconds=$(echo "scale=2; ${TIME_MS:-0} / 1000" | bc)
@@ -63,11 +64,15 @@ jobs:
 
       - name: Add Test Results to PR
         uses: marocchino/sticky-pull-request-comment@v2
+        if: always()
         with:
           header: Test Results
           recreate: true
           message: |
             ## 🛠️ Test Summary
+            
+            🚦 **Status**: ${{ steps.reporter.outputs.conclusion }}
+            📄 **[View Detailed Test Logs](${{ steps.reporter.outputs.url_html }})**
             
             | **Metrics**           | **Test Result Details**               |
             |-----------------------|---------------------------------------|
@@ -76,5 +81,3 @@ jobs:
             | ❌ **Tests Failed**   | ${{ steps.reporter.outputs.failed }}  |
             | ⚠️ **Tests Skipped**  | ${{ steps.reporter.outputs.skipped }} |
             | ⏱️ **Execution Time** | ${{ env.time_in_seconds }}s           |
-
-            📄 **[View Detailed Test Logs](${{ steps.reporter.outputs.url_html }})**
