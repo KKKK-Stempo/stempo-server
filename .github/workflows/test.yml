@@ -34,7 +34,7 @@ jobs:
           path: '**/build/reports/tests/test/*'
 
       - name: Test Reporter
-        uses: dorny/test-reporter@v1.9.1
+        uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: 'Spring Boot Tests'
@@ -46,3 +46,16 @@ jobs:
           max-annotations: '50'
           fail-on-error: 'true'
           fail-on-empty: 'true'
+
+      - name: Add Test Results to PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: Test Results
+          message: |
+            ### 🛠️ Test Summary
+            - Total Tests: ${{steps.reporter.outputs.passed}} + ${{steps.reporter.outputs.failed}} + ${{steps.reporter.outputs.skipped}}
+            - ✅ Passed: ${{ steps.reporter.outputs.passed }}
+            - ❌ Failed: ${{ steps.reporter.outputs.failed }}
+            - ⚠️ Skipped: ${{ steps.reporter.outputs.skipped }}
+            - ⏱️ Time: ${{ steps.reporter.outputs.time }}ms
+            - 📄 [View Test Logs](https://github.com/${{ github.repository }}/runs/${{ github.run_id }})
