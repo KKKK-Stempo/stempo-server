@@ -79,6 +79,10 @@ allprojects {
 
     tasks.named<Test>("test") {
         useJUnitPlatform()
+
+        reports {
+            junitXml.required.set(true)
+        }
     }
 
     tasks.withType<JavaExec> {

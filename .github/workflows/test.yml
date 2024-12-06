@@ -27,3 +27,17 @@ jobs:
         with:
           name: test-results
           path: '**/build/reports/tests/test/*'
+
+      - name: Test Reporter
+        uses: dorny/test-reporter@v1.9.1
+        if: success() || failure()
+        with:
+          name: 'Spring Boot Tests'
+          path: '**/build/test-results/test/*.xml'
+          reporter: 'java-junit'
+          only-summary: 'false'
+          list-suites: 'all'
+          list-tests: 'all'
+          max-annotations: '50'
+          fail-on-error: 'true'
+          fail-on-empty: 'true'
