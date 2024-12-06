@@ -67,10 +67,14 @@ jobs:
           header: Test Results
           recreate: true
           message: |
-            ### 🛠️ Test Summary
-            - Total Tests: ${{ env.total }}
-            - ✅ Passed: ${{ steps.reporter.outputs.passed }}
-            - ❌ Failed: ${{ steps.reporter.outputs.failed }}
-            - ⚠️ Skipped: ${{ steps.reporter.outputs.skipped }}
-            - ⏱️ Time: ${{ env.time_in_seconds }}s
-            - 📄 [View Test Logs](${{ steps.reporter.outputs.url_html }})
+            ## 🛠️ Test Summary
+            
+            | **Metric**      | **Result**                            |
+            |-----------------|---------------------------------------|
+            | **Total Tests** | ${{ env.total }}                      |
+            | ✅ **Passed**    | ${{ steps.reporter.outputs.passed }}  |
+            | ❌ **Failed**    | ${{ steps.reporter.outputs.failed }}  |
+            | ⚠️ **Skipped**  | ${{ steps.reporter.outputs.skipped }} |
+            | ⏱️ **Time**     | ${{ env.time_in_seconds }}s           |
+            
+            📄 **[View Test Logs](${{ steps.reporter.outputs.url_html }})**
