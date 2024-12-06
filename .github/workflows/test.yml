@@ -69,12 +69,12 @@ jobs:
           message: |
             ## 🛠️ Test Summary
             
-            | **Metric**      | **Result**                            |
-            |-----------------|---------------------------------------|
-            | **Total Tests** | ${{ env.total }}                      |
-            | ✅ **Passed**    | ${{ steps.reporter.outputs.passed }}  |
-            | ❌ **Failed**    | ${{ steps.reporter.outputs.failed }}  |
-            | ⚠️ **Skipped**  | ${{ steps.reporter.outputs.skipped }} |
-            | ⏱️ **Time**     | ${{ env.time_in_seconds }}s           |
-            
-            📄 **[View Test Logs](${{ steps.reporter.outputs.url_html }})**
+            | **Metrics**           | **Test Result Details**               |
+            |-----------------------|---------------------------------------|
+            | **Total Tests**       | ${{ env.total }}                      |
+            | ✅ **Tests Passed**   | ${{ steps.reporter.outputs.passed }}  |
+            | ❌ **Tests Failed**   | ${{ steps.reporter.outputs.failed }}  |
+            | ⚠️ **Tests Skipped**  | ${{ steps.reporter.outputs.skipped }} |
+            | ⏱️ **Execution Time** | ${{ env.time_in_seconds }}s           |
+
+            📄 **[View Detailed Test Logs](${{ steps.reporter.outputs.url_html }})**
