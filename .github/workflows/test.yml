@@ -72,6 +72,7 @@ jobs:
             ## 🛠️ Test Summary
             
             🚦 **Status**: ${{ steps.reporter.outputs.conclusion }}
+            
             📄 **[View Detailed Test Logs](${{ steps.reporter.outputs.url_html }})**
             
             | **Metrics**           | **Test Result Details**               |
