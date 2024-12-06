@@ -69,9 +69,7 @@ jobs:
           header: Test Results
           recreate: true
           message: |
-            ## 🛠️ Test Summary
-            
-            🚦 **Status**: ${{ steps.reporter.outputs.conclusion }}
+            ## 🛠️ Test Summary (${{ steps.reporter.outputs.conclusion }})
             
             📄 **[View Detailed Test Logs](${{ steps.reporter.outputs.url_html }})**
             
