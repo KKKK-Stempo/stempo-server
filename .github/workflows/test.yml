@@ -35,6 +35,7 @@ jobs:
           path: '**/build/reports/tests/test/*'
 
       - name: Test Reporter
+        id: reporter
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
@@ -55,9 +56,9 @@ jobs:
           recreate: true
           message: |
             ### 🛠️ Test Summary
-            - Total Tests: ${{steps.reporter.outputs.passed}} + ${{steps.reporter.outputs.failed}} + ${{steps.reporter.outputs.skipped}}
+            - Total Tests: ${{ steps.reporter.outputs.passed }} + ${{ steps.reporter.outputs.failed }} + ${{ steps.reporter.outputs.skipped }}
             - ✅ Passed: ${{ steps.reporter.outputs.passed }}
             - ❌ Failed: ${{ steps.reporter.outputs.failed }}
             - ⚠️ Skipped: ${{ steps.reporter.outputs.skipped }}
             - ⏱️ Time: ${{ steps.reporter.outputs.time }}ms
-            - 📄 [View Test Logs](https://github.com/${{ github.repository }}/runs/${{ github.run_id }})
+            - 📄 [View Test Logs](${{ steps.reporter.outputs.url_html }})
