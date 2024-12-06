@@ -38,20 +38,21 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: 'Spring Boot Tests'
+          name: Spring Boot Tests
           path: '**/build/test-results/test/*.xml'
-          reporter: 'java-junit'
-          only-summary: 'false'
-          list-suites: 'all'
-          list-tests: 'all'
-          max-annotations: '50'
-          fail-on-error: 'true'
-          fail-on-empty: 'true'
+          reporter: java-junit
+          only-summary: false
+          list-suites: all
+          list-tests: all
+          max-annotations: 50
+          fail-on-error: true
+          fail-on-empty: true
 
       - name: Add Test Results to PR
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: Test Results
+          recreate: true
           message: |
             ### 🛠️ Test Summary
             - Total Tests: ${{steps.reporter.outputs.passed}} + ${{steps.reporter.outputs.failed}} + ${{steps.reporter.outputs.skipped}}
