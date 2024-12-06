@@ -49,6 +49,18 @@ jobs:
           fail-on-error: true
           fail-on-empty: true
 
+      - name: Compute Metrics
+        run: |
+          total=$(( ${PASSED:-0} + ${FAILED:-0} + ${SKIPPED:-0} ))
+          time_in_seconds=$(echo "scale=2; ${TIME_MS:-0} / 1000" | bc)
+          echo "total=$total" >> $GITHUB_ENV
+          echo "time_in_seconds=$time_in_seconds" >> $GITHUB_ENV
+        env:
+          PASSED: ${{ steps.reporter.outputs.passed }}
+          FAILED: ${{ steps.reporter.outputs.failed }}
+          SKIPPED: ${{ steps.reporter.outputs.skipped }}
+          TIME_MS: ${{ steps.reporter.outputs.time }}
+
       - name: Add Test Results to PR
         uses: marocchino/sticky-pull-request-comment@v2
         with:
@@ -56,9 +68,9 @@ jobs:
           recreate: true
           message: |
             ### 🛠️ Test Summary
-            - Total Tests: ${{ steps.reporter.outputs.passed }} + ${{ steps.reporter.outputs.failed }} + ${{ steps.reporter.outputs.skipped }}
+            - Total Tests: ${{ env.total }}
             - ✅ Passed: ${{ steps.reporter.outputs.passed }}
             - ❌ Failed: ${{ steps.reporter.outputs.failed }}
             - ⚠️ Skipped: ${{ steps.reporter.outputs.skipped }}
-            - ⏱️ Time: ${{ steps.reporter.outputs.time }}ms
+            - ⏱️ Time: ${{ env.time_in_seconds }}s
             - 📄 [View Test Logs](${{ steps.reporter.outputs.url_html }})
