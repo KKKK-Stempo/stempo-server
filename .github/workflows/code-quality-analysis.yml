@@ -26,6 +26,6 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Run SonarCloud Analysis
-        run: ./gradlew checkstyleMain checkstyleTest sonarqube --info
+        run: ./gradlew checkstyleMain checkstyleTest sonar --info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
