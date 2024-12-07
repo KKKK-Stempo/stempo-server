@@ -56,7 +56,10 @@ class ColumnValidatorTest {
 
     static class TestDomain {
 
+        @SuppressWarnings("unused")
         private String validField;
+
+        @SuppressWarnings("unused")
         private int anotherField;
     }
 }

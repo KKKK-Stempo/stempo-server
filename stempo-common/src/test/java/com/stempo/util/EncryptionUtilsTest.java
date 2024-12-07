@@ -14,8 +14,8 @@ class EncryptionUtilsTest {
 
     @BeforeEach
     void setUp() {
-        AesConfig aesConfig = new AesConfig("01234567890123456789012345678901", 12, 128);
-        encryptionUtils = EncryptionUtils.create(aesConfig);
+        AesConfig aesConfig = new AesConfig("01234567890123456789012345678901", 12, 128, "deviceTagSecretKey");
+        encryptionUtils = new EncryptionUtils(aesConfig);
     }
 
     @Test
@@ -57,7 +57,7 @@ class EncryptionUtilsTest {
 
         // then
         assertThatThrownBy(() -> encryptionUtils.decryptWithHashedIv(encryptedText, differentUniqueValue))
-                .isInstanceOf(BaseException.class);
+            .isInstanceOf(BaseException.class);
     }
 
     @Test
@@ -84,8 +84,8 @@ class EncryptionUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> encryptionUtils.decrypt(invalidEncryptedText))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining("잘못된 패딩이 감지되었습니다.");
+            .isInstanceOf(BaseException.class)
+            .hasMessageContaining("잘못된 패딩이 감지되었습니다.");
     }
 
     @Test
@@ -98,8 +98,7 @@ class EncryptionUtilsTest {
         byte[] iv = encryptionUtils.generateIvFromUniqueValue(uniqueValue);
 
         // then
-        assertThat(iv).isNotNull();
-        assertThat(iv.length).isEqualTo(ivLength);
+        assertThat(iv).isNotNull().hasSize(ivLength);
     }
 
     @Test
@@ -108,8 +107,7 @@ class EncryptionUtilsTest {
 
         byte[] iv = encryptionUtils.generateRandomIv(ivLength);
 
-        assertThat(iv).isNotNull();
-        assertThat(iv.length).isEqualTo(ivLength);
+        assertThat(iv).isNotNull().hasSize(ivLength);
     }
 
     @Test

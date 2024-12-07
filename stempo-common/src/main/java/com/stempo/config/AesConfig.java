@@ -8,31 +8,27 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Getter
-public class AesConfig {
+public class AesConfig implements EncryptionConfig {
 
-    @Value("${security.aes.key}")
-    private String secretKey;
+    private final String secretKey;
+    private final int ivLengthBytes;
+    private final int gcmTagLengthBits;
+    private final String deviceTagSecretKey;
 
-    @Value("${security.aes.iv-length-bytes}")
-    private int ivLengthBytes;
-
-    @Value("${security.aes.gcm-tag-length-bits}")
-    private int gcmTagLengthBits;
-
-    @Value("${security.aes.device-tag-secret-key}")
-    private String deviceTagSecretKey;
-
-    public AesConfig() {
-    }
-
-    public AesConfig(String secretKey, int ivLengthBytes, int gcmTagLengthBits) {
+    public AesConfig(
+        @Value("${security.aes.key}") String secretKey,
+        @Value("${security.aes.iv-length-bytes}") int ivLengthBytes,
+        @Value("${security.aes.gcm-tag-length-bits}") int gcmTagLengthBits,
+        @Value("${security.aes.device-tag-secret-key}") String deviceTagSecretKey
+    ) {
         this.secretKey = secretKey;
         this.ivLengthBytes = ivLengthBytes;
         this.gcmTagLengthBits = gcmTagLengthBits;
+        this.deviceTagSecretKey = deviceTagSecretKey;
     }
 
     @Bean
-    public EncryptionUtils encryptionUtil(AesConfig aesConfig) {
-        return EncryptionUtils.create(aesConfig);
+    public EncryptionUtils encryptionUtils() {
+        return new EncryptionUtils(this);
     }
 }

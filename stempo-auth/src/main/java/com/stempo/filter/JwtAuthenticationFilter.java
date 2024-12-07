@@ -23,7 +23,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String path = httpServletRequest.getRequestURI();
 
@@ -33,19 +33,16 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             return;
         }
 
-        if (!authenticateToken(httpServletRequest)) {
-            return;
-        }
+        authenticateToken(httpServletRequest);
 
         chain.doFilter(request, response);
     }
 
-    private boolean authenticateToken(HttpServletRequest request) {
+    private void authenticateToken(HttpServletRequest request) {
         String token = tokenService.resolveToken(request);
         if (Objects.nonNull(token) && tokenService.validateTokenSilently(token)) {
             Authentication authentication = tokenService.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-        return true;
     }
 }

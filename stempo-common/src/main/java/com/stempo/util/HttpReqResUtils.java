@@ -20,12 +20,21 @@ public class HttpReqResUtils {
         "REMOTE_ADDR"
     };
 
+    private HttpReqResUtils() {
+    }
+
     public static String getClientIpAddressIfServletRequestExist() {
         if (RequestContextHolder.getRequestAttributes() == null) {
             return "0.0.0.0";
         }
-        HttpServletRequest request =
-            ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            throw new IllegalStateException("No request attributes are available in the current thread.");
+        }
+
+        HttpServletRequest request = attributes.getRequest();
+
         for (String header : IP_HEADER_CANDIDATES) {
             String ipList = request.getHeader(header);
             if (ipList != null && !ipList.isEmpty() && !"unknown".equalsIgnoreCase(ipList)) {

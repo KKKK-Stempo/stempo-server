@@ -1,5 +1,6 @@
 package com.stempo.config;
 
+import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.stempo.annotation.SuccessApiResponseCustomizer;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -92,7 +94,7 @@ class OpenApiConfigTest {
         // then
         assertThat(components).isNotNull();
         assertThat(components.getSecuritySchemes()).containsKey("bearerAuth");
-        assertThat(components.getSecuritySchemes().get("bearerAuth")).isEqualTo(securityScheme);
+        assertThat(components.getSecuritySchemes()).containsEntry("bearerAuth", securityScheme);
     }
 
     @Test
@@ -101,8 +103,7 @@ class OpenApiConfigTest {
         SecurityRequirement securityRequirement = openApiConfig.securityRequirement();
 
         // then
-        assertThat(securityRequirement).isNotNull();
-        assertThat(securityRequirement.containsKey("bearerAuth")).isTrue();
+        assertThat(securityRequirement).isNotNull().contains(entry("bearerAuth", new ArrayList<>()));
     }
 
     @Test

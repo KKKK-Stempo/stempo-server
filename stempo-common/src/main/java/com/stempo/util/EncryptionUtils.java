@@ -1,6 +1,6 @@
 package com.stempo.util;
 
-import com.stempo.config.AesConfig;
+import com.stempo.config.EncryptionConfig;
 import com.stempo.exception.BaseException;
 import com.stempo.exception.ErrorCode;
 import java.nio.charset.StandardCharsets;
@@ -21,22 +21,15 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class EncryptionUtils {
 
+    private static final String AES_GCM_NO_PADDING = "AES/GCM/NoPadding";
     private final String secretKey;
     private final int ivLengthBytes;
     private final int gcmTagLengthBits;
 
-    private EncryptionUtils(String secretKey, int ivLengthBytes, int gcmTagLengthBits) {
-        this.secretKey = secretKey;
-        this.ivLengthBytes = ivLengthBytes;
-        this.gcmTagLengthBits = gcmTagLengthBits;
-    }
-
-    public static EncryptionUtils create(AesConfig aesConfig) {
-        return new EncryptionUtils(
-                aesConfig.getSecretKey(),
-                aesConfig.getIvLengthBytes(),
-                aesConfig.getGcmTagLengthBits()
-        );
+    public EncryptionUtils(EncryptionConfig config) {
+        this.secretKey = config.getSecretKey();
+        this.ivLengthBytes = config.getIvLengthBytes();
+        this.gcmTagLengthBits = config.getGcmTagLengthBits();
     }
 
     /**
@@ -50,7 +43,7 @@ public class EncryptionUtils {
         try {
             byte[] iv = generateRandomIv(this.ivLengthBytes);
             SecretKeySpec keySpec = new SecretKeySpec(this.secretKey.getBytes(StandardCharsets.UTF_8), "AES");
-            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            Cipher cipher = Cipher.getInstance(AES_GCM_NO_PADDING);
             GCMParameterSpec gcmSpec = new GCMParameterSpec(this.gcmTagLengthBits, iv);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
             byte[] cipherText = cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8));
@@ -80,7 +73,7 @@ public class EncryptionUtils {
             byte[] iv = Arrays.copyOfRange(combined, 0, this.ivLengthBytes);
             byte[] cipherText = Arrays.copyOfRange(combined, this.ivLengthBytes, combined.length);
             SecretKeySpec keySpec = new SecretKeySpec(this.secretKey.getBytes(StandardCharsets.UTF_8), "AES");
-            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            Cipher cipher = Cipher.getInstance(AES_GCM_NO_PADDING);
             GCMParameterSpec gcmSpec = new GCMParameterSpec(this.gcmTagLengthBits, iv);
             cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec);
             byte[] decryptedText = cipher.doFinal(cipherText);
@@ -108,7 +101,7 @@ public class EncryptionUtils {
         try {
             byte[] iv = generateIvFromUniqueValue(uniqueValue);
             SecretKeySpec keySpec = new SecretKeySpec(this.secretKey.getBytes(StandardCharsets.UTF_8), "AES");
-            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            Cipher cipher = Cipher.getInstance(AES_GCM_NO_PADDING);
             GCMParameterSpec gcmSpec = new GCMParameterSpec(this.gcmTagLengthBits, iv);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
             byte[] cipherText = cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8));
@@ -131,7 +124,7 @@ public class EncryptionUtils {
             byte[] iv = generateIvFromUniqueValue(uniqueValue);
             byte[] cipherText = Base64.getDecoder().decode(strToDecrypt);
             SecretKeySpec keySpec = new SecretKeySpec(this.secretKey.getBytes(StandardCharsets.UTF_8), "AES");
-            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            Cipher cipher = Cipher.getInstance(AES_GCM_NO_PADDING);
             GCMParameterSpec gcmSpec = new GCMParameterSpec(this.gcmTagLengthBits, iv);
             cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec);
             byte[] decryptedText = cipher.doFinal(cipherText);
