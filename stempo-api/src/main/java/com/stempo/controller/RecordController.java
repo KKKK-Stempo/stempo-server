@@ -37,10 +37,10 @@ public class RecordController {
         return ApiResponse.success(deviceTag);
     }
 
-    @Operation(summary = "[U] 내 보행 훈련 기록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "startDate와 endDate는 yyyy-MM-dd 형식으로 입력해야 함<br>" +
-            "startDate 이전의 가장 최신 데이터와 startDate부터 endDate까지의 데이터를 가져옴<br>" +
-            "데이터가 없을 경우 startDate 이전 날짜, 정확도 0으로 설정하여 반환")
+    @Operation(summary = "[U] 내 보행 훈련 기록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>"
+        + "startDate와 endDate는 yyyy-MM-dd 형식으로 입력해야 함<br>"
+        + "startDate 이전의 가장 최신 데이터와 startDate부터 endDate까지의 데이터를 가져옴<br>"
+        + "데이터가 없을 경우 startDate 이전 날짜, 정확도 0으로 설정하여 반환")
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/api/v1/records")
     public ApiResponse<List<RecordResponseDto>> getRecords(

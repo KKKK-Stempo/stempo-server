@@ -34,7 +34,7 @@ public class FileService {
     private final EncryptionUtils encryptionUtils;
 
     @Value("${resource.file.url}")
-    private String fileURL;
+    private String fileUrl;
 
     @Transactional
     public List<String> saveFiles(List<MultipartFile> multipartFiles, String path) throws IOException {
@@ -68,7 +68,7 @@ public class FileService {
     public String saveFile(File file) throws IOException {
         String savedFilePath = fileHandler.saveFile(file);
         String fileName = new File(savedFilePath).getName();
-        String url = fileURL + "/" + fileName;
+        String url = fileUrl + "/" + fileName;
 
         String encryptedFilePath = encryptionUtils.encrypt(savedFilePath);
 
@@ -95,7 +95,7 @@ public class FileService {
     }
 
     private String generateFileUrl(String path, String fileName) {
-        return fileURL + "/" + path.replace(File.separator, "/") + "/" + fileName;
+        return fileUrl + "/" + path.replace(File.separator, "/") + "/" + fileName;
     }
 }
 

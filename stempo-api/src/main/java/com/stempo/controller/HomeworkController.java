@@ -42,10 +42,10 @@ public class HomeworkController {
         return ApiResponse.success(id);
     }
 
-    @Operation(summary = "[U] 과제 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "completed(Optional)가 true이면 완료된 과제, false이면 미완료된 과제를 조회함<br>" +
-            "completed가 없으면 모든 과제를 조회함<br>" +
-            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
+    @Operation(summary = "[U] 과제 조회", description = "ROLE_USER 이상의 권한이 필요함<br>"
+        + "completed(Optional)가 true이면 완료된 과제, false이면 미완료된 과제를 조회함<br>"
+        + "completed가 없으면 모든 과제를 조회함<br>"
+        + "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @PreAuthorize("hasRole('USER')")
     @GetMapping(value = "/api/v1/homeworks")
     public ApiResponse<PagedResponseDto<HomeworkResponseDto>> getHomeworks(

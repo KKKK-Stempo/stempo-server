@@ -48,7 +48,7 @@ public class EncryptionUtils {
      */
     public String encrypt(String strToEncrypt) {
         try {
-            byte[] iv = generateRandomIV(this.ivLengthBytes);
+            byte[] iv = generateRandomIv(this.ivLengthBytes);
             SecretKeySpec keySpec = new SecretKeySpec(this.secretKey.getBytes(StandardCharsets.UTF_8), "AES");
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             GCMParameterSpec gcmSpec = new GCMParameterSpec(this.gcmTagLengthBits, iv);
@@ -104,9 +104,9 @@ public class EncryptionUtils {
      * @return Base64 형식으로 인코딩된 암호화된 문자열.
      * @throws BaseException 암호화 중 오류가 발생할 경우.
      */
-    public String encryptWithHashedIV(String strToEncrypt, String uniqueValue) {
+    public String encryptWithHashedIv(String strToEncrypt, String uniqueValue) {
         try {
-            byte[] iv = generateIVFromUniqueValue(uniqueValue);
+            byte[] iv = generateIvFromUniqueValue(uniqueValue);
             SecretKeySpec keySpec = new SecretKeySpec(this.secretKey.getBytes(StandardCharsets.UTF_8), "AES");
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             GCMParameterSpec gcmSpec = new GCMParameterSpec(this.gcmTagLengthBits, iv);
@@ -126,9 +126,9 @@ public class EncryptionUtils {
      * @return 복호화된 문자열.
      * @throws BaseException 복호화 중 오류가 발생할 경우.
      */
-    public String decryptWithHashedIV(String strToDecrypt, String uniqueValue) {
+    public String decryptWithHashedIv(String strToDecrypt, String uniqueValue) {
         try {
-            byte[] iv = generateIVFromUniqueValue(uniqueValue);
+            byte[] iv = generateIvFromUniqueValue(uniqueValue);
             byte[] cipherText = Base64.getDecoder().decode(strToDecrypt);
             SecretKeySpec keySpec = new SecretKeySpec(this.secretKey.getBytes(StandardCharsets.UTF_8), "AES");
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
@@ -166,7 +166,7 @@ public class EncryptionUtils {
      * @return 해시된 고유 값으로부터 유도된 IV를 나타내는 byte 배열.
      * @throws BaseException 해싱 알고리즘이 사용 불가능할 경우.
      */
-    public byte[] generateIVFromUniqueValue(String uniqueValue) {
+    public byte[] generateIvFromUniqueValue(String uniqueValue) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(uniqueValue.getBytes(StandardCharsets.UTF_8));
@@ -182,7 +182,7 @@ public class EncryptionUtils {
      * @param ivLengthBytes 생성할 IV의 길이 (바이트 단위).
      * @return 생성된 IV를 나타내는 byte 배열.
      */
-    protected byte[] generateRandomIV(int ivLengthBytes) {
+    protected byte[] generateRandomIv(int ivLengthBytes) {
         SecureRandom random = new SecureRandom();
         byte[] iv = new byte[ivLengthBytes];
         random.nextBytes(iv);

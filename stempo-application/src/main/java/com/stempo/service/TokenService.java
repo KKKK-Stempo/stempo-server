@@ -22,7 +22,7 @@ public class TokenService {
     public TokenInfo reissueToken(HttpServletRequest request) {
         String refreshToken = tokenService.resolveToken(request);
         validateRefreshToken(refreshToken);
-        return reissueToken(refreshToken);
+        return reissue(refreshToken);
     }
 
     private void validateRefreshToken(String refreshToken) {
@@ -31,7 +31,7 @@ public class TokenService {
         }
     }
 
-    private TokenInfo reissueToken(String refreshToken) {
+    private TokenInfo reissue(String refreshToken) {
         Authentication authentication = tokenService.getAuthentication(refreshToken);
         User user = getTokenUserInfo(authentication);
         return tokenService.generateToken(user.getDeviceTag(), user.getRole());

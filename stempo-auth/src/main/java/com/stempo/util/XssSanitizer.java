@@ -15,7 +15,7 @@ public class XssSanitizer {
     }
 
     /**
-     * 입력값을 XSS로부터 안전한 값으로 변환
+     * 입력값을 XSS로부터 안전한 값으로 변환.
      *
      * @param input 사용자 입력 값
      * @return 필터링된 값

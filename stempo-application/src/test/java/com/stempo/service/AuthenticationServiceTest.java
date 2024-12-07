@@ -75,7 +75,7 @@ class AuthenticationServiceTest {
         User user = User.builder().deviceTag(deviceTag).role(Role.USER).build();
         TokenInfo tokenInfo = TokenInfo.create("access-token", "refresh-token");
 
-        when(encryptionUtils.encryptWithHashedIV(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
         when(userService.getById(encryptedDeviceTag)).thenReturn(user);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
@@ -96,7 +96,7 @@ class AuthenticationServiceTest {
         String deviceTag = "user-device";
         authRequestDto.setDeviceTag(deviceTag);
 
-        when(encryptionUtils.encryptWithHashedIV(eq(deviceTag), anyString())).thenReturn(encryptedDeviceTag);
+        when(encryptionUtils.encryptWithHashedIv(eq(deviceTag), anyString())).thenReturn(encryptedDeviceTag);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new BadCredentialsException("Invalid deviceTag or password."));
 
@@ -117,7 +117,7 @@ class AuthenticationServiceTest {
         String encryptedDeviceTag = "encrypted-admin-device";
         User adminUser = User.builder().deviceTag(deviceTag).role(Role.ADMIN).build();
 
-        when(encryptionUtils.encryptWithHashedIV(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
         when(userService.getById(encryptedDeviceTag)).thenReturn(adminUser);
         when(authenticatorService.isAuthenticatorExist(encryptedDeviceTag)).thenReturn(true);
 
@@ -140,7 +140,7 @@ class AuthenticationServiceTest {
         String encryptedDeviceTag = "encrypted-admin-device";
         User adminUser = User.builder().deviceTag(deviceTag).role(Role.ADMIN).build();
 
-        when(encryptionUtils.encryptWithHashedIV(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
         when(userService.getById(encryptedDeviceTag)).thenReturn(adminUser);
         when(authenticatorService.isAuthenticatorExist(encryptedDeviceTag)).thenReturn(false);
         when(authenticatorService.generateSecretKey(encryptedDeviceTag)).thenReturn("secret-key");

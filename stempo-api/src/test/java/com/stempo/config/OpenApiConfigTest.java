@@ -106,7 +106,7 @@ class OpenApiConfigTest {
     }
 
     @Test
-    void OpenAPI_빈이_정상적으로_생성되는지_확인한다() {
+    void OpenApi_빈이_정상적으로_생성되는지_확인한다() {
         // given
         Info apiInfo = openApiConfig.apiInfo();
         Server apiServer = openApiConfig.apiServer();
@@ -115,7 +115,7 @@ class OpenApiConfigTest {
         SecurityRequirement securityRequirement = openApiConfig.securityRequirement();
 
         // when
-        OpenAPI openAPI = openApiConfig.openAPI(apiInfo, apiServer, components, securityRequirement);
+        OpenAPI openAPI = openApiConfig.openApi(apiInfo, apiServer, components, securityRequirement);
 
         // then
         assertThat(openAPI).isNotNull();

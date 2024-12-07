@@ -34,7 +34,8 @@ public class FileController {
     @Operation(summary = "[U] 게시판 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @SuccessApiResponse(data = "[\"filePath1\", \"filePath2\"]", dataType = List.class, dataDescription = "파일 경로 리스트")
     @PreAuthorize("hasRole('USER')")
-    @PostMapping(value = "/api/v1/files/boards", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/api/v1/files/boards",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<String>> boardFileUpload(
             @RequestParam(name = "multipartFile", required = false) List<MultipartFile> multipartFiles
     ) throws IOException {
@@ -42,8 +43,8 @@ public class FileController {
         return ApiResponse.success(filePaths);
     }
 
-    @Operation(summary = "[A] 파일 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
-            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
+    @Operation(summary = "[A] 파일 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함<br>"
+        + "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/api/v1/files")
     public ApiResponse<PagedResponseDto<UploadedFileResponseDto>> getFiles(
@@ -58,8 +59,8 @@ public class FileController {
         return ApiResponse.success(uploadedFiles);
     }
 
-    @Operation(summary = "[A] 파일 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
-            "파일 경로(/resources/files/)를 받아 해당 파일을 삭제함")
+    @Operation(summary = "[A] 파일 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함<br>"
+        + "파일 경로(/resources/files/)를 받아 해당 파일을 삭제함")
     @SuccessApiResponse(data = "true", dataType = Boolean.class, dataDescription = "파일 삭제 여부")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/api/v1/files")

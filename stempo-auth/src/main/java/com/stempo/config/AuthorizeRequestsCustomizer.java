@@ -16,7 +16,9 @@ public class AuthorizeRequestsCustomizer {
     private final WhitelistProperties whitelistProperties;
 
     @Bean
-    public @NotNull Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsConfig() {
+    public @NotNull Customizer<
+            AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry
+            > authorizeHttpRequestsConfig() {
         return (authorize) -> authorize
                 .requestMatchers(SecurityConstants.PERMIT_ALL).permitAll()
                 .requestMatchers(HttpMethod.GET, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_GET).permitAll()

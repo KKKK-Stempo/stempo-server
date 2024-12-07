@@ -210,7 +210,7 @@ class BoardControllerTest {
     @WithMockUser(roles = "USER")
     void 정상적으로_게시글을_수정한다() throws Exception {
         // given
-        Long boardId = 1L;
+        final Long boardId = 1L;
         BoardUpdateRequestDto updateRequestDto = new BoardUpdateRequestDto();
         updateRequestDto.setCategory(BoardCategory.NOTICE);
         updateRequestDto.setTitle("청각 자극을 통한 뇌성마비 환자 보행 패턴 개선 서비스, Stempo. (수정)");
@@ -237,7 +237,7 @@ class BoardControllerTest {
     @Test
     void 인증되지_않은_사용자가_게시글을_수정시_권한에러가_발생한다() throws Exception {
         // given
-        Long boardId = 1L;
+        final Long boardId = 1L;
         BoardUpdateRequestDto updateRequestDto = new BoardUpdateRequestDto();
         updateRequestDto.setCategory(BoardCategory.NOTICE);
         updateRequestDto.setTitle("청각 자극을 통한 뇌성마비 환자 보행 패턴 개선 서비스, Stempo. (수정)");

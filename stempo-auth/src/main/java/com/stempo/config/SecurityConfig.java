@@ -33,38 +33,39 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final AuthenticationManager authenticationManager;
-    private final Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsCustomizer;
+    private final Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>
+        .AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsCustomizer;
     private final JwtTokenService tokenService;
     private final IpWhitelistValidator ipWhitelistValidator;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .authorizeHttpRequests(
-                        authorizeHttpRequestsCustomizer
-                )
-                .addFilterBefore(
-                        new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator),
-                        UsernamePasswordAuthenticationFilter.class
-                )
-                .addFilterBefore(
-                        new JwtAuthenticationFilter(tokenService),
-                        UsernamePasswordAuthenticationFilter.class
-                )
-                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
-                        httpSecurityExceptionHandlingConfigurer
-                                .authenticationEntryPoint(this::handleException)
-                                .accessDeniedHandler(this::handleException)
-                );
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(sessionManagement ->
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(
+                authorizeHttpRequestsCustomizer
+            )
+            .addFilterBefore(
+                new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator),
+                UsernamePasswordAuthenticationFilter.class
+            )
+            .addFilterBefore(
+                new JwtAuthenticationFilter(tokenService),
+                UsernamePasswordAuthenticationFilter.class
+            )
+            .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
+                httpSecurityExceptionHandlingConfigurer
+                    .authenticationEntryPoint(this::handleException)
+                    .accessDeniedHandler(this::handleException)
+            );
         return http.build();
     }
 
     private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception)
-            throws IOException {
+        throws IOException {
         String clientIpAddress = HttpReqResUtils.getClientIpAddressIfServletRequestExist();
         String message;
         int statusCode;

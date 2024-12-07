@@ -64,7 +64,7 @@ class UserRegistrationServiceTest {
         String encryptedDeviceTag = "encrypted-device";
         TokenInfo tokenInfo = TokenInfo.create("access-token", "refresh-token");
 
-        when(encryptionUtils.encryptWithHashedIV(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
         when(passwordValidator.isValid(anyString(), anyString())).thenReturn(true);
         when(passwordEncoder.encode(anyString())).thenReturn("encrypted-password");
         when(userService.existsById(anyString())).thenReturn(false);
@@ -82,7 +82,7 @@ class UserRegistrationServiceTest {
     void 중복_사용자일_경우_예외가_발생한다() {
         // given
         when(userService.existsById(any())).thenReturn(true);
-        when(encryptionUtils.encryptWithHashedIV(any(), any())).thenReturn("encrypted-device");
+        when(encryptionUtils.encryptWithHashedIv(any(), any())).thenReturn("encrypted-device");
 
         // when, then
         assertThatThrownBy(() -> userRegistrationService.registerUser(authRequestDto, tokenService))

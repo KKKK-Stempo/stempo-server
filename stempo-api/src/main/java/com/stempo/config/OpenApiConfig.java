@@ -64,7 +64,7 @@ public class OpenApiConfig {
     }
 
     @Bean
-    public OpenAPI openAPI(Info apiInfo, Server apiServer, Components apiComponents,
+    public OpenAPI openApi(Info apiInfo, Server apiServer, Components apiComponents,
             SecurityRequirement securityRequirement) {
         return new OpenAPI()
                 .info(apiInfo)

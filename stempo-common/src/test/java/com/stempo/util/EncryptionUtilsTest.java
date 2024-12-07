@@ -38,8 +38,8 @@ class EncryptionUtilsTest {
         String uniqueValue = "deviceTag123";
 
         // when
-        String encryptedText = encryptionUtils.encryptWithHashedIV(plainText, uniqueValue);
-        String decryptedText = encryptionUtils.decryptWithHashedIV(encryptedText, uniqueValue);
+        String encryptedText = encryptionUtils.encryptWithHashedIv(plainText, uniqueValue);
+        String decryptedText = encryptionUtils.decryptWithHashedIv(encryptedText, uniqueValue);
 
         // then
         assertThat(decryptedText).isEqualTo(plainText);
@@ -53,10 +53,10 @@ class EncryptionUtilsTest {
         String differentUniqueValue = "deviceTag456";
 
         // when
-        String encryptedText = encryptionUtils.encryptWithHashedIV(plainText, uniqueValue);
+        String encryptedText = encryptionUtils.encryptWithHashedIv(plainText, uniqueValue);
 
         // then
-        assertThatThrownBy(() -> encryptionUtils.decryptWithHashedIV(encryptedText, differentUniqueValue))
+        assertThatThrownBy(() -> encryptionUtils.decryptWithHashedIv(encryptedText, differentUniqueValue))
                 .isInstanceOf(BaseException.class);
     }
 
@@ -95,7 +95,7 @@ class EncryptionUtilsTest {
         int ivLength = 12;
 
         // when
-        byte[] iv = encryptionUtils.generateIVFromUniqueValue(uniqueValue);
+        byte[] iv = encryptionUtils.generateIvFromUniqueValue(uniqueValue);
 
         // then
         assertThat(iv).isNotNull();
@@ -106,7 +106,7 @@ class EncryptionUtilsTest {
     void 임의의_IV가_정확히_생성된다() {
         int ivLength = 12;
 
-        byte[] iv = encryptionUtils.generateRandomIV(ivLength);
+        byte[] iv = encryptionUtils.generateRandomIv(ivLength);
 
         assertThat(iv).isNotNull();
         assertThat(iv.length).isEqualTo(ivLength);
