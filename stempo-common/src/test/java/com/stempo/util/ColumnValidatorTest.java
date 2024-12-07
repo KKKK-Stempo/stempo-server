@@ -6,12 +6,6 @@ import org.junit.jupiter.api.Test;
 
 class ColumnValidatorTest {
 
-    static class TestDomain {
-
-        private String validField;
-        private int anotherField;
-    }
-
     @Test
     void 존재하는_컬럼을_확인한다() {
         // given
@@ -58,5 +52,11 @@ class ColumnValidatorTest {
 
         // then
         assertThat(result).isFalse();
+    }
+
+    static class TestDomain {
+
+        private String validField;
+        private int anotherField;
     }
 }

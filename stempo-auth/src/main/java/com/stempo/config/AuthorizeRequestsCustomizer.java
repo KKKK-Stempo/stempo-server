@@ -21,7 +21,8 @@ public class AuthorizeRequestsCustomizer {
                 .requestMatchers(SecurityConstants.PERMIT_ALL).permitAll()
                 .requestMatchers(HttpMethod.GET, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
                 .requestMatchers(HttpMethod.POST, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
-                .requestMatchers(whitelistProperties.getPatterns().getWhitelistPatterns()).hasRole(whitelistProperties.getAccount().getRole())
+                .requestMatchers(whitelistProperties.getPatterns().getWhitelistPatterns())
+                .hasRole(whitelistProperties.getAccount().getRole())
                 .anyRequest().authenticated();
     }
 }

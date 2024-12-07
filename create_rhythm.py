@@ -32,6 +32,7 @@ def create_metronome_bpm(bpm, bit, tone_duration=100, volume_factor=1.5):  # 볼
 
     return rhythm
 
+
 # 리듬 생성 및 파일 저장
 def main():
     if len(sys.argv) < 3:
@@ -52,6 +53,7 @@ def main():
     combined_rhythm.export(output_path, format="wav")  # 파일로 저장
 
     print(f"Rhythm created: {output_path}")
+
 
 if __name__ == "__main__":
     main()

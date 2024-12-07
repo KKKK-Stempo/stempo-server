@@ -1,7 +1,6 @@
 package com.stempo.repository;
 
 import com.stempo.model.Record;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

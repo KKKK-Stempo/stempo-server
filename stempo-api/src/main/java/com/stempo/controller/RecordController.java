@@ -9,6 +9,8 @@ import com.stempo.service.RecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,7 +51,7 @@ public class RecordController {
         return ApiResponse.success(records);
     }
 
-    @Operation(summary = "[U] 내 보행 훈련 기록 통계" , description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 내 보행 훈련 기록 통계", description = "ROLE_USER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/api/v1/records/statistics")
     public ApiResponse<RecordStatisticsResponseDto> getRecordStatistics() {

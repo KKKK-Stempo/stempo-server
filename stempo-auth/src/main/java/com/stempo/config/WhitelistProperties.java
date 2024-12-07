@@ -1,12 +1,11 @@
 package com.stempo.config;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Arrays;
-import java.util.stream.Stream;
 
 @Getter
 @Setter
@@ -23,6 +22,7 @@ public class WhitelistProperties {
     @Getter
     @Setter
     public static class Account {
+
         private String username;
         private String password;
         private String role;
@@ -31,6 +31,7 @@ public class WhitelistProperties {
     @Getter
     @Setter
     public static class Patterns {
+
         private String[] actuator = new String[0];
         private String[] apiDocs = new String[0];
 

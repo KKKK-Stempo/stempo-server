@@ -1,12 +1,15 @@
- # Stempo Server <img src="https://github.com/user-attachments/assets/0a825ee4-3f9e-44db-94f7-31ae7e38d5f3" align=left width=100> &middot; [![GitHub License](https://img.shields.io/github/license/KKKK-Stempo/stempo-server)](https://github.com/KKKK-Stempo/stempo-server/blob/develop/LICENSE) [![Spring Boot Gradle CI](https://github.com/KKKK-Stempo/stempo-server/actions/workflows/spring-boot-gradle-ci.yml/badge.svg)](https://github.com/KKKK-Stempo/stempo-server/actions/workflows/spring-boot-gradle-ci.yml)
+# Stempo Server <img src="https://github.com/user-attachments/assets/0a825ee4-3f9e-44db-94f7-31ae7e38d5f3" align=left width=100> &middot; [![GitHub License](https://img.shields.io/github/license/KKKK-Stempo/stempo-server)](https://github.com/KKKK-Stempo/stempo-server/blob/develop/LICENSE) [![Spring Boot Gradle CI](https://github.com/KKKK-Stempo/stempo-server/actions/workflows/spring-boot-gradle-ci.yml/badge.svg)](https://github.com/KKKK-Stempo/stempo-server/actions/workflows/spring-boot-gradle-ci.yml)
 
-Stempo는 뇌성마비 및 후천적 장애 환자들의 리듬기반 재활 훈련을 돕기 위한 프로젝트입니다. Stempo는 환자들의 보행 훈련을 지원하며, 사용자의 보행 기록을 분석하여 맞춤형 훈련 리듬을 제공합니다. 이 프로젝트는 장애 환자들이 일상 생활에서 신체 능력을 향상시키고 재활 속도를 높일 수 있도록 돕는 것을 목표로 합니다.
+Stempo는 뇌성마비 및 후천적 장애 환자들의 리듬기반 재활 훈련을 돕기 위한 프로젝트입니다. Stempo는 환자들의 보행 훈련을 지원하며, 사용자의 보행 기록을 분석하여 맞춤형 훈련 리듬을 제공합니다. 이
+프로젝트는 장애 환자들이 일상 생활에서 신체 능력을 향상시키고 재활 속도를 높일 수 있도록 돕는 것을 목표로 합니다.
 
-백엔드 시스템뿐만 아니라 안드로이드 시스템도 모두 공개되어 있습니다. 관심이 있으신 분들은 [여기](https://github.com/KKKK-Stempo/stempo-android)에서 안드로이드 리포지토리도 확인해보세요.
+백엔드 시스템뿐만 아니라 안드로이드 시스템도 모두 공개되어 있습니다. 관심이 있으신 분들은 [여기](https://github.com/KKKK-Stempo/stempo-android)에서 안드로이드 리포지토리도
+확인해보세요.
 
 ![설명](https://github.com/user-attachments/assets/978dd883-667e-4cf7-afa1-5ad5495ceb70)
 
 ## 프로젝트 구조
+
 ```markdown
 └── stempo-api
     ├── annotation
@@ -52,6 +55,7 @@ Stempo는 뇌성마비 및 후천적 장애 환자들의 리듬기반 재활 훈
 ```
 
 ### 패키지 구성
+
 - `stempo-api`: 사용자 요청을 처리하고 비즈니스 로직과 상호작용하는 모듈입니다.
     - **annotation**: API 응답에 대한 커스텀 어노테이션과 관련된 클래스들을 포함합니다.
     - **config**: API 요청 및 응답에 대한 설정 클래스들이 포함됩니다.
@@ -91,9 +95,12 @@ Stempo는 뇌성마비 및 후천적 장애 환자들의 리듬기반 재활 훈
     - **util**: 외부 시스템과 상호작용하는 유틸리티 클래스들이 포함됩니다.
 
 ## 라이선스
-이 프로젝트는 GNU 일반 공중 사용 허가서(GPL) v3.0에 따라 라이선스가 부여됩니다. 자세한 내용은 [LICENSE](https://github.com/KKKK-Stempo/stempo-server?tab=GPL-3.0-1-ov-file#readme) 파일을 확인하세요.
+
+이 프로젝트는 GNU 일반 공중 사용 허가서(GPL) v3.0에 따라 라이선스가 부여됩니다. 자세한
+내용은 [LICENSE](https://github.com/KKKK-Stempo/stempo-server?tab=GPL-3.0-1-ov-file#readme) 파일을 확인하세요.
 
 ## 기여자
+
 <a href="https://github.com/KKKK-Stempo/stempo-server/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=KKKK-Stempo/stempo-server" />
 </a>

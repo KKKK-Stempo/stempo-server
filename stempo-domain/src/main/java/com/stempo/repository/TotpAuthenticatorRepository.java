@@ -1,7 +1,6 @@
 package com.stempo.repository;
 
 import com.stempo.model.TotpAuthenticator;
-
 import java.util.Optional;
 
 public interface TotpAuthenticatorRepository {

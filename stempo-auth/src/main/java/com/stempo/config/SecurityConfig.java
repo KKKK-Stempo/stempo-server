@@ -9,6 +9,7 @@ import com.stempo.util.IpWhitelistValidator;
 import com.stempo.util.ResponseUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +25,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -64,7 +63,8 @@ public class SecurityConfig {
         return http.build();
     }
 
-    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception) throws IOException {
+    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception)
+            throws IOException {
         String clientIpAddress = HttpReqResUtils.getClientIpAddressIfServletRequestExist();
         String message;
         int statusCode;

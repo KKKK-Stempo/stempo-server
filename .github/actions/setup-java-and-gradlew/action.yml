@@ -15,7 +15,7 @@ inputs:
     required: false
     default: "jdk"
     type: string
-outputs: {}
+outputs: { }
 
 runs:
   using: "composite"

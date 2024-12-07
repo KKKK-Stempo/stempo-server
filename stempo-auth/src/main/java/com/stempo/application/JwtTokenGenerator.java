@@ -4,15 +4,14 @@ import com.stempo.dto.TokenInfo;
 import com.stempo.model.Role;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+import java.util.Collection;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
-import java.security.Key;
-import java.util.Collection;
-import java.util.Date;
 
 @Component
 public class JwtTokenGenerator {

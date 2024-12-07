@@ -101,7 +101,7 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     }
 
     @NotNull
-    private static String[] decodeCredentials(String authorizationHeader) {
+    private String[] decodeCredentials(String authorizationHeader) {
         String base64Credentials = authorizationHeader.substring("Basic ".length());
         String credentials = new String(Base64.getDecoder().decode(base64Credentials));
         return credentials.split(":", 2);
