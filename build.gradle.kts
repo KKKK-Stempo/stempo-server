@@ -6,14 +6,7 @@ plugins {
     id("java")
     id("org.springframework.boot") version Versions.springBoot
     id("io.spring.dependency-management") version Versions.springDependencyManagement
-}
-
-tasks.named<Jar>("jar") {
-    enabled = false
-}
-
-tasks.named<Jar>("bootJar") {
-    enabled = false
+    id("checkstyle")
 }
 
 repositories {
@@ -24,25 +17,32 @@ dependencies {
     implementation(project(":stempo-api"))
 }
 
+tasks.named<Jar>("jar") {
+    enabled = false
+}
+
+tasks.named<Jar>("bootJar") {
+    enabled = false
+}
+
 allprojects {
     group = "com.stempo"
     version = "0.0.1"
-
-    ext["springConfigLocation"] = "${rootProject.projectDir}/config/"
-
-    apply(plugin = "java")
-
-    java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(21))
-        }
-    }
 
     apply(plugin = "java")
     apply(plugin = "java-library")
     apply(plugin = "org.springframework.boot")
     apply(plugin = "org.springframework.boot.aot")
     apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "checkstyle")
+
+    ext["springConfigLocation"] = "${rootProject.projectDir}/config/"
+
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
+    }
 
     tasks.named<Jar>("jar") {
         enabled = true
@@ -58,6 +58,18 @@ allprojects {
 
     tasks.named<ProcessTestAot>("processTestAot") {
         enabled = false
+    }
+
+    checkstyle {
+        toolVersion = Versions.checkStyle
+        configFile = file("${rootProject.projectDir}/config/checkstyle/google_checks.xml")
+    }
+
+    tasks.withType<Checkstyle>().configureEach {
+        reports {
+            xml.required.set(true)
+            html.required.set(true)
+        }
     }
 
     configurations {
