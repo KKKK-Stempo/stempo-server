@@ -62,7 +62,8 @@ allprojects {
 
     checkstyle {
         toolVersion = Versions.checkStyle
-        configFile = file("${rootProject.projectDir}/config/checkstyle/google_checks.xml")
+        configFile = file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")
+        configProperties["suppressionsFile"] = file("${rootProject.projectDir}/config/checkstyle/checkstyle-suppressions.xml")
     }
 
     tasks.withType<Checkstyle>().configureEach {

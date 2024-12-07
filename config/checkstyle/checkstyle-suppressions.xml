@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+  "-//Checkstyle//DTD Suppressions 1.2//EN"
+  "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+  <!-- src/test 디렉토리 하위의 모든 파일에 대해 MethodName 체크 비활성화 -->
+  <suppress files=".*src/test/.*" checks="MethodName" />
+  <!-- src/test 디렉토리 하위의 모든 파일에 대해 AbbreviationAsWordInName 체크 비활성화 -->
+  <suppress files=".*src/test/.*" checks="AbbreviationAsWordInName" />
+</suppressions>
