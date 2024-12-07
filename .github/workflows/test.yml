@@ -62,7 +62,7 @@ jobs:
           SKIPPED: ${{ steps.reporter.outputs.skipped }}
           TIME_MS: ${{ steps.reporter.outputs.time }}
 
-      - name: Add Test Results to PR
+      - name: Post Test Results to PR
         uses: marocchino/sticky-pull-request-comment@v2
         if: always()
         with:

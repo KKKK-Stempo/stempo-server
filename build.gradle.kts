@@ -6,6 +6,7 @@ plugins {
     id("java")
     id("org.springframework.boot") version Versions.springBoot
     id("io.spring.dependency-management") version Versions.springDependencyManagement
+    id("org.sonarqube") version Versions.sonarQube
     id("checkstyle")
 }
 
@@ -34,6 +35,7 @@ allprojects {
     apply(plugin = "org.springframework.boot")
     apply(plugin = "org.springframework.boot.aot")
     apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "org.sonarqube")
     apply(plugin = "checkstyle")
 
     ext["springConfigLocation"] = "${rootProject.projectDir}/config/"
@@ -58,6 +60,15 @@ allprojects {
 
     tasks.named<ProcessTestAot>("processTestAot") {
         enabled = false
+    }
+
+    sonar {
+        properties {
+            property("sonar.host.url", "https://sonarcloud.io")
+            property("sonar.organization", "kkkk-stempo")
+            property("sonar.projectKey", "KKKK-Stempo_stempo-server")
+            property("sonar.java.checkstyle.reportPaths", "build/reports/checkstyle/*.xml")
+        }
     }
 
     checkstyle {

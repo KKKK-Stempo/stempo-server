@@ -11,5 +11,6 @@ object Versions {
     const val gson = "2.10.1"
     const val owaspJavaHtmlSanitizer = "20240325.1"
     const val googleAuthenticator = "1.5.0"
+    const val sonarQube = "6.0.1.5171"
     const val checkStyle = "10.20.2"
 }

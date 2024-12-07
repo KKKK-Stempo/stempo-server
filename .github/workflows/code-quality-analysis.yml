@@ -1,0 +1,31 @@
+name: Code Quality and SonarCloud Analysis
+
+on:
+  pull_request:
+
+jobs:
+  code_quality_analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java and Gradlew
+        uses: ./.github/actions/setup-java-and-gradlew
+        with:
+          java-distribution: 'liberica'
+          java-version: '21'
+          java-package: 'jdk'
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Run SonarCloud Analysis
+        run: ./gradlew checkstyleMain checkstyleTest sonarqube --info
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
