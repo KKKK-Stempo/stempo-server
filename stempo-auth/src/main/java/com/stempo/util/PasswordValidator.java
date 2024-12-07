@@ -11,7 +11,7 @@ public class PasswordValidator {
 
     // 비밀번호에 영문 대문자, 소문자, 숫자, 특수문자 중 최소 3가지가 포함되어야 함
     private static final String CHARACTER_COMPLEXITY_PATTERN =
-        "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+=!]).{8,16}$";
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,16}$";
 
     // 연속된 문자나 숫자 3개 이상 금지
     private static final String SEQUENTIAL_CHARACTERS_PATTERN = "(.)\\1\\1";

@@ -37,5 +37,8 @@ out/
 ### VS Code ###
 .vscode/
 
+### SonarQube ###
+.sonarlint/
+
 ### Environments ###
 .env
