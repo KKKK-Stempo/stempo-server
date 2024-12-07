@@ -55,11 +55,11 @@ class FileServiceTest {
     private FileService fileService;
 
     @Value("${resource.file.url}")
-    private String fileURL = "http://example.com/files";
+    private String fileUrl = "http://example.com/files";
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(fileService, "fileURL", fileURL);
+        ReflectionTestUtils.setField(fileService, "fileUrl", fileUrl);
     }
 
     @Test
@@ -79,8 +79,8 @@ class FileServiceTest {
         String fileName1 = "file1.txt";
         String fileName2 = "file2.txt";
 
-        String url1 = fileURL + "/" + path + "/" + fileName1;
-        String url2 = fileURL + "/" + path + "/" + fileName2;
+        String url1 = fileUrl + "/" + path + "/" + fileName1;
+        String url2 = fileUrl + "/" + path + "/" + fileName2;
 
         when(multipartFile1.getOriginalFilename()).thenReturn("originalFile1.txt");
         when(multipartFile1.getSize()).thenReturn(100L);
@@ -145,7 +145,7 @@ class FileServiceTest {
         String savedFilePath = "/saved/path/file.txt";
         String encryptedFilePath = "encryptedPath";
         String fileName = "file.txt";
-        String url = fileURL + "/" + path + "/" + fileName;
+        String url = fileUrl + "/" + path + "/" + fileName;
 
         when(multipartFile.getOriginalFilename()).thenReturn("originalFile.txt");
         when(multipartFile.getSize()).thenReturn(100L);
@@ -170,7 +170,7 @@ class FileServiceTest {
         String savedFilePath = "/saved/path/file.txt";
         String encryptedFilePath = "encryptedPath";
         String fileName = "file.txt";
-        String url = fileURL + "/" + fileName;
+        String url = fileUrl + "/" + fileName;
 
         when(file.getName()).thenReturn("originalFile.txt");
         when(file.length()).thenReturn(100L);
