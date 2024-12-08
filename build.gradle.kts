@@ -94,7 +94,7 @@ allprojects {
         violationRules {
             rule {
                 limit {
-                    minimum = "0.5".toBigDecimal()
+                    minimum = "0.50".toBigDecimal()
                 }
             }
 
@@ -105,13 +105,13 @@ allprojects {
                 limit {
                     counter = "BRANCH"
                     value = "COVEREDRATIO"
-                    minimum = "0.7".toBigDecimal()
+                    minimum = "0.70".toBigDecimal()
                 }
 
                 limit {
                     counter = "LINE"
                     value = "COVEREDRATIO"
-                    minimum = "0.5".toBigDecimal()
+                    minimum = "0.50".toBigDecimal()
                 }
 
                 limit {
@@ -128,7 +128,7 @@ allprojects {
                     "com.stempo.**.*Service.*",
                     "com.stempo.**.*Repository.*",
                     "com.stempo.**.*Exception.*",
-                    "com.stempo.ApiApplication",
+                    "com.stempo.ApiApplication.*",
                 )
             }
         }
