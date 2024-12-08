@@ -36,18 +36,25 @@ jobs:
           name: test-results
           path: '**/build/reports/tests/test/*'
 
-      - name: Upload coverage results
+      - name: Upload HTML Coverage Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: coverage-html-report
+          path: '**/build/reports/jacoco/test/html'
+
+      - name: Upload XML Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml-report
           path: '**/build/reports/jacoco/test/jacocoTestReport.xml'
 
-      - name: Upload exec data
+      - name: Upload coverage exec data
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: exec-data
+          name: coverage-exec-data
           path: '**/build/jacoco/test.exec'
 
       - name: Test Reporter
@@ -111,15 +118,20 @@ jobs:
         with:
           name: test-results
 
-      - name: Download coverage report
+      - name: Download HTML coverage report
         uses: actions/download-artifact@v4
         with:
-          name: coverage-report
+          name: coverage-html-report
 
-      - name: Download exec data
+      - name: Download XML coverage report
         uses: actions/download-artifact@v4
         with:
-          name: exec-data
+          name: coverage-xml-report
+
+      - name: Download coverage exec data
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-exec-data
 
       - name: Setup Java and Gradlew
         uses: ./.github/actions/setup-java-and-gradlew
@@ -139,10 +151,58 @@ jobs:
         run: ./gradlew checkstyleMain checkstyleTest -x test --info
 
       - name: Run JaCoCo Test Coverage Verification
-        run: ./gradlew jacocoTestCoverageVerification -x test -x jacocoTestReport --info
+        run: ./gradlew jacocoTestCoverageVerification -x test -x jacocoTestReport --info | tee jacoco_verification.log
         continue-on-error: true
+
+      - name: Parse Jacoco Violations
+        if: always()
+        id: parse
+        run: |
+          # 'Rule violated for class'가 포함된 라인 추출
+          violations=$(grep "Rule violated for class" jacoco_verification.log || true)
+          
+          if [ -z "$violations" ]; then
+            echo "violations_table=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Markdown 테이블 헤더
+          echo "| Class | Metric | Actual | Threshold Type | Expected |" > violations_table.md
+          echo "|-------|---------|--------|----------------|----------|" >> violations_table.md
+          
+          # sed를 이용한 파싱
+          # 패턴 예시:
+          # Rule violated for class com.example.ClassName: branches covered ratio is 0.3, but expected minimum is 0.7
+          # 그룹화:
+          # 1: 클래스명
+          # 2: 메트릭(예: branches covered)
+          # 3: 실제값(0.3)
+          # 4: 기준 타입(minimum 또는 maximum)
+          # 5: 기대값(0.7)
+          echo "$violations" | sed -n 's/Rule violated for class \([^:]*\): \(.*\) ratio is \([^,]*\), but expected \(minimum\|maximum\) is \([0-9.]*\)/| \1 | \2 | \3 | \4 | \5 |/p' >> violations_table.md
+          
+          # 결과를 GITHUB_OUTPUT에 저장
+          echo "violations_table=$(cat violations_table.md)" >> $GITHUB_OUTPUT
 
       - name: Run SonarCloud Analysis
         run: ./gradlew sonar --info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Post Coverage & Quality Results to PR
+        if: always()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: Coverage & Quality Results
+          recreate: true
+          message: |
+            ## 📉 JaCoCo Coverage Verification Results
+            
+            ${{ steps.parse.outputs.violations_table }}
+            
+            *(If empty, there are no coverage violations.)*
+            
+            ### HTML Coverage Report
+            You can download the HTML coverage report from the Artifacts of this run:
+            [View Coverage HTML Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
