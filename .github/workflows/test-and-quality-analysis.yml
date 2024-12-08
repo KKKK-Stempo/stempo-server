@@ -170,7 +170,8 @@ jobs:
           
           # Markdown Table 초기화
           table="| Class | Metric | Actual | Threshold Type | Expected |"
-          table="$table\n|-------|--------|--------|----------------|----------|"
+          table="$table
+          |-------|--------|--------|----------------|----------|"
           
           # sed를 이용한 파싱 및 예외 처리
           # 패턴 예시:
@@ -191,14 +192,18 @@ jobs:
           # 테이블 데이터 생성
           if [ -s violations_table.md ]; then
             while IFS= read -r line; do
-              table="$table\n$line"
+              table="$table
+          $line"
             done < violations_table.md
           else
-            table="$table\n| No violations found | - | - | - | - |"
+            table="$table
+          | No violations found | - | - | - | - |"
           fi
           
           # Markdown Table을 GitHub Output에 추가
-          echo "violations_table=$(echo "$table")" >> $GITHUB_OUTPUT
+          echo "violations_table<<EOF" >> $GITHUB_OUTPUT
+          echo "$table" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Run SonarCloud Analysis
         run: ./gradlew sonar --info
