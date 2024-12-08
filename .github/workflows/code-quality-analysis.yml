@@ -25,7 +25,15 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
+      - name: Run Checkstyle
+        run: ./gradlew checkstyleMain checkstyleTest --info
+
+      - name: Run Tests and Generate JaCoCo Coverage Report
+        run: ./gradlew test jacocoTestReport jacocoTestCoverageVerification --info
+        env:
+          SPRING_PROFILES_ACTIVE: test
+
       - name: Run SonarCloud Analysis
-        run: ./gradlew checkstyleMain checkstyleTest sonar --info
+        run: ./gradlew sonar --info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
