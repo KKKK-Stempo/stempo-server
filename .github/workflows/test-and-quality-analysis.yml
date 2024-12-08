@@ -161,16 +161,17 @@ jobs:
           # 'Rule violated for class'가 포함된 라인 추출
           violations=$(grep "Rule violated for class" jacoco_verification.log || true)
           
+          # violations이 없으면 처리 종료
           if [ -z "$violations" ]; then
+            echo "No violations found."
             echo "violations_table=" >> $GITHUB_OUTPUT
             exit 0
           fi
           
-          # Markdown 테이블 헤더
-          echo "| Class | Metric | Actual | Threshold Type | Expected |" > violations_table.md
-          echo "|-------|---------|--------|----------------|----------|" >> violations_table.md
+          # Markdown Table 초기화
+          table="| Class | Metric | Actual | Threshold Type | Expected |\n|-------|--------|--------|----------------|----------|"
           
-          # sed를 이용한 파싱
+          # sed를 이용한 파싱 및 예외 처리
           # 패턴 예시:
           # Rule violated for class com.example.ClassName: branches covered ratio is 0.3, but expected minimum is 0.7
           # 그룹화:
@@ -179,10 +180,24 @@ jobs:
           # 3: 실제값(0.3)
           # 4: 기준 타입(minimum 또는 maximum)
           # 5: 기대값(0.7)
-          echo "$violations" | sed -n 's/Rule violated for class \([^:]*\): \(.*\) ratio is \([^,]*\), but expected \(minimum\|maximum\) is \([0-9.]*\)/| \1 | \2 | \3 | \4 | \5 |/p' >> violations_table.md
+          {
+            echo "$violations" | sed -n 's/Rule violated for class \([^:]*\): \(.*\) ratio is \([^,]*\), but expected \(minimum\|maximum\) is \([0-9.]*\)/| \1 | \2 | \3 | \4 | \5 |/p' > violations_table.md
+          } || {
+            echo "Error during sed parsing. Exiting." >&2
+            exit 1
+          }
           
-          # 결과를 GITHUB_OUTPUT에 저장
-          echo "violations_table=$(cat violations_table.md)" >> $GITHUB_OUTPUT
+          # 테이블 데이터 생성
+          if [ -s violations_table.md ]; then
+            while IFS= read -r line; do
+              table="$table\n$line"
+            done < violations_table.md
+          else
+            table="$table\n| No violations found | - | - | - | - |"
+          fi
+          
+          # Markdown Table을 GitHub Output에 추가
+          echo "violations_table=$(echo -e "$table")" >> $GITHUB_OUTPUT
 
       - name: Run SonarCloud Analysis
         run: ./gradlew sonar --info
