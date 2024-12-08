@@ -13,4 +13,5 @@ object Versions {
     const val googleAuthenticator = "1.5.0"
     const val sonarQube = "6.0.1.5171"
     const val checkStyle = "10.20.2"
+    const val jacoco = "0.8.12"
 }

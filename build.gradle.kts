@@ -8,6 +8,7 @@ plugins {
     id("io.spring.dependency-management") version Versions.springDependencyManagement
     id("org.sonarqube") version Versions.sonarQube
     id("checkstyle")
+    id("jacoco")
 }
 
 repositories {
@@ -37,6 +38,7 @@ allprojects {
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "org.sonarqube")
     apply(plugin = "checkstyle")
+    apply(plugin = "jacoco")
 
     ext["springConfigLocation"] = "${rootProject.projectDir}/config/"
 
@@ -68,13 +70,75 @@ allprojects {
             property("sonar.organization", "kkkk-stempo")
             property("sonar.projectKey", "KKKK-Stempo_stempo-server")
             property("sonar.java.checkstyle.reportPaths", "build/reports/checkstyle/*.xml")
+            property("sonar.java.coveragePlugin", "jacoco")
+            property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
+        }
+    }
+
+    jacoco {
+        toolVersion = Versions.jacoco
+    }
+
+    tasks.jacocoTestReport {
+        dependsOn(tasks.test)
+        reports {
+            xml.required.set(true)
+            html.required.set(true)
+            csv.required.set(false)
+        }
+    }
+
+    tasks.jacocoTestCoverageVerification {
+        dependsOn(tasks.jacocoTestReport)
+
+        violationRules {
+            rule {
+                limit {
+                    minimum = "0.5".toBigDecimal()
+                }
+            }
+
+            rule {
+                isEnabled = true
+                element = "CLASS"
+
+                limit {
+                    counter = "BRANCH"
+                    value = "COVEREDRATIO"
+                    minimum = "0.7".toBigDecimal()
+                }
+
+                limit {
+                    counter = "LINE"
+                    value = "COVEREDRATIO"
+                    minimum = "0.5".toBigDecimal()
+                }
+
+                limit {
+                    counter = "LINE"
+                    value = "TOTALCOUNT"
+                    maximum = "300".toBigDecimal()
+                }
+
+                excludes = listOf(
+                    "com.stempo.**.Test*.*",
+                    "com.stempo.**.*Test.*",
+                    "com.stempo.**.*Dto.*",
+                    "com.stempo.**.*Entity.*",
+                    "com.stempo.**.*Service.*",
+                    "com.stempo.**.*Repository.*",
+                    "com.stempo.**.*Exception.*",
+                    "com.stempo.ApiApplication",
+                )
+            }
         }
     }
 
     checkstyle {
         toolVersion = Versions.checkStyle
         configFile = file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")
-        configProperties["suppressionsFile"] = file("${rootProject.projectDir}/config/checkstyle/checkstyle-suppressions.xml")
+        configProperties["suppressionsFile"] =
+            file("${rootProject.projectDir}/config/checkstyle/checkstyle-suppressions.xml")
     }
 
     tasks.withType<Checkstyle>().configureEach {
@@ -107,6 +171,18 @@ allprojects {
         reports {
             junitXml.required.set(true)
         }
+    }
+
+    tasks.register("testCoverage") {
+        group = "verification"
+        description = "Runs the unit tests and generates a coverage report"
+
+        dependsOn(tasks.test)
+        dependsOn(tasks.jacocoTestReport)
+        dependsOn(tasks.jacocoTestCoverageVerification)
+
+        tasks["jacocoTestReport"].mustRunAfter(tasks["test"])
+        tasks["jacocoTestCoverageVerification"].mustRunAfter(tasks["jacocoTestReport"])
     }
 
     tasks.withType<JavaExec> {
