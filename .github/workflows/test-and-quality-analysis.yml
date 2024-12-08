@@ -151,19 +151,15 @@ jobs:
         run: ./gradlew checkstyleMain checkstyleTest -x test --info
 
       - name: Run JaCoCo Test Coverage Verification
-        run: ./gradlew jacocoTestCoverageVerification -x test -x jacocoTestReport --info | tee jacoco_verification.log
+        run: ./gradlew jacocoTestCoverageVerification -x test -x jacocoTestReport --info 2>&1 | tee jacoco_verification.log
         continue-on-error: true
 
       - name: Parse Jacoco Violations
         if: always()
         id: parse
         run: |
-          # 'Rule violated for class'가 포함된 라인 추출
-          violations=$(grep "Rule violated for class" jacoco_verification.log || true)
-          
-          # 만약 각 라인 앞에 '>'가 있다면 제거
-          # 'sed "s/^> //"': 라인 시작 문자 '^' 뒤에 오는 '>'를 빈 문자열로 치환
-          violations=$(echo "$violations" | sed 's/^> //')
+          # 'Rule violated for class'가 포함된 라인 추출, 중복 제거
+          violations=$(grep "Rule violated for class" jacoco_verification.log | grep "\[ant:jacocoReport\]" | sort | uniq || true)
           
           # violations이 없으면 처리 종료
           if [ -z "$violations" ]; then
@@ -173,11 +169,12 @@ jobs:
           fi
           
           # Markdown Table 초기화
-          table="| Class | Metric | Actual | Threshold Type | Expected |\n|-------|--------|--------|----------------|----------|"
+          table="| Class | Metric | Actual | Threshold Type | Expected |"
+          table="$table\n|-------|--------|--------|----------------|----------|"
           
           # sed를 이용한 파싱 및 예외 처리
           # 패턴 예시:
-          # Rule violated for class com.example.ClassName: branches covered ratio is 0.3, but expected minimum is 0.7
+          # [ant:jacocoReport] Rule violated for class com.example.ClassName: branches covered ratio is 0.3, but expected minimum is 0.7
           # 그룹화:
           # 1: 클래스명
           # 2: 메트릭(예: branches covered)
@@ -185,7 +182,7 @@ jobs:
           # 4: 기준 타입(minimum 또는 maximum)
           # 5: 기대값(0.7)
           {
-            echo "$violations" | sed -n 's/Rule violated for class \([^:]*\): \(.*\) ratio is \([^,]*\), but expected \(minimum\|maximum\) is \([0-9.]*\)/| \1 | \2 | \3 | \4 | \5 |/p' > violations_table.md
+            echo "$violations" | sed -nE 's/.*Rule violated for class ([^:]*): ([^ ]+ [^ ]+) ratio is ([0-9.]*)[, ] but expected (minimum|maximum) is ([0-9.]*)/| \1 | \2 | \3 | \4 | \5 |/p' > violations_table.md
           } || {
             echo "Error during sed parsing. Exiting." >&2
             exit 1
@@ -201,7 +198,7 @@ jobs:
           fi
           
           # Markdown Table을 GitHub Output에 추가
-          echo "violations_table=$(echo -e "$table")" >> $GITHUB_OUTPUT
+          echo "violations_table=$(echo "$table")" >> $GITHUB_OUTPUT
 
       - name: Run SonarCloud Analysis
         run: ./gradlew sonar --info
