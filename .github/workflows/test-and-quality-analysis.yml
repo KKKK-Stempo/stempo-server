@@ -215,8 +215,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: '**/build/reports/jacoco/test/jacocoTestReport.xml'
-          flags: stempo-server
-          name: codecov-jacoco
 
       - name: Post Coverage & Quality Results to PR
         if: always()
