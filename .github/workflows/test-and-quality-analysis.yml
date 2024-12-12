@@ -1,7 +1,14 @@
 name: Test and Quality Analysis
 
 on:
+  push:
+    branches:
+      - main
+      - develop
   pull_request:
+    branches:
+      - main
+      - develop
 
 permissions:
   pull-requests: write
