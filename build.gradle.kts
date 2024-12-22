@@ -9,6 +9,7 @@ plugins {
     id("org.sonarqube") version Versions.sonarQube
     id("checkstyle")
     id("jacoco")
+    kotlin("jvm")
 }
 
 repositories {
@@ -17,6 +18,7 @@ repositories {
 
 dependencies {
     implementation(project(":stempo-api"))
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks.named<Jar>("jar") {

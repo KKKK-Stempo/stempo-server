@@ -221,7 +221,22 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: '**/build/reports/jacoco/test/jacocoTestReport.xml'
+          files: |
+            stempo-api/build/reports/jacoco/test/jacocoTestReport.xml
+            stempo-application/build/reports/jacoco/test/jacocoTestReport.xml
+            stempo-auth/build/reports/jacoco/test/jacocoTestReport.xml
+            stempo-common/build/reports/jacoco/test/jacocoTestReport.xml
+            stempo-domain/build/reports/jacoco/test/jacocoTestReport.xml
+            stempo-infrastructure/build/reports/jacoco/test/jacocoTestReport.xml
+          flags: |
+            stempo-api
+            stempo-application
+            stempo-auth
+            stempo-common
+            stempo-domain
+            stempo-infrastructure
+          fail_ci_if_error: false
+          verbose: true
 
       - name: Post Coverage & Quality Results to PR
         if: always()
