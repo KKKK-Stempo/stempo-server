@@ -49,6 +49,7 @@ class XssEscapeServletRequestWrapperTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:VariableDeclarationUsageDistance")
     void 여러_파라미터가_Xss필터링되어_반환된다() {
         // given
         String[] rawValues = {"<script>", "<b>bold</b>"};

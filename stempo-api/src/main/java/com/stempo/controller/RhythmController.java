@@ -20,9 +20,9 @@ public class RhythmController {
 
     private final RhythmService rhythmService;
 
-    @Operation(summary = "[U] 리듬 생성", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "BPM은 10 이상 200 이하의 값이어야 함<br>" +
-            "Bit는 1 이상 8 이하의 값이어야 함")
+    @Operation(summary = "[U] 리듬 생성", description = "ROLE_USER 이상의 권한이 필요함<br>"
+        + "BPM은 10 이상 200 이하의 값이어야 함<br>"
+        + "Bit는 1 이상 8 이하의 값이어야 함")
     @SuccessApiResponse(data = "/resources/files/{fileName}", dataType = String.class, dataDescription = "파일 경로")
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/api/v1/rhythm")

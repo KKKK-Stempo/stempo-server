@@ -24,5 +24,4 @@ docker-compose.yml
 
 # Ignore specific directories
 cloud/
-config/
 jenkins/

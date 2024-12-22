@@ -18,6 +18,10 @@ import org.apache.commons.io.FilenameUtils;
 @Slf4j
 public class FileUtils {
 
+    private static final long KB = 1024;
+    private static final long MB = KB * 1024;
+    private static final long GB = MB * 1024;
+
     /**
      * 주어진 파일 경로가 기본 디렉토리 내에 포함되는지 확인하고, 정상적인 경로를 반환합니다.
      *
@@ -86,7 +90,7 @@ public class FileUtils {
      * @throws IllegalArgumentException 유효하지 않은 파일명이나 확장자일 경우 발생
      */
     public static void validateFileAttributes(String originalFilename, Set<String> disallowExtensions)
-            throws IllegalArgumentException {
+        throws IllegalArgumentException {
         String extension = FilenameUtils.getExtension(originalFilename);
         validateFilename(originalFilename);
         if (!validateExtension(extension, disallowExtensions)) {
@@ -97,8 +101,8 @@ public class FileUtils {
 
     /**
      * 파일명이 유효한지 확인하고, 유효하지 않은 경우 예외를 발생시킵니다.
-     * <p>
-     * 유효하지 않은 파일명에는 다음과 같은 경우가 포함됩니다:
+     *
+     * <p>유효하지 않은 파일명에는 다음과 같은 경우가 포함됩니다:
      * <ul>
      *   <li>파일명이 null이거나 빈 문자열인 경우</li>
      *   <li>파일명에 "..", "/", "\\" 문자가 포함된 경우</li>
@@ -176,15 +180,15 @@ public class FileUtils {
 
         // POSIX 파일 권한을 소유자에게만 읽기 권한을 부여하도록 설정
         Set<PosixFilePermission> permissions = EnumSet.of(
-                PosixFilePermission.OWNER_READ
+            PosixFilePermission.OWNER_READ
         );
         Files.setPosixFilePermissions(path, permissions);
     }
 
     /**
      * 주어진 파일 크기를 적절한 단위로 포맷팅합니다.
-     * <p>
-     * 파일 크기는 바이트 단위로 제공되며, KB, MB, GB 단위로 포맷팅됩니다.
+     *
+     * <p>파일 크기는 바이트 단위로 제공되며, KB, MB, GB 단위로 포맷팅됩니다.
      *
      * <ul>
      *     <li>1 KB 미만: "B" 단위 (바이트)</li>
@@ -197,10 +201,6 @@ public class FileUtils {
      * @return 포맷팅된 파일 크기 문자열 (예: "10.00KB", "1.50MB", "3.00GB")
      */
     public static String formatFileSize(long fileSize) {
-        final long KB = 1024;
-        final long MB = KB * 1024;
-        final long GB = MB * 1024;
-
         if (fileSize < KB) {
             return fileSize + " B";
         } else if (fileSize < MB) {

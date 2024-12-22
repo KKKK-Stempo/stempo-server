@@ -62,6 +62,6 @@ public class AuthenticationService {
     }
 
     private String encryptDeviceTag(String deviceTag) {
-        return encryptionUtils.encryptWithHashedIV(deviceTag, aesConfig.getDeviceTagSecretKey());
+        return encryptionUtils.encryptWithHashedIv(deviceTag, aesConfig.getDeviceTagSecretKey());
     }
 }

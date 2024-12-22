@@ -58,13 +58,13 @@ class RecordServiceImplTest {
         recordRequestDto.setSteps(1000);
 
         record = Record.builder()
-                .id(1L)
-                .deviceTag(deviceTag)
-                .accuracy("encrypted-accuracy")
-                .duration("encrypted-duration")
-                .steps("encrypted-steps")
-                .createdAt(LocalDateTime.now())
-                .build();
+            .id(1L)
+            .deviceTag(deviceTag)
+            .accuracy("encrypted-accuracy")
+            .duration("encrypted-duration")
+            .steps("encrypted-steps")
+            .createdAt(LocalDateTime.now())
+            .build();
     }
 
     @Test
@@ -93,35 +93,35 @@ class RecordServiceImplTest {
         LocalDateTime endDateTime = endDate.atStartOfDay().plusDays(1);
 
         Record latestRecord = Record.builder()
-                .id(2L)
-                .deviceTag(deviceTag)
-                .accuracy("encrypted-accuracy")
-                .duration("encrypted-duration")
-                .steps("encrypted-steps")
-                .createdAt(startDateTime.minusDays(1))
-                .build();
+            .id(2L)
+            .deviceTag(deviceTag)
+            .accuracy("encrypted-accuracy")
+            .duration("encrypted-duration")
+            .steps("encrypted-steps")
+            .createdAt(startDateTime.minusDays(1))
+            .build();
 
         List<Record> recordsBetweenDates = List.of(record);
 
         when(userService.getCurrentDeviceTag()).thenReturn(deviceTag);
         when(recordRepository.findLatestBeforeStartDate(deviceTag, startDateTime))
-                .thenReturn(Optional.of(latestRecord));
+            .thenReturn(Optional.of(latestRecord));
         when(recordRepository.findByDateBetween(deviceTag, startDateTime, endDateTime))
-                .thenReturn(recordsBetweenDates);
+            .thenReturn(recordsBetweenDates);
         when(encryptionUtils.decrypt(anyString())).thenReturn("95.5", "120", "1000");
         when(mapper.toDto(anyDouble(), anyInt(), anyInt(), any(LocalDate.class)))
-                .thenReturn(
-                        RecordResponseDto.builder()
-                                .accuracy(95.5)
-                                .duration(120)
-                                .steps(1000)
-                                .build(),
-                        RecordResponseDto.builder()
-                                .accuracy(95.5)
-                                .duration(120)
-                                .steps(1000)
-                                .build()
-                );
+            .thenReturn(
+                RecordResponseDto.builder()
+                    .accuracy(95.5)
+                    .duration(120)
+                    .steps(1000)
+                    .build(),
+                RecordResponseDto.builder()
+                    .accuracy(95.5)
+                    .duration(120)
+                    .steps(1000)
+                    .build()
+            );
 
         // when
         List<RecordResponseDto> result = recordService.getRecordsByDateRange(startDate, endDate);
@@ -140,17 +140,17 @@ class RecordServiceImplTest {
         // given
         when(userService.getCurrentDeviceTag()).thenReturn(deviceTag);
         when(recordRepository.countByDeviceTagAndCreatedAtBetween(anyString(), any(LocalDateTime.class),
-                any(LocalDateTime.class)))
-                .thenReturn(2, 5); // todayWalkTrainingCount, weeklyWalkTrainingCount
+            any(LocalDateTime.class)))
+            .thenReturn(2, 5); // todayWalkTrainingCount, weeklyWalkTrainingCount
         when(recordRepository.findCreatedAtByDeviceTagOrderByCreatedAtDesc(deviceTag))
-                .thenReturn(createMockedCreatedAtList());
+            .thenReturn(createMockedCreatedAtList());
         when(mapper.toDto(anyInt(), anyInt(), anyInt()))
-                .thenReturn(RecordStatisticsResponseDto.builder()
-                        .todayWalkTrainingCount(2)
-                        .weeklyWalkTrainingCount(5)
-                        .consecutiveWalkTrainingDays(3)
-                        .build()
-                );
+            .thenReturn(RecordStatisticsResponseDto.builder()
+                .todayWalkTrainingCount(2)
+                .weeklyWalkTrainingCount(5)
+                .consecutiveWalkTrainingDays(3)
+                .build()
+            );
 
         // when
         RecordStatisticsResponseDto result = recordService.getRecordStatistics();
@@ -161,7 +161,7 @@ class RecordServiceImplTest {
         assertThat(result.getConsecutiveWalkTrainingDays()).isEqualTo(3);
         verify(userService).getCurrentDeviceTag();
         verify(recordRepository, times(2))
-                .countByDeviceTagAndCreatedAtBetween(anyString(), any(LocalDateTime.class), any(LocalDateTime.class));
+            .countByDeviceTagAndCreatedAtBetween(anyString(), any(LocalDateTime.class), any(LocalDateTime.class));
         verify(recordRepository).findCreatedAtByDeviceTagOrderByCreatedAtDesc(deviceTag);
         verify(mapper).toDto(2, 5, 3);
     }
@@ -169,10 +169,10 @@ class RecordServiceImplTest {
     private List<LocalDateTime> createMockedCreatedAtList() {
         LocalDateTime now = LocalDateTime.now();
         return List.of(
-                now,
-                now.minusDays(1),
-                now.minusDays(2),
-                now.minusDays(4)
+            now,
+            now.minusDays(1),
+            now.minusDays(2),
+            now.minusDays(4)
         );
     }
 }

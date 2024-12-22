@@ -14,8 +14,8 @@ class EncryptionUtilsTest {
 
     @BeforeEach
     void setUp() {
-        AesConfig aesConfig = new AesConfig("01234567890123456789012345678901", 12, 128);
-        encryptionUtils = EncryptionUtils.create(aesConfig);
+        AesConfig aesConfig = new AesConfig("01234567890123456789012345678901", 12, 128, "deviceTagSecretKey");
+        encryptionUtils = new EncryptionUtils(aesConfig);
     }
 
     @Test
@@ -38,8 +38,8 @@ class EncryptionUtilsTest {
         String uniqueValue = "deviceTag123";
 
         // when
-        String encryptedText = encryptionUtils.encryptWithHashedIV(plainText, uniqueValue);
-        String decryptedText = encryptionUtils.decryptWithHashedIV(encryptedText, uniqueValue);
+        String encryptedText = encryptionUtils.encryptWithHashedIv(plainText, uniqueValue);
+        String decryptedText = encryptionUtils.decryptWithHashedIv(encryptedText, uniqueValue);
 
         // then
         assertThat(decryptedText).isEqualTo(plainText);
@@ -53,11 +53,11 @@ class EncryptionUtilsTest {
         String differentUniqueValue = "deviceTag456";
 
         // when
-        String encryptedText = encryptionUtils.encryptWithHashedIV(plainText, uniqueValue);
+        String encryptedText = encryptionUtils.encryptWithHashedIv(plainText, uniqueValue);
 
         // then
-        assertThatThrownBy(() -> encryptionUtils.decryptWithHashedIV(encryptedText, differentUniqueValue))
-                .isInstanceOf(BaseException.class);
+        assertThatThrownBy(() -> encryptionUtils.decryptWithHashedIv(encryptedText, differentUniqueValue))
+            .isInstanceOf(BaseException.class);
     }
 
     @Test
@@ -84,8 +84,8 @@ class EncryptionUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> encryptionUtils.decrypt(invalidEncryptedText))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining("잘못된 패딩이 감지되었습니다.");
+            .isInstanceOf(BaseException.class)
+            .hasMessageContaining("잘못된 패딩이 감지되었습니다.");
     }
 
     @Test
@@ -95,21 +95,19 @@ class EncryptionUtilsTest {
         int ivLength = 12;
 
         // when
-        byte[] iv = encryptionUtils.generateIVFromUniqueValue(uniqueValue);
+        byte[] iv = encryptionUtils.generateIvFromUniqueValue(uniqueValue);
 
         // then
-        assertThat(iv).isNotNull();
-        assertThat(iv.length).isEqualTo(ivLength);
+        assertThat(iv).isNotNull().hasSize(ivLength);
     }
 
     @Test
     void 임의의_IV가_정확히_생성된다() {
         int ivLength = 12;
 
-        byte[] iv = encryptionUtils.generateRandomIV(ivLength);
+        byte[] iv = encryptionUtils.generateRandomIv(ivLength);
 
-        assertThat(iv).isNotNull();
-        assertThat(iv.length).isEqualTo(ivLength);
+        assertThat(iv).isNotNull().hasSize(ivLength);
     }
 
     @Test

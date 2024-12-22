@@ -4,15 +4,14 @@ import com.stempo.dto.TokenInfo;
 import com.stempo.model.Role;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+import java.util.Collection;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
-import java.security.Key;
-import java.util.Collection;
-import java.util.Date;
 
 @Component
 public class JwtTokenGenerator {
@@ -22,9 +21,9 @@ public class JwtTokenGenerator {
     private final long refreshTokenDuration;
 
     public JwtTokenGenerator(
-            @Value("${security.jwt.secret-key}") String secretKey,
-            @Value("${security.jwt.token-validity-in-seconds.access-token}") long accessTokenDuration,
-            @Value("${security.jwt.token-validity-in-seconds.refresh-token}") long refreshTokenDuration
+        @Value("${security.jwt.secret-key}") String secretKey,
+        @Value("${security.jwt.token-validity-in-seconds.access-token}") long accessTokenDuration,
+        @Value("${security.jwt.token-validity-in-seconds.refresh-token}") long refreshTokenDuration
     ) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
         this.accessTokenDuration = accessTokenDuration;
@@ -37,8 +36,11 @@ public class JwtTokenGenerator {
 
         String id = principal.getUsername();
         Role role = Role.valueOf(
-                authorities.stream().findFirst().isPresent() ? authorities.stream().findFirst().get().getAuthority()
-                        : Role.USER.name());
+            authorities.stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse(Role.USER.name())
+        );
         return generateToken(id, role);
     }
 
@@ -46,21 +48,21 @@ public class JwtTokenGenerator {
         Date expiry = new Date();
         Date accessTokenExpiry = new Date(expiry.getTime() + (accessTokenDuration));
         String accessToken = Jwts.builder()
-                .subject(id)
-                .claim("role", role == null ? Role.USER.name() : role.name())
-                .issuedAt(expiry)
-                .expiration(accessTokenExpiry)
-                .signWith(key)
-                .compact();
+            .subject(id)
+            .claim("role", role == null ? Role.USER.name() : role.name())
+            .issuedAt(expiry)
+            .expiration(accessTokenExpiry)
+            .signWith(key)
+            .compact();
 
         Date refreshTokenExpiry = new Date(expiry.getTime() + (refreshTokenDuration));
         String refreshToken = Jwts.builder()
-                .subject(id)
-                .claim("role", role == null ? Role.USER.name() : role.name())
-                .issuedAt(expiry)
-                .expiration(refreshTokenExpiry)
-                .signWith(key)
-                .compact();
+            .subject(id)
+            .claim("role", role == null ? Role.USER.name() : role.name())
+            .issuedAt(expiry)
+            .expiration(refreshTokenExpiry)
+            .signWith(key)
+            .compact();
 
         return TokenInfo.create(accessToken, refreshToken);
     }

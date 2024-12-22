@@ -9,6 +9,7 @@ import com.stempo.util.IpWhitelistValidator;
 import com.stempo.util.ResponseUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +26,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.io.IOException;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -34,37 +33,39 @@ import java.io.IOException;
 public class SecurityConfig {
 
     private final AuthenticationManager authenticationManager;
-    private final Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsCustomizer;
+    private final Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>
+        .AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsCustomizer;
     private final JwtTokenService tokenService;
     private final IpWhitelistValidator ipWhitelistValidator;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .authorizeHttpRequests(
-                        authorizeHttpRequestsCustomizer
-                )
-                .addFilterBefore(
-                        new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator),
-                        UsernamePasswordAuthenticationFilter.class
-                )
-                .addFilterBefore(
-                        new JwtAuthenticationFilter(tokenService),
-                        UsernamePasswordAuthenticationFilter.class
-                )
-                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
-                        httpSecurityExceptionHandlingConfigurer
-                                .authenticationEntryPoint(this::handleException)
-                                .accessDeniedHandler(this::handleException)
-                );
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(sessionManagement ->
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(
+                authorizeHttpRequestsCustomizer
+            )
+            .addFilterBefore(
+                new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator),
+                UsernamePasswordAuthenticationFilter.class
+            )
+            .addFilterBefore(
+                new JwtAuthenticationFilter(tokenService),
+                UsernamePasswordAuthenticationFilter.class
+            )
+            .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
+                httpSecurityExceptionHandlingConfigurer
+                    .authenticationEntryPoint(this::handleException)
+                    .accessDeniedHandler(this::handleException)
+            );
         return http.build();
     }
 
-    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception) throws IOException {
+    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception)
+        throws IOException {
         String clientIpAddress = HttpReqResUtils.getClientIpAddressIfServletRequestExist();
         String message;
         int statusCode;

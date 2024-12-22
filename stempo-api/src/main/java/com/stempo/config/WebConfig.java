@@ -25,13 +25,13 @@ public class WebConfig implements WebMvcConfigurer {
     private String filePath;
 
     @Value("${resource.file.url}")
-    private String fileURL;
+    private String fileUrl;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        log.info("Resource UploadedFile Mapped : {} -> {}", fileURL, filePath);
+        log.info("Resource UploadedFile Mapped : {} -> {}", fileUrl, filePath);
         registry
-                .addResourceHandler(fileURL + "/**")
+                .addResourceHandler(fileUrl + "/**")
                 .addResourceLocations("file://" + filePath + "/")
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver() {

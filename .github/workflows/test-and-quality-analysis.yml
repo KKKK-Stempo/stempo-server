@@ -1,0 +1,257 @@
+name: Test and Quality Analysis
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+permissions:
+  pull-requests: write
+  contents: read
+  actions: read
+  checks: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java and Gradlew
+        uses: ./.github/actions/setup-java-and-gradlew
+        with:
+          java-distribution: 'liberica'
+          java-version: '21'
+          java-package: 'jdk'
+
+      - name: Run tests with Gradle
+        run: ./gradlew test jacocoTestReport --info --parallel
+        env:
+          SPRING_PROFILES_ACTIVE: test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/build/reports/tests/test/*'
+
+      - name: Upload HTML Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-report
+          path: '**/build/reports/jacoco/test/html'
+
+      - name: Upload XML Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml-report
+          path: '**/build/reports/jacoco/test/jacocoTestReport.xml'
+
+      - name: Upload coverage exec data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-exec-data
+          path: '**/build/jacoco/test.exec'
+
+      - name: Test Reporter
+        id: reporter
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Spring Boot Tests
+          path: '**/build/test-results/test/*.xml'
+          reporter: java-junit
+          only-summary: false
+          list-suites: all
+          list-tests: all
+          max-annotations: 50
+          fail-on-error: true
+          fail-on-empty: true
+
+      - name: Compute Metrics
+        if: always()
+        run: |
+          total=$(( ${PASSED:-0} + ${FAILED:-0} + ${SKIPPED:-0} ))
+          time_in_seconds=$(echo "scale=2; ${TIME_MS:-0} / 1000" | bc)
+          echo "total=$total" >> $GITHUB_ENV
+          echo "time_in_seconds=$time_in_seconds" >> $GITHUB_ENV
+        env:
+          PASSED: ${{ steps.reporter.outputs.passed }}
+          FAILED: ${{ steps.reporter.outputs.failed }}
+          SKIPPED: ${{ steps.reporter.outputs.skipped }}
+          TIME_MS: ${{ steps.reporter.outputs.time }}
+
+      - name: Post Test Results to PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: always()
+        with:
+          header: Test Results
+          recreate: true
+          message: |
+            ## 🛠️ Test Summary (${{ steps.reporter.outputs.conclusion }})
+            
+            📄 **[View Detailed Test Logs](${{ steps.reporter.outputs.url_html }})**
+            
+            | **Metrics**           | **Test Result Details**               |
+            |-----------------------|---------------------------------------|
+            | **Total Tests**       | ${{ env.total }}                      |
+            | ✅ **Tests Passed**   | ${{ steps.reporter.outputs.passed }}  |
+            | ❌ **Tests Failed**   | ${{ steps.reporter.outputs.failed }}  |
+            | ⚠️ **Tests Skipped**  | ${{ steps.reporter.outputs.skipped }} |
+            | ⏱️ **Execution Time** | ${{ env.time_in_seconds }}s           |
+
+  code_quality_analysis:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
+
+      - name: Download HTML coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-html-report
+
+      - name: Download XML coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-xml-report
+
+      - name: Download coverage exec data
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-exec-data
+
+      - name: Setup Java and Gradlew
+        uses: ./.github/actions/setup-java-and-gradlew
+        with:
+          java-distribution: 'liberica'
+          java-version: '21'
+          java-package: 'jdk'
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Run Checkstyle
+        run: ./gradlew checkstyleMain checkstyleTest -x test --info
+
+      - name: Run JaCoCo Test Coverage Verification
+        run: ./gradlew jacocoTestCoverageVerification -x test -x jacocoTestReport --info 2>&1 | tee jacoco_verification.log
+        continue-on-error: true
+
+      - name: Parse Jacoco Violations
+        if: always()
+        id: parse
+        run: |
+          # 'Rule violated for class'가 포함된 라인 추출, 중복 제거
+          violations=$(grep "Rule violated for class" jacoco_verification.log | grep "\[ant:jacocoReport\]" | sort | uniq || true)
+          
+          # violations이 없으면 처리 종료
+          if [ -z "$violations" ]; then
+            echo "No violations found."
+            echo "violations_table=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Markdown Table 초기화
+          table="| Class | Metric | Actual | Threshold Type | Expected |"
+          table="$table
+          |-------|--------|--------|----------------|----------|"
+          
+          # sed를 이용한 파싱 및 예외 처리
+          # 패턴 예시:
+          # [ant:jacocoReport] Rule violated for class com.example.ClassName: branches covered ratio is 0.3, but expected minimum is 0.7
+          # 그룹화:
+          # 1: 클래스명
+          # 2: 메트릭(예: branches covered)
+          # 3: 실제값(0.3)
+          # 4: 기준 타입(minimum 또는 maximum)
+          # 5: 기대값(0.7)
+          {
+            echo "$violations" | sed -nE 's/.*Rule violated for class ([^:]*): ([^ ]+ [^ ]+) ratio is ([0-9.]*)[, ] but expected (minimum|maximum) is ([0-9.]*)/| \1 | \2 | \3 | \4 | \5 |/p' > violations_table.md
+          } || {
+            echo "Error during sed parsing. Exiting." >&2
+            exit 1
+          }
+          
+          # 테이블 데이터 생성
+          if [ -s violations_table.md ]; then
+            while IFS= read -r line; do
+              table="$table
+          $line"
+            done < violations_table.md
+          else
+            table="$table
+          | No violations found | - | - | - | - |"
+          fi
+          
+          # Markdown Table을 GitHub Output에 추가
+          echo "violations_table<<EOF" >> $GITHUB_OUTPUT
+          echo "$table" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Run SonarCloud Analysis
+        run: ./gradlew sonar --info
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: |
+            stempo-api/build/reports/jacoco/test/jacocoTestReport.xml
+            stempo-application/build/reports/jacoco/test/jacocoTestReport.xml
+            stempo-auth/build/reports/jacoco/test/jacocoTestReport.xml
+            stempo-common/build/reports/jacoco/test/jacocoTestReport.xml
+            stempo-domain/build/reports/jacoco/test/jacocoTestReport.xml
+            stempo-infrastructure/build/reports/jacoco/test/jacocoTestReport.xml
+          flags: |
+            stempo-api
+            stempo-application
+            stempo-auth
+            stempo-common
+            stempo-domain
+            stempo-infrastructure
+          fail_ci_if_error: false
+          verbose: true
+
+      - name: Post Coverage & Quality Results to PR
+        if: always()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: Coverage & Quality Results
+          recreate: true
+          message: |
+            ## 📉 JaCoCo Coverage Verification Results
+            
+            ${{ steps.parse.outputs.violations_table }}
+            
+            *(If empty, there are no coverage violations.)*
+            
+            ### HTML Coverage Report
+            You can download the HTML coverage report from the Artifacts of this run:
+            [View Coverage HTML Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+

@@ -64,7 +64,7 @@ class TotpServiceTest {
     void TOTP_인증이_성공하면_TokenInfo를_반환한다() {
         // given
         String encryptedDeviceTag = "encrypted-test-device";
-        when(encryptionUtils.encryptWithHashedIV(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
         when(authenticatorService.isAuthenticatorValid(encryptedDeviceTag, requestDto.getTotp())).thenReturn(true);
         when(userService.getById(encryptedDeviceTag)).thenReturn(user);
         when(tokenService.generateToken(encryptedDeviceTag, Role.USER)).thenReturn(tokenInfo);
@@ -83,7 +83,7 @@ class TotpServiceTest {
     void TOTP_인증이_실패하면_예외를_발생시킨다() {
         // given
         String encryptedDeviceTag = "encrypted-test-device";
-        when(encryptionUtils.encryptWithHashedIV(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
         when(authenticatorService.isAuthenticatorValid(encryptedDeviceTag, requestDto.getTotp())).thenReturn(false);
 
         // when, then
@@ -102,7 +102,7 @@ class TotpServiceTest {
         // given
         String deviceTag = "test-device";
         String encryptedDeviceTag = "encrypted-test-device";
-        when(encryptionUtils.encryptWithHashedIV(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
         when(authenticatorService.resetAuthenticator(encryptedDeviceTag)).thenReturn("new-secret-key");
 
         // when
@@ -110,7 +110,7 @@ class TotpServiceTest {
 
         // then
         assertThat(result).isEqualTo("new-secret-key");
-        verify(encryptionUtils).encryptWithHashedIV(deviceTag, "test-secret-key");
+        verify(encryptionUtils).encryptWithHashedIv(deviceTag, "test-secret-key");
         verify(authenticatorService).resetAuthenticator(encryptedDeviceTag);
     }
 }

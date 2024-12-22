@@ -1,0 +1,17 @@
+spring.config.activate.on-profile: test
+
+security:
+  whitelist:
+    enabled: true
+    path: "/whitelist"
+    account:
+      username: "testuser"
+      password: "testpass"
+      role: "ADMIN"
+    patterns:
+      actuator:
+        - "/actuator/health"
+        - "/actuator/info"
+      apiDocs:
+        - "/v3/api-docs"
+        - "/swagger-ui.html"

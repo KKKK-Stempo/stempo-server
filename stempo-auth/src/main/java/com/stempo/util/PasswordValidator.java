@@ -10,7 +10,8 @@ public class PasswordValidator {
     private static final String PASSWORD_LENGTH_PATTERN = "^.{8,16}$";
 
     // 비밀번호에 영문 대문자, 소문자, 숫자, 특수문자 중 최소 3가지가 포함되어야 함
-    private static final String CHARACTER_COMPLEXITY_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+=!]).{8,16}$";
+    private static final String CHARACTER_COMPLEXITY_PATTERN =
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,16}$";
 
     // 연속된 문자나 숫자 3개 이상 금지
     private static final String SEQUENTIAL_CHARACTERS_PATTERN = "(.)\\1\\1";
@@ -29,7 +30,7 @@ public class PasswordValidator {
     }
 
     /**
-     * 비밀번호가 유효한지 확인하는 메서드
+     * 비밀번호가 유효한지 확인하는 메서드.
      *
      * @param password 비밀번호
      * @param username 사용자 아이디 (비밀번호와 비교)
@@ -66,7 +67,7 @@ public class PasswordValidator {
     }
 
     /**
-     * 비밀번호에 사용자 아이디의 length 길이 이상 연속된 부분 문자열이 포함되어 있는지 확인하는 메서드
+     * 비밀번호에 사용자 아이디의 length 길이 이상 연속된 부분 문자열이 포함되어 있는지 확인하는 메서드.
      */
     private boolean containsSubstringOfLength(String password, String username, int length) {
         int usernameLength = username.length();

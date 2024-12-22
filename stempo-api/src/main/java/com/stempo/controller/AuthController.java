@@ -28,7 +28,7 @@ public class AuthController {
     @Operation(summary = "회원 가입", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/api/v1/auth/register")
     public ApiResponse<TokenInfo> registerUser(
-            @Valid @RequestBody AuthRequestDto requestDto
+        @Valid @RequestBody AuthRequestDto requestDto
     ) {
         TokenInfo token = authService.registerUser(requestDto);
         return ApiResponse.success(token);
@@ -43,11 +43,11 @@ public class AuthController {
         return ApiResponse.success(deviceTag);
     }
 
-    @Operation(summary = "로그인", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
-            "일반 계정일 경우 Device-Tag만 기입하면 됨")
+    @Operation(summary = "로그인", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>"
+        + "일반 계정일 경우 Device-Tag만 기입하면 됨")
     @PostMapping("/api/v1/auth/login")
     public ApiResponse<Object> login(
-            @Valid @RequestBody AuthRequestDto requestDto
+        @Valid @RequestBody AuthRequestDto requestDto
     ) {
         Object token = authService.login(requestDto);
         return ApiResponse.success(token);
@@ -57,7 +57,7 @@ public class AuthController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/api/v1/auth/reissue")
     public ApiResponse<TokenInfo> reissueToken(
-            HttpServletRequest request
+        HttpServletRequest request
     ) {
         TokenInfo token = authService.reissueToken(request);
         return ApiResponse.success(token);
@@ -66,7 +66,7 @@ public class AuthController {
     @Operation(summary = "TOTP 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("/api/v1/auth/two-factor-authentication")
     public ApiResponse<TokenInfo> authenticate(
-            @Valid @RequestBody TwoFactorAuthenticationRequestDto requestDto
+        @Valid @RequestBody TwoFactorAuthenticationRequestDto requestDto
     ) {
         TokenInfo token = authService.authenticate(requestDto);
         return ApiResponse.success(token);
@@ -76,7 +76,7 @@ public class AuthController {
     @DeleteMapping("/api/v1/auth/two-factor-authentication/{deviceTag}")
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<String> resetAuthenticator(
-            @PathVariable(name = "deviceTag") String deviceTag
+        @PathVariable(name = "deviceTag") String deviceTag
     ) {
         String id = authService.resetAuthenticator(deviceTag);
         return ApiResponse.success(id);

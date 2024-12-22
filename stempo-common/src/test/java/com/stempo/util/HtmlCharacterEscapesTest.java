@@ -35,6 +35,7 @@ class HtmlCharacterEscapesTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:AvoidEscapedUnicodeCharacters")
     void 이스케이프된_유니코드_문자가_정상적으로_출력된다() {
         // given
         char emojiChar = '\uD83D';
