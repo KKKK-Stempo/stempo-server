@@ -53,13 +53,13 @@ public class RecordServiceImpl implements RecordService {
         // startDateTime과 endDateTime 사이의 데이터 가져오기
         List<Record> records = recordRepository.findByDateBetween(deviceTag, startDateTime, endDateTime);
         List<RecordItemDto> decryptedRecords = records.stream()
-            .map(this::convertToDecryptedDto)
+            .map(this::convertToDecryptedRecordItemDto)
             .toList();
 
         // 결과 합치기
         List<RecordItemDto> combinedRecords = new ArrayList<>();
         latestBeforeStartDate.ifPresentOrElse(
-            record -> combinedRecords.add(convertToDecryptedDto(record)),
+            record -> combinedRecords.add(convertToDecryptedRecordItemDto(record)),
             () -> combinedRecords.add(mapper.toDto(0.0, 0, 0, startDate.minusDays(1)))
         );
         combinedRecords.addAll(decryptedRecords);
@@ -98,7 +98,7 @@ public class RecordServiceImpl implements RecordService {
         return mapper.toDto(todayWalkTrainingCount, weeklyWalkTrainingCount, consecutiveWalkTrainingDays);
     }
 
-    private RecordItemDto convertToDecryptedDto(Record record) {
+    private RecordItemDto convertToDecryptedRecordItemDto(Record record) {
         Double decryptedAccuracy = Double.parseDouble(encryptionUtils.decrypt(record.getAccuracy()));
         Integer decryptedDuration = Integer.parseInt(encryptionUtils.decrypt(record.getDuration()));
         Integer decryptedSteps = Integer.parseInt(encryptionUtils.decrypt(record.getSteps()));
