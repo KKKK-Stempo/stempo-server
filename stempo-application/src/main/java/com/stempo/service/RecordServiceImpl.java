@@ -30,14 +30,14 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     @Transactional
-    public String record(RecordRequestDto requestDto) {
+    public String recordTrainingData(RecordRequestDto requestDto) {
         String deviceTag = userService.getCurrentDeviceTag();
         String encryptedAccuracy = encryptionUtils.encrypt(requestDto.getAccuracy().toString());
         String encryptedDuration = encryptionUtils.encrypt(requestDto.getDuration().toString());
         String encryptedSteps = encryptionUtils.encrypt(requestDto.getSteps().toString());
 
-        Record record = Record.create(deviceTag, encryptedAccuracy, encryptedDuration, encryptedSteps);
-        return recordRepository.save(record).getDeviceTag();
+        Record newRecord = Record.create(deviceTag, encryptedAccuracy, encryptedDuration, encryptedSteps);
+        return recordRepository.save(newRecord).getDeviceTag();
     }
 
     @Override
@@ -59,7 +59,7 @@ public class RecordServiceImpl implements RecordService {
         // 결과 합치기
         List<RecordItemDto> combinedRecords = new ArrayList<>();
         latestBeforeStartDate.ifPresentOrElse(
-            record -> combinedRecords.add(convertToDecryptedRecordItemDto(record)),
+            latestTrainingRecord -> combinedRecords.add(convertToDecryptedRecordItemDto(latestTrainingRecord)),
             () -> combinedRecords.add(mapper.toDto(0.0, 0, 0, startDate.minusDays(1)))
         );
         combinedRecords.addAll(decryptedRecords);
@@ -98,11 +98,11 @@ public class RecordServiceImpl implements RecordService {
         return mapper.toDto(todayWalkTrainingCount, weeklyWalkTrainingCount, consecutiveWalkTrainingDays);
     }
 
-    private RecordItemDto convertToDecryptedRecordItemDto(Record record) {
-        Double decryptedAccuracy = Double.parseDouble(encryptionUtils.decrypt(record.getAccuracy()));
-        Integer decryptedDuration = Integer.parseInt(encryptionUtils.decrypt(record.getDuration()));
-        Integer decryptedSteps = Integer.parseInt(encryptionUtils.decrypt(record.getSteps()));
-        LocalDate date = record.getCreatedAt().toLocalDate();
+    private RecordItemDto convertToDecryptedRecordItemDto(Record trainingRecord) {
+        Double decryptedAccuracy = Double.parseDouble(encryptionUtils.decrypt(trainingRecord.getAccuracy()));
+        Integer decryptedDuration = Integer.parseInt(encryptionUtils.decrypt(trainingRecord.getDuration()));
+        Integer decryptedSteps = Integer.parseInt(encryptionUtils.decrypt(trainingRecord.getSteps()));
+        LocalDate date = trainingRecord.getCreatedAt().toLocalDate();
 
         return mapper.toDto(decryptedAccuracy, decryptedDuration, decryptedSteps, date);
     }

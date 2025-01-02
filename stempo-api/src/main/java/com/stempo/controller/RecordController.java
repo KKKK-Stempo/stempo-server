@@ -29,10 +29,10 @@ public class RecordController {
     @SuccessApiResponse(data = "deviceTag", dataType = String.class, dataDescription = "사용자의 디바이스 식별자")
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/api/v1/records")
-    public ApiResponse<String> record(
+    public ApiResponse<String> recordTrainingData(
         @Valid @RequestBody RecordRequestDto requestDto
     ) {
-        String deviceTag = recordService.record(requestDto);
+        String deviceTag = recordService.recordTrainingData(requestDto);
         return ApiResponse.success(deviceTag);
     }
 

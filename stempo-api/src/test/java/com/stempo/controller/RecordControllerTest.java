@@ -29,7 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = RecordController.class)
 @ContextConfiguration(classes = TestApplication.class)
 @ActiveProfiles("test")
-public class RecordControllerTest {
+class RecordControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -51,7 +51,7 @@ public class RecordControllerTest {
 
         String expectedDeviceTag = "device123";
 
-        when(recordService.record(any(RecordRequestDto.class)))
+        when(recordService.recordTrainingData(any(RecordRequestDto.class)))
             .thenReturn(expectedDeviceTag);
 
         // when

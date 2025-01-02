@@ -48,7 +48,7 @@ class RecordServiceImplTest {
     private RecordServiceImpl recordService;
 
     private RecordRequestDto recordRequestDto;
-    private Record record;
+    private Record trainingRecord;
     private String deviceTag;
 
     @BeforeEach
@@ -59,7 +59,7 @@ class RecordServiceImplTest {
         recordRequestDto.setDuration(120);
         recordRequestDto.setSteps(1000);
 
-        record = Record.builder()
+        trainingRecord = Record.builder()
             .id(1L)
             .deviceTag(deviceTag)
             .accuracy("encrypted-accuracy")
@@ -74,10 +74,10 @@ class RecordServiceImplTest {
         // given
         when(userService.getCurrentDeviceTag()).thenReturn(deviceTag);
         when(encryptionUtils.encrypt(anyString())).thenReturn("encrypted-value");
-        when(recordRepository.save(any(Record.class))).thenReturn(record);
+        when(recordRepository.save(any(Record.class))).thenReturn(trainingRecord);
 
         // when
-        String result = recordService.record(recordRequestDto);
+        String result = recordService.recordTrainingData(recordRequestDto);
 
         // then
         assertThat(result).isEqualTo(deviceTag);
@@ -103,7 +103,7 @@ class RecordServiceImplTest {
             .createdAt(startDateTime.minusDays(1))
             .build();
 
-        List<Record> recordsBetweenDates = List.of(record);
+        List<Record> recordsBetweenDates = List.of(trainingRecord);
 
         when(userService.getCurrentDeviceTag()).thenReturn(deviceTag);
         when(recordRepository.findLatestBeforeStartDate(deviceTag, startDateTime))

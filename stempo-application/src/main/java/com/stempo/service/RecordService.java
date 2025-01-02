@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public interface RecordService {
 
-    String record(RecordRequestDto requestDto);
+    String recordTrainingData(RecordRequestDto requestDto);
 
     RecordResponseDto getRecordsByDateRange(LocalDate startDate, LocalDate endDate);
 
