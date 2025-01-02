@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,25 +29,26 @@ public class RecordController {
     @SuccessApiResponse(data = "deviceTag", dataType = String.class, dataDescription = "사용자의 디바이스 식별자")
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/api/v1/records")
-    public ApiResponse<String> record(
-            @Valid @RequestBody RecordRequestDto requestDto
+    public ApiResponse<String> recordTrainingData(
+        @Valid @RequestBody RecordRequestDto requestDto
     ) {
-        String deviceTag = recordService.record(requestDto);
+        String deviceTag = recordService.recordTrainingData(requestDto);
         return ApiResponse.success(deviceTag);
     }
 
     @Operation(summary = "[U] 내 보행 훈련 기록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>"
         + "startDate와 endDate는 yyyy-MM-dd 형식으로 입력해야 함<br>"
         + "startDate 이전의 가장 최신 데이터와 startDate부터 endDate까지의 데이터를 가져옴<br>"
-        + "데이터가 없을 경우 startDate 이전 날짜, 정확도 0으로 설정하여 반환")
+        + "데이터가 없을 경우 startDate 이전 날짜, 정확도 0으로 설정하여 반환"
+        + "정확도 평균은 소수점 첫째 자리에서 반올림된 값으로 반환")
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/api/v1/records")
-    public ApiResponse<List<RecordResponseDto>> getRecords(
-            @RequestParam(name = "startDate") LocalDate startDate,
-            @RequestParam(name = "endDate") LocalDate endDate
+    public ApiResponse<RecordResponseDto> getRecords(
+        @RequestParam(name = "startDate") LocalDate startDate,
+        @RequestParam(name = "endDate") LocalDate endDate
     ) {
-        List<RecordResponseDto> records = recordService.getRecordsByDateRange(startDate, endDate);
-        return ApiResponse.success(records);
+        RecordResponseDto recordsByDateRange = recordService.getRecordsByDateRange(startDate, endDate);
+        return ApiResponse.success(recordsByDateRange);
     }
 
     @Operation(summary = "[U] 내 보행 훈련 기록 통계", description = "ROLE_USER 이상의 권한이 필요함")

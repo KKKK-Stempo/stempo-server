@@ -10,7 +10,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +20,8 @@ public class AuthenticationService {
     private final EncryptionUtils encryptionUtils;
     private final AesConfig aesConfig;
 
-    @Transactional
     public Object login(AuthRequestDto requestDto, JwtTokenService tokenService,
-            TotpAuthenticatorService authenticatorService) {
+        TotpAuthenticatorService authenticatorService) {
         String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
         userService.handleAccountLock(deviceTag);
 
@@ -31,7 +29,7 @@ public class AuthenticationService {
     }
 
     private Object attemptAuthentication(String deviceTag, String password, JwtTokenService tokenService,
-            TotpAuthenticatorService authenticatorService) {
+        TotpAuthenticatorService authenticatorService) {
         try {
             Authentication authentication = performAuthentication(deviceTag, password);
             userService.resetFailedAttempts(deviceTag);
@@ -45,12 +43,12 @@ public class AuthenticationService {
 
     private Authentication performAuthentication(String deviceTag, String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(deviceTag, password);
+            new UsernamePasswordAuthenticationToken(deviceTag, password);
         return authenticationManager.authenticate(authenticationToken);
     }
 
     private Object handleTwoFactorIfRequired(String deviceTag, Authentication authentication,
-            TotpAuthenticatorService authenticatorService, JwtTokenService tokenService) {
+        TotpAuthenticatorService authenticatorService, JwtTokenService tokenService) {
         boolean isAdmin = userService.getById(deviceTag).isAdmin();
         boolean hasAuthenticator = authenticatorService.isAuthenticatorExist(deviceTag);
 

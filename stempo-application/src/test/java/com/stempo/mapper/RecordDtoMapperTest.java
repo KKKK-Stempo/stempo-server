@@ -2,9 +2,11 @@ package com.stempo.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.stempo.dto.response.RecordItemDto;
 import com.stempo.dto.response.RecordResponseDto;
 import com.stempo.dto.response.RecordStatisticsResponseDto;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +20,26 @@ class RecordDtoMapperTest {
     }
 
     @Test
-    void accuracy와_duration과_steps와_date로_RecordResponseDto로_매핑된다() {
+    void accuracyAverage와_records가_RecordResponseDto로_매핑된다() {
+        // given
+        int accuracyAverage = 95;
+        RecordItemDto recordItemDto = RecordItemDto.builder()
+            .accuracy(95.5)
+            .duration(1200)
+            .steps(1500)
+            .date(LocalDate.of(2023, 10, 24))
+            .build();
+
+        // when
+        RecordResponseDto responseDto = recordDtoMapper.toDto(accuracyAverage, List.of(recordItemDto));
+
+        // then
+        assertThat(responseDto.getAccuracyAverage()).isEqualTo(accuracyAverage);
+        assertThat(responseDto.getRecords()).containsExactly(recordItemDto);
+    }
+
+    @Test
+    void accuracy_duration_steps_date가_RecordItemDto로_매핑된다() {
         // given
         Double accuracy = 95.5;
         Integer duration = 1200;
@@ -26,7 +47,7 @@ class RecordDtoMapperTest {
         LocalDate date = LocalDate.of(2023, 10, 24);
 
         // when
-        RecordResponseDto responseDto = recordDtoMapper.toDto(accuracy, duration, steps, date);
+        RecordItemDto responseDto = recordDtoMapper.toDto(accuracy, duration, steps, date);
 
         // then
         assertThat(responseDto.getAccuracy()).isEqualTo(accuracy);
@@ -36,7 +57,7 @@ class RecordDtoMapperTest {
     }
 
     @Test
-    void 오늘_보행_훈련_횟수와_주간_보행_훈련_횟수와_연속_보행_훈련_일수로_RecordStatisticsResponseDto로_매핑된다() {
+    void 오늘_보행_훈련_횟수와_주간_보행_훈련_횟수와_연속_보행_훈련_일수가_RecordStatisticsResponseDto로_매핑된다() {
         // given
         int todayWalkTrainingCount = 3;
         int weeklyWalkTrainingCount = 10;
@@ -44,7 +65,7 @@ class RecordDtoMapperTest {
 
         // when
         RecordStatisticsResponseDto responseDto = recordDtoMapper.toDto(todayWalkTrainingCount, weeklyWalkTrainingCount,
-                consecutiveWalkTrainingDays);
+            consecutiveWalkTrainingDays);
 
         // then
         assertThat(responseDto.getTodayWalkTrainingCount()).isEqualTo(todayWalkTrainingCount);
