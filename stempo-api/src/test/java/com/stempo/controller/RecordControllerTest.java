@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stempo.dto.request.RecordRequestDto;
+import com.stempo.dto.response.RecordItemDto;
 import com.stempo.dto.response.RecordResponseDto;
 import com.stempo.dto.response.RecordStatisticsResponseDto;
 import com.stempo.service.RecordService;
@@ -51,16 +52,16 @@ public class RecordControllerTest {
         String expectedDeviceTag = "device123";
 
         when(recordService.record(any(RecordRequestDto.class)))
-                .thenReturn(expectedDeviceTag);
+            .thenReturn(expectedDeviceTag);
 
         // when
         mockMvc.perform(post("/api/v1/records")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").value(expectedDeviceTag));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data").value(expectedDeviceTag));
     }
 
     @Test
@@ -74,12 +75,12 @@ public class RecordControllerTest {
 
         // when
         mockMvc.perform(post("/api/v1/records")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.data").isEmpty());
     }
 
     @Test
@@ -92,10 +93,10 @@ public class RecordControllerTest {
 
         // when
         mockMvc.perform(post("/api/v1/records")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isUnauthorized());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -105,52 +106,59 @@ public class RecordControllerTest {
         LocalDate startDate = LocalDate.of(2024, 10, 1);
         LocalDate endDate = LocalDate.of(2024, 10, 31);
 
-        List<RecordResponseDto> expectedRecords = List.of(
-                RecordResponseDto.builder()
-                        .accuracy(95.5)
-                        .duration(30)
-                        .steps(5000)
-                        .date(LocalDate.of(2024, 10, 15))
-                        .build(),
-                RecordResponseDto.builder()
-                        .accuracy(90.0)
-                        .duration(25)
-                        .steps(4500)
-                        .date(LocalDate.of(2024, 10, 20))
-                        .build()
+        List<RecordItemDto> recordItems = List.of(
+            RecordItemDto.builder()
+                .accuracy(95.5)
+                .duration(30)
+                .steps(5000)
+                .date(LocalDate.of(2024, 10, 15))
+                .build(),
+            RecordItemDto.builder()
+                .accuracy(90.0)
+                .duration(25)
+                .steps(4500)
+                .date(LocalDate.of(2024, 10, 20))
+                .build()
         );
 
+        int accuracyAverage = 93;
+
+        RecordResponseDto responseDto = RecordResponseDto.builder()
+            .accuracyAverage(accuracyAverage)
+            .records(recordItems)
+            .build();
+
         when(recordService.getRecordsByDateRange(startDate, endDate))
-                .thenReturn(expectedRecords);
+            .thenReturn(responseDto);
 
         // when
         mockMvc.perform(get("/api/v1/records")
-                        .param("startDate", "2024-10-01")
-                        .param("endDate", "2024-10-31")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0].accuracy").value(95.5))
-                .andExpect(jsonPath("$.data[0].duration").value(30))
-                .andExpect(jsonPath("$.data[0].steps").value(5000))
-                .andExpect(jsonPath("$.data[0].date").value("2024-10-15"))
-                .andExpect(jsonPath("$.data[1].accuracy").value(90.0))
-                .andExpect(jsonPath("$.data[1].duration").value(25))
-                .andExpect(jsonPath("$.data[1].steps").value(4500))
-                .andExpect(jsonPath("$.data[1].date").value("2024-10-20"));
+                .param("startDate", "2024-10-01")
+                .param("endDate", "2024-10-31")
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.accuracyAverage").value(93))
+            .andExpect(jsonPath("$.data.records[0].accuracy").value(95.5))
+            .andExpect(jsonPath("$.data.records[0].duration").value(30))
+            .andExpect(jsonPath("$.data.records[0].steps").value(5000))
+            .andExpect(jsonPath("$.data.records[0].date").value("2024-10-15"))
+            .andExpect(jsonPath("$.data.records[1].accuracy").value(90.0))
+            .andExpect(jsonPath("$.data.records[1].duration").value(25))
+            .andExpect(jsonPath("$.data.records[1].steps").value(4500))
+            .andExpect(jsonPath("$.data.records[1].date").value("2024-10-20"));
     }
 
     @Test
     void 인증되지_않은_사용자가_보행_훈련_기록을_조회시_권한에러가_발생한다() throws Exception {
         // when
         mockMvc.perform(get("/api/v1/records")
-                        .param("startDate", "2024-10-01")
-                        .param("endDate", "2024-10-31")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isUnauthorized());
+                .param("startDate", "2024-10-01")
+                .param("endDate", "2024-10-31")
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -158,31 +166,31 @@ public class RecordControllerTest {
     void 정상적으로_보행_훈련_기록_통계를_조회한다() throws Exception {
         // given
         RecordStatisticsResponseDto expectedStatistics = RecordStatisticsResponseDto.builder()
-                .todayWalkTrainingCount(10)
-                .weeklyWalkTrainingCount(50)
-                .consecutiveWalkTrainingDays(5)
-                .build();
+            .todayWalkTrainingCount(10)
+            .weeklyWalkTrainingCount(50)
+            .consecutiveWalkTrainingDays(5)
+            .build();
 
         when(recordService.getRecordStatistics())
-                .thenReturn(expectedStatistics);
+            .thenReturn(expectedStatistics);
 
         // when
         mockMvc.perform(get("/api/v1/records/statistics")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.todayWalkTrainingCount").value(10))
-                .andExpect(jsonPath("$.data.weeklyWalkTrainingCount").value(50))
-                .andExpect(jsonPath("$.data.consecutiveWalkTrainingDays").value(5));
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.todayWalkTrainingCount").value(10))
+            .andExpect(jsonPath("$.data.weeklyWalkTrainingCount").value(50))
+            .andExpect(jsonPath("$.data.consecutiveWalkTrainingDays").value(5));
     }
 
     @Test
     void 인증되지_않은_사용자가_보행_훈련_기록_통계를_조회시_권한에러가_발생한다() throws Exception {
         // when
         mockMvc.perform(get("/api/v1/records/statistics")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isUnauthorized());
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isUnauthorized());
     }
 }

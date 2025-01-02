@@ -2,7 +2,7 @@ package com.stempo.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.stempo.dto.response.RecordResponseDto;
+import com.stempo.dto.response.RecordItemDto;
 import com.stempo.dto.response.RecordStatisticsResponseDto;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ class RecordDtoMapperTest {
         LocalDate date = LocalDate.of(2023, 10, 24);
 
         // when
-        RecordResponseDto responseDto = recordDtoMapper.toDto(accuracy, duration, steps, date);
+        RecordItemDto responseDto = recordDtoMapper.toDto(accuracy, duration, steps, date);
 
         // then
         assertThat(responseDto.getAccuracy()).isEqualTo(accuracy);
@@ -44,7 +44,7 @@ class RecordDtoMapperTest {
 
         // when
         RecordStatisticsResponseDto responseDto = recordDtoMapper.toDto(todayWalkTrainingCount, weeklyWalkTrainingCount,
-                consecutiveWalkTrainingDays);
+            consecutiveWalkTrainingDays);
 
         // then
         assertThat(responseDto.getTodayWalkTrainingCount()).isEqualTo(todayWalkTrainingCount);

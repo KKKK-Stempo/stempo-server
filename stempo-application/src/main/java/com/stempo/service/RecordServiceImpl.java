@@ -1,6 +1,7 @@
 package com.stempo.service;
 
 import com.stempo.dto.request.RecordRequestDto;
+import com.stempo.dto.response.RecordItemDto;
 import com.stempo.dto.response.RecordResponseDto;
 import com.stempo.dto.response.RecordStatisticsResponseDto;
 import com.stempo.mapper.RecordDtoMapper;
@@ -41,7 +42,7 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RecordResponseDto> getRecordsByDateRange(LocalDate startDate, LocalDate endDate) {
+    public RecordResponseDto getRecordsByDateRange(LocalDate startDate, LocalDate endDate) {
         String deviceTag = userService.getCurrentDeviceTag();
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atStartOfDay().plusDays(1);
@@ -51,19 +52,25 @@ public class RecordServiceImpl implements RecordService {
 
         // startDateTime과 endDateTime 사이의 데이터 가져오기
         List<Record> records = recordRepository.findByDateBetween(deviceTag, startDateTime, endDateTime);
+        List<RecordItemDto> decryptedRecords = records.stream()
+            .map(this::convertToDecryptedDto)
+            .toList();
 
         // 결과 합치기
-        List<RecordResponseDto> combinedRecords = new ArrayList<>();
+        List<RecordItemDto> combinedRecords = new ArrayList<>();
         latestBeforeStartDate.ifPresentOrElse(
-                record -> combinedRecords.add(convertToDecryptedDto(record)),
-                () -> combinedRecords.add(mapper.toDto(0.0, 0, 0, startDate.minusDays(1)))
+            record -> combinedRecords.add(convertToDecryptedDto(record)),
+            () -> combinedRecords.add(mapper.toDto(0.0, 0, 0, startDate.minusDays(1)))
         );
+        combinedRecords.addAll(decryptedRecords);
 
-        combinedRecords.addAll(records.stream()
-                .map(this::convertToDecryptedDto)
-                .toList());
+        // 정확도 평균 계산
+        int accuracyAverage = (int) Math.ceil(decryptedRecords.stream()
+            .mapToDouble(RecordItemDto::getAccuracy)
+            .average()
+            .orElse(0.0));
 
-        return combinedRecords;
+        return mapper.toDto(accuracyAverage, combinedRecords);
     }
 
     @Override
@@ -74,16 +81,16 @@ public class RecordServiceImpl implements RecordService {
         LocalDateTime todayStartDateTime = LocalDate.now().atStartOfDay();
         LocalDateTime todayEndDateTime = todayStartDateTime.plusDays(1);
         LocalDateTime weekStartDateTime = LocalDate.now()
-                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-                .atStartOfDay();
+            .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+            .atStartOfDay();
 
         // 오늘의 훈련 횟수 계산
         int todayWalkTrainingCount = recordRepository.countByDeviceTagAndCreatedAtBetween(
-                deviceTag, todayStartDateTime, todayEndDateTime);
+            deviceTag, todayStartDateTime, todayEndDateTime);
 
         // 이번 주 훈련 횟수 계산 (월요일부터 오늘까지)
         int weeklyWalkTrainingCount = recordRepository.countByDeviceTagAndCreatedAtBetween(
-                deviceTag, weekStartDateTime, todayEndDateTime);
+            deviceTag, weekStartDateTime, todayEndDateTime);
 
         // 연속된 훈련 일수 계산
         int consecutiveWalkTrainingDays = calculateConsecutiveTrainingDays(deviceTag);
@@ -91,7 +98,7 @@ public class RecordServiceImpl implements RecordService {
         return mapper.toDto(todayWalkTrainingCount, weeklyWalkTrainingCount, consecutiveWalkTrainingDays);
     }
 
-    private RecordResponseDto convertToDecryptedDto(Record record) {
+    private RecordItemDto convertToDecryptedDto(Record record) {
         Double decryptedAccuracy = Double.parseDouble(encryptionUtils.decrypt(record.getAccuracy()));
         Integer decryptedDuration = Integer.parseInt(encryptionUtils.decrypt(record.getDuration()));
         Integer decryptedSteps = Integer.parseInt(encryptionUtils.decrypt(record.getSteps()));

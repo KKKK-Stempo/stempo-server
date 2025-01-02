@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.stempo.dto.request.RecordRequestDto;
+import com.stempo.dto.response.RecordItemDto;
 import com.stempo.dto.response.RecordResponseDto;
 import com.stempo.dto.response.RecordStatisticsResponseDto;
 import com.stempo.mapper.RecordDtoMapper;
@@ -90,7 +91,7 @@ class RecordServiceImplTest {
         LocalDate startDate = LocalDate.of(2024, 10, 21);
         LocalDate endDate = LocalDate.of(2024, 10, 27);
         LocalDateTime startDateTime = startDate.atStartOfDay();
-        LocalDateTime endDateTime = endDate.atStartOfDay().plusDays(1);
+        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
 
         Record latestRecord = Record.builder()
             .id(2L)
@@ -111,28 +112,46 @@ class RecordServiceImplTest {
         when(encryptionUtils.decrypt(anyString())).thenReturn("95.5", "120", "1000");
         when(mapper.toDto(anyDouble(), anyInt(), anyInt(), any(LocalDate.class)))
             .thenReturn(
-                RecordResponseDto.builder()
+                RecordItemDto.builder()
                     .accuracy(95.5)
                     .duration(120)
                     .steps(1000)
                     .build(),
-                RecordResponseDto.builder()
+                RecordItemDto.builder()
                     .accuracy(95.5)
                     .duration(120)
                     .steps(1000)
                     .build()
             );
+        when(mapper.toDto(anyInt(), any(List.class)))
+            .thenReturn(RecordResponseDto.builder()
+                .accuracyAverage(96)
+                .records(List.of(
+                    RecordItemDto.builder()
+                        .accuracy(95.5)
+                        .duration(120)
+                        .steps(1000)
+                        .build(),
+                    RecordItemDto.builder()
+                        .accuracy(95.5)
+                        .duration(120)
+                        .steps(1000)
+                        .build()
+                ))
+                .build());
 
         // when
-        List<RecordResponseDto> result = recordService.getRecordsByDateRange(startDate, endDate);
+        RecordResponseDto result = recordService.getRecordsByDateRange(startDate, endDate);
 
         // then
-        assertThat(result).hasSize(2);
+        assertThat(result.getAccuracyAverage()).isEqualTo(96);
+        assertThat(result.getRecords()).hasSize(2);
         verify(userService).getCurrentDeviceTag();
         verify(recordRepository).findLatestBeforeStartDate(deviceTag, startDateTime);
         verify(recordRepository).findByDateBetween(deviceTag, startDateTime, endDateTime);
         verify(encryptionUtils, times(6)).decrypt(anyString()); // accuracy, duration, steps * 2 records
         verify(mapper, times(2)).toDto(anyDouble(), anyInt(), anyInt(), any(LocalDate.class));
+        verify(mapper, times(1)).toDto(anyInt(), any(List.class));
     }
 
     @Test
