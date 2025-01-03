@@ -1,7 +1,7 @@
 import math
 from fastapi import FastAPI, Body, Response, HTTPException
 from io import BytesIO
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pydub import AudioSegment
 from pydub.generators import Sine
 
@@ -59,8 +59,8 @@ def create_metronome_bpm(
 
 # 요청 바디 모델 정의
 class RhythmRequest(BaseModel):
-    bpm: int
-    bit: int
+    bpm: int = Field(..., ge=10, le=200, description="BPM은 10에서 200 사이의 정수여야 합니다.")
+    bit: int = Field(..., ge=1, le=8, description="Bit는 1에서 8 사이의 정수여야 합니다.")
 
 
 @app.post("/api/v1/rhythm", response_class=Response, responses={
@@ -81,7 +81,7 @@ def create_rhythm(request: RhythmRequest = Body(...)) -> Response:
     try:
         rhythm = create_metronome_bpm(bpm=request.bpm, bit=request.bit)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=f"잘못된 입력입니다: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"리듬 생성에 실패했습니다: {str(e)}")
 
