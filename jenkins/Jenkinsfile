@@ -212,12 +212,10 @@ def loadEnvironmentVariables(String configFile) {
 
     env.DOCKER_HUB_REPO = config.dockerhub.repo
 
-    env.HOST_CONFIG_PATH = config.host.'config-path'
-    env.HOST_CLOUD_PATH = config.host.'cloud-path'
+    env.HOST_DEFAULT_PATH = config.host.'default-path'
     env.HOST_LOGS_PATH = config.host.'logs-path'
 
-    env.CONTAINER_CONFIG_PATH = config.container.'config-path'
-    env.CONTAINER_CLOUD_PATH = config.container.'cloud-path'
+    env.CONTAINER_DEFAULT_PATH = config.container.'default-path'
     env.CONTAINER_LOGS_PATH = config.container.'logs-path'
 
     env.BLUE_CONTAINER = config.containers.blue
@@ -336,8 +334,7 @@ def deployNewInstance() {
         docker run -d --name ${env.DEPLOY_CONTAINER} \\
             -p ${env.NEW_PORT}:8080 \\
             --network ${env.APPLICATION_NETWORK} \\
-            -v ${env.HOST_CONFIG_PATH}:${env.CONTAINER_CONFIG_PATH} \\
-            -v ${env.HOST_CLOUD_PATH}:${env.CONTAINER_CLOUD_PATH} \\
+            -v ${env.HOST_DEFAULT_PATH}:${env.CONTAINER_DEFAULT_PATH} \\
             -v ${env.HOST_LOGS_PATH}:${env.CONTAINER_LOGS_PATH} \\
             -e LOG_PATH=${env.CONTAINER_LOGS_PATH} \\
             -e SPRING_PROFILES_ACTIVE=${env.PROFILE} \\
