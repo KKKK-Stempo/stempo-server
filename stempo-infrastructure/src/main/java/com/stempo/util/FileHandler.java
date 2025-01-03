@@ -23,8 +23,8 @@ public class FileHandler {
     private String filePath;
 
     public FileHandler(
-            @Value("${resource.file.disallow-extension}") String[] disallowExtensions,
-            @Value("${resource.file.path}") String filePath
+        @Value("${resource.file.disallow-extension}") String[] disallowExtensions,
+        @Value("${resource.file.path}") String filePath
     ) {
         this.filePath = filePath;
         this.disallowExtensions.addAll(Arrays.asList(disallowExtensions));
@@ -63,6 +63,23 @@ public class FileHandler {
 
         Files.copy(file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
         FileUtils.setFilePermissions(destination, savePath, filePath);
+        return savePath;
+    }
+
+    public String saveFile(byte[] fileData, String category, String fileName) throws IOException {
+        init();
+        String extension = FilenameUtils.getExtension(fileName);
+        FileUtils.validateFileAttributes(fileName, disallowExtensions);
+
+        String saveFilename = FileUtils.makeFileName(extension);
+        String savePath = filePath + File.separator + category + File.separator + saveFilename;
+
+        File file = new File(savePath);
+        FileUtils.ensureParentDirectoryExists(file, filePath);
+
+        Files.write(file.toPath(), fileData);
+
+        FileUtils.setFilePermissions(file, savePath, filePath);
         return savePath;
     }
 

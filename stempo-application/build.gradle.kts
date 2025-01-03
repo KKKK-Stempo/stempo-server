@@ -16,4 +16,5 @@ dependencies {
     implementation(Dependencies.hibernateValidator)
     implementation(Dependencies.swagger)
     implementation(Dependencies.googleAuthenticator)
+    implementation(Dependencies.apacheHttpClient)
 }
