@@ -1,7 +1,7 @@
-from io import BytesIO
-
 import math
-from fastapi import FastAPI, Query, Response, HTTPException
+from fastapi import FastAPI, Body, Response, HTTPException
+from io import BytesIO
+from pydantic import BaseModel
 from pydub import AudioSegment
 from pydub.generators import Sine
 
@@ -27,11 +27,17 @@ def create_metronome_bpm(
     Returns:
         AudioSegment: 생성된 리듬의 오디오 세그먼트.
     """
+    # 유효성 검증
+    if bpm <= 0 or bit <= 0:
+        raise ValueError("BPM과 비트는 양의 정수여야 합니다.")
+
+    interval_ms = (60 / bpm) * 1000  # 비트 간 간격 (밀리초 단위)
+    if tone_duration >= interval_ms:
+        raise ValueError("tone_duration은 bpm에서 계산된 비트 간격보다 작아야 합니다.")
+
     frequency = 440.0  # 메트로놈 주파수 (Hz)
     sine_wave_strong = Sine(frequency)  # 강한 첫 박자
     sine_wave_weak = Sine(frequency * 0.6)  # 약한 박자
-
-    interval_ms = (60 / bpm) * 1000  # 비트 간 간격 (밀리초 단위)
 
     strong_tone = sine_wave_strong.to_audio_segment(duration=tone_duration)
     weak_tone = sine_wave_weak.to_audio_segment(duration=tone_duration)
@@ -51,32 +57,33 @@ def create_metronome_bpm(
     return rhythm
 
 
+# 요청 바디 모델 정의
+class RhythmRequest(BaseModel):
+    bpm: int
+    bit: int
+
+
 @app.post("/api/v1/rhythm", response_class=Response, responses={
     200: {"description": "리듬 WAV 파일이 성공적으로 생성되었습니다."},
     400: {"description": "잘못된 입력 파라미터."},
     500: {"description": "내부 서버 오류."}
 })
-def create_rhythm(
-        bpm: int = Query(..., description="분당 비트 수 (예: 120)"),
-        bit: int = Query(..., description="비트의 수 (예: 4)")
-) -> Response:
+def create_rhythm(request: RhythmRequest = Body(...)) -> Response:
     """
     BPM과 비트 수를 받아 메트로놈 리듬 WAV 파일을 생성하는 엔드포인트입니다.
 
     Args:
-        bpm (int): 분당 비트 수.
-        bit (int): 비트의 수.
+        request (RhythmRequest): 리듬 생성 요청 바디. BPM과 비트 정보를 포함.
 
     Returns:
         Response: 생성된 WAV 오디오 파일의 바이너리 데이터.
     """
-    if bpm <= 0 or bit <= 0:
-        raise HTTPException(status_code=400, detail="BPM과 비트는 양의 정수여야 합니다.")
-
     try:
-        rhythm = create_metronome_bpm(bpm=bpm, bit=bit)
+        rhythm = create_metronome_bpm(bpm=request.bpm, bit=request.bit)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail="리듬 생성에 실패했습니다.") from e
+        raise HTTPException(status_code=500, detail=f"리듬 생성에 실패했습니다: {str(e)}")
 
     output_buffer = BytesIO()
     rhythm.export(output_buffer, format="wav")
