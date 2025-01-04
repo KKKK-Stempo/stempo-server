@@ -60,7 +60,7 @@ public class FileService {
         String encryptedFilePath = encryptionUtils.encrypt(savedFilePath);
 
         UploadedFile uploadedFile = UploadedFile.create(multipartFile.getOriginalFilename(), fileName,
-                encryptedFilePath, url, multipartFile.getSize());
+            encryptedFilePath, url, multipartFile.getSize());
         uploadedFileService.saveUploadedFile(uploadedFile);
         return uploadedFile.getUrl();
     }
@@ -73,9 +73,29 @@ public class FileService {
         String encryptedFilePath = encryptionUtils.encrypt(savedFilePath);
 
         UploadedFile uploadedFile = UploadedFile.create(file.getName(), fileName, encryptedFilePath, url,
-                file.length());
+            file.length());
         uploadedFileService.saveUploadedFile(uploadedFile);
         return url;
+    }
+
+    public String saveRhythmFile(byte[] fileData, String fileName) {
+        try {
+            String category = "rhythm";
+            String savedFilePath = fileHandler.saveFile(fileData, category, fileName);
+            String savedFileName = parseFileName(savedFilePath);
+            String url = generateFileUrl(category, savedFileName);
+
+            String encryptedFilePath = encryptionUtils.encrypt(savedFilePath);
+
+            UploadedFile uploadedFile = UploadedFile.create(fileName, savedFileName,
+                encryptedFilePath, url, (long) fileData.length);
+            uploadedFileService.saveUploadedFile(uploadedFile);
+
+            return uploadedFile.getUrl();
+        } catch (Exception e) {
+            log.error("리듬 파일 저장 중 오류 발생: {}", e.getMessage());
+            throw new BaseException(ErrorCode.RHYTHM_GENERATION_ERROR, "리듬 파일 저장에 실패했습니다: " + fileName);
+        }
     }
 
     public boolean deleteFile(DeleteFileRequestDto requestDto) {
@@ -96,6 +116,10 @@ public class FileService {
 
     private String generateFileUrl(String path, String fileName) {
         return fileUrl + "/" + path.replace(File.separator, "/") + "/" + fileName;
+    }
+
+    private String parseFileName(String url) {
+        return url.substring(url.lastIndexOf("/") + 1);
     }
 }
 

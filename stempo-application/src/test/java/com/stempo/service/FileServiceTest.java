@@ -3,7 +3,9 @@ package com.stempo.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -111,16 +113,16 @@ class FileServiceTest {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         UploadedFile uploadedFile = UploadedFile.builder()
-                .id(1L)
-                .originalFileName("original.txt")
-                .saveFileName("file.txt")
-                .url("http://example.com/files/file.txt")
-                .build();
+            .id(1L)
+            .originalFileName("original.txt")
+            .saveFileName("file.txt")
+            .url("http://example.com/files/file.txt")
+            .build();
         UploadedFileResponseDto responseDto = UploadedFileResponseDto.builder()
-                .originalFileName(uploadedFile.getOriginalFileName())
-                .url(uploadedFile.getUrl())
-                .createdAt(uploadedFile.getCreatedAt())
-                .build();
+            .originalFileName(uploadedFile.getOriginalFileName())
+            .url(uploadedFile.getUrl())
+            .createdAt(uploadedFile.getCreatedAt())
+            .build();
 
         Page<UploadedFile> uploadedFilesPage = new PageImpl<>(Collections.singletonList(uploadedFile), pageable, 1);
 
@@ -189,6 +191,52 @@ class FileServiceTest {
     }
 
     @Test
+    void saveRhythmFile_정상적으로_저장하고_URL을_반환한다() throws IOException {
+        // given
+        byte[] fileData = "Sample rhythm data".getBytes();
+        String fileName = "rhythm_120_4_bpm.wav";
+        String category = "rhythm";
+        String savedFilePath = "/saved/path/rhythm_120_4_bpm.wav";
+        String savedFileName = "rhythm_120_4_bpm.wav";
+        String url = fileUrl + "/" + category + "/" + savedFileName;
+        String encryptedFilePath = "encryptedPath";
+
+        when(fileHandler.saveFile(fileData, category, fileName)).thenReturn(savedFilePath);
+        when(encryptionUtils.encrypt(savedFilePath)).thenReturn(encryptedFilePath);
+
+        // when
+        String resultUrl = fileService.saveRhythmFile(fileData, fileName);
+
+        // then
+        assertThat(resultUrl).isEqualTo(url);
+        verify(fileHandler).saveFile(fileData, category, fileName);
+        verify(encryptionUtils).encrypt(savedFilePath);
+        verify(uploadedFileService).saveUploadedFile(any(UploadedFile.class));
+    }
+
+    @Test
+    void saveRhythmFile_저장_중_예외가_발생하면_BaseException을_던진다() throws IOException {
+        // given
+        byte[] fileData = "Sample rhythm data".getBytes();
+        String fileName = "rhythm_120_4_bpm.wav";
+        String category = "rhythm";
+
+        when(fileHandler.saveFile(fileData, category, fileName))
+            .thenThrow(new IOException("파일 저장 실패"));
+
+        // when, then
+        assertThatThrownBy(() -> fileService.saveRhythmFile(fileData, fileName))
+            .isInstanceOf(BaseException.class)
+            .hasMessageContaining("리듬 파일 저장에 실패했습니다: " + fileName)
+            .extracting("errorCode")
+            .isEqualTo(ErrorCode.RHYTHM_GENERATION_ERROR);
+
+        verify(fileHandler).saveFile(fileData, category, fileName);
+        verify(encryptionUtils, never()).encrypt(anyString());
+        verify(uploadedFileService, never()).saveUploadedFile(any(UploadedFile.class));
+    }
+
+    @Test
     void deleteFile_파일을_삭제하고_true를_반환한다() {
         // given
         String url = "http://example.com/files/file.txt";
@@ -199,9 +247,9 @@ class FileServiceTest {
         requestDto.setUrl(url);
 
         UploadedFile uploadedFile = UploadedFile.builder()
-                .savedPath(encryptedFilePath)
-                .url(url)
-                .build();
+            .savedPath(encryptedFilePath)
+            .url(url)
+            .build();
 
         when(uploadedFileService.getUploadedFileByUrl(url)).thenReturn(uploadedFile);
         when(encryptionUtils.decrypt(encryptedFilePath)).thenReturn(decryptedFilePath);
@@ -229,9 +277,9 @@ class FileServiceTest {
         requestDto.setUrl(url);
 
         UploadedFile uploadedFile = UploadedFile.builder()
-                .savedPath(encryptedFilePath)
-                .url(url)
-                .build();
+            .savedPath(encryptedFilePath)
+            .url(url)
+            .build();
 
         when(uploadedFileService.getUploadedFileByUrl(url)).thenReturn(uploadedFile);
         when(encryptionUtils.decrypt(encryptedFilePath)).thenReturn(decryptedFilePath);
@@ -239,8 +287,8 @@ class FileServiceTest {
 
         // when, then
         assertThatThrownBy(() -> fileService.deleteFile(requestDto))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining(ErrorCode.FILE_DELETE_FAILED.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessageContaining(ErrorCode.FILE_DELETE_FAILED.getDefaultMessage());
 
         verify(uploadedFileService).getUploadedFileByUrl(url);
         verify(encryptionUtils).decrypt(encryptedFilePath);

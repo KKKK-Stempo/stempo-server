@@ -14,4 +14,6 @@ object Versions {
     const val sonarQube = "6.0.1.5171"
     const val checkStyle = "10.20.2"
     const val jacoco = "0.8.12"
+    const val apacheHttpClient = "5.2.3"
+    const val mockWebServer = "4.12.0"
 }

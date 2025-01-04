@@ -9,12 +9,28 @@ pipeline {
     }
 
     stages {
+        stage('Check for Python-only Changes') {
+            steps {
+                script {
+                    def changedFiles = sh(script: "git diff --name-only HEAD~1..HEAD", returnStdout: true).trim().split('\n')
+                    def hasNonPythonChange = changedFiles.any {
+                        !it.startsWith("stempo-rhythm/")
+                    }
+
+                    if (!hasNonPythonChange) {
+                        echo "Only Python code changed. Skipping pipeline."
+                        error("Aborting pipeline because only Python code changed.")
+                    }
+                }
+            }
+        }
+
         stage('Load Environment Variables') {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
                 }
-                withCredentials([file(credentialsId: 'stempo_prod_config_yml', variable: 'CONFIG_FILE')]) {
+                withCredentials([file(credentialsId: 'stempo_prod_core_config_yml', variable: 'CONFIG_FILE')]) {
                     script {
                         loadEnvironmentVariables(env.CONFIG_FILE)
                     }
@@ -25,7 +41,7 @@ pipeline {
         stage('Configure Centralized Spring Profiles') {
             steps {
                 script {
-                    configureModuleProfile('stempo_prod_yml', env.RESOURCES_PATH, env.PROFILE_FILE_NAME)
+                    configureModuleProfile('stempo_prod_core_yml', env.RESOURCES_PATH, env.PROFILE_FILE_NAME)
                 }
             }
         }
@@ -134,7 +150,7 @@ def sendSlackBuildNotification(String message, String color) {
 
 def createSlackPayload(String message, String color, String jobUrl, String consoleOutputUrl) {
     return [
-        blocks: [
+        blocks     : [
             [
                 type: "section",
                 text: [
@@ -145,7 +161,7 @@ def createSlackPayload(String message, String color, String jobUrl, String conso
         ],
         attachments: [
             [
-                color: color,
+                color : color,
                 blocks: [
                     [
                         type: "section",
@@ -155,26 +171,26 @@ def createSlackPayload(String message, String color, String jobUrl, String conso
                         ]
                     ],
                     [
-                        type: "actions",
+                        type    : "actions",
                         elements: [
                             [
-                                type: "button",
-                                text: [
-                                    type: "plain_text",
-                                    text: "Job",
+                                type : "button",
+                                text : [
+                                    type : "plain_text",
+                                    text : "Job",
                                     emoji: true
                                 ],
-                                url: jobUrl,
+                                url  : jobUrl,
                                 value: "click_job"
                             ],
                             [
-                                type: "button",
-                                text: [
-                                    type: "plain_text",
-                                    text: "Console Output",
+                                type : "button",
+                                text : [
+                                    type : "plain_text",
+                                    text : "Console Output",
                                     emoji: true
                                 ],
-                                url: consoleOutputUrl,
+                                url  : consoleOutputUrl,
                                 value: "click_console_output"
                             ]
                         ]
@@ -212,12 +228,10 @@ def loadEnvironmentVariables(String configFile) {
 
     env.DOCKER_HUB_REPO = config.dockerhub.repo
 
-    env.HOST_CONFIG_PATH = config.host.'config-path'
-    env.HOST_CLOUD_PATH = config.host.'cloud-path'
+    env.HOST_DEFAULT_PATH = config.host.'default-path'
     env.HOST_LOGS_PATH = config.host.'logs-path'
 
-    env.CONTAINER_CONFIG_PATH = config.container.'config-path'
-    env.CONTAINER_CLOUD_PATH = config.container.'cloud-path'
+    env.CONTAINER_DEFAULT_PATH = config.container.'default-path'
     env.CONTAINER_LOGS_PATH = config.container.'logs-path'
 
     env.BLUE_CONTAINER = config.containers.blue
@@ -336,8 +350,7 @@ def deployNewInstance() {
         docker run -d --name ${env.DEPLOY_CONTAINER} \\
             -p ${env.NEW_PORT}:8080 \\
             --network ${env.APPLICATION_NETWORK} \\
-            -v ${env.HOST_CONFIG_PATH}:${env.CONTAINER_CONFIG_PATH} \\
-            -v ${env.HOST_CLOUD_PATH}:${env.CONTAINER_CLOUD_PATH} \\
+            -v ${env.HOST_DEFAULT_PATH}:${env.CONTAINER_DEFAULT_PATH} \\
             -v ${env.HOST_LOGS_PATH}:${env.CONTAINER_LOGS_PATH} \\
             -e LOG_PATH=${env.CONTAINER_LOGS_PATH} \\
             -e SPRING_PROFILES_ACTIVE=${env.PROFILE} \\
@@ -371,7 +384,7 @@ def performHealthCheck() {
         echo "Checking health... ${elapsed} seconds elapsed."
         def status = sh(
             script: """curl -s -u ${env.WHITELIST_ADMIN_USERNAME}:${env.WHITELIST_ADMIN_PASSWORD} \
-                http://${PUBLIC_IP}:${env.NEW_PORT}/actuator/health | grep 'UP'""",
+                http://${PUBLIC_IP}:${env.NEW_PORT}${env.ACTUATOR_PATH} | grep 'UP'""",
             returnStatus: true
         )
         if (status == 0) {
