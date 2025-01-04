@@ -10,12 +10,12 @@ RUN apt-get update \
 WORKDIR /app
 
 # 파이썬 패키지 설치
-COPY requirements.txt /app/
+COPY stempo-rhythm/requirements.txt /app/
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # 소스 복사
-COPY main.py /app/
+COPY stempo-rhythm/main.py /app/
 
 # FastAPI 서버를 위한 포트 노출
 EXPOSE 5000
