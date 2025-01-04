@@ -9,12 +9,28 @@ pipeline {
     }
 
     stages {
+        stage('Check for Python-only Changes') {
+            steps {
+                script {
+                    def changedFiles = sh(script: "git diff --name-only HEAD~1..HEAD", returnStdout: true).trim().split('\n')
+                    def hasNonPythonChange = changedFiles.any {
+                        !it.startsWith("stempo-rhythm-generator/")
+                    }
+
+                    if (!hasNonPythonChange) {
+                        echo "Only Python code changed. Skipping pipeline."
+                        error("Aborting pipeline because only Python code changed.")
+                    }
+                }
+            }
+        }
+
         stage('Load Environment Variables') {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
                 }
-                withCredentials([file(credentialsId: 'stempo_prod_config_yml', variable: 'CONFIG_FILE')]) {
+                withCredentials([file(credentialsId: 'stempo_prod_core_config_yml', variable: 'CONFIG_FILE')]) {
                     script {
                         loadEnvironmentVariables(env.CONFIG_FILE)
                     }
@@ -25,7 +41,7 @@ pipeline {
         stage('Configure Centralized Spring Profiles') {
             steps {
                 script {
-                    configureModuleProfile('stempo_prod_yml', env.RESOURCES_PATH, env.PROFILE_FILE_NAME)
+                    configureModuleProfile('stempo_prod_core_yml', env.RESOURCES_PATH, env.PROFILE_FILE_NAME)
                 }
             }
         }
@@ -134,7 +150,7 @@ def sendSlackBuildNotification(String message, String color) {
 
 def createSlackPayload(String message, String color, String jobUrl, String consoleOutputUrl) {
     return [
-        blocks: [
+        blocks     : [
             [
                 type: "section",
                 text: [
@@ -145,7 +161,7 @@ def createSlackPayload(String message, String color, String jobUrl, String conso
         ],
         attachments: [
             [
-                color: color,
+                color : color,
                 blocks: [
                     [
                         type: "section",
@@ -155,26 +171,26 @@ def createSlackPayload(String message, String color, String jobUrl, String conso
                         ]
                     ],
                     [
-                        type: "actions",
+                        type    : "actions",
                         elements: [
                             [
-                                type: "button",
-                                text: [
-                                    type: "plain_text",
-                                    text: "Job",
+                                type : "button",
+                                text : [
+                                    type : "plain_text",
+                                    text : "Job",
                                     emoji: true
                                 ],
-                                url: jobUrl,
+                                url  : jobUrl,
                                 value: "click_job"
                             ],
                             [
-                                type: "button",
-                                text: [
-                                    type: "plain_text",
-                                    text: "Console Output",
+                                type : "button",
+                                text : [
+                                    type : "plain_text",
+                                    text : "Console Output",
                                     emoji: true
                                 ],
-                                url: consoleOutputUrl,
+                                url  : consoleOutputUrl,
                                 value: "click_console_output"
                             ]
                         ]
@@ -368,7 +384,7 @@ def performHealthCheck() {
         echo "Checking health... ${elapsed} seconds elapsed."
         def status = sh(
             script: """curl -s -u ${env.WHITELIST_ADMIN_USERNAME}:${env.WHITELIST_ADMIN_PASSWORD} \
-                http://${PUBLIC_IP}:${env.NEW_PORT}/actuator/health | grep 'UP'""",
+                http://${PUBLIC_IP}:${env.NEW_PORT}${env.ACTUATOR_PATH} | grep 'UP'""",
             returnStatus: true
         )
         if (status == 0) {
