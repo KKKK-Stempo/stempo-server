@@ -85,15 +85,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Switch Traffic and Cleanup') {
-            steps {
-                script {
-                    FAILED_STAGE = env.STAGE_NAME
-                    switchTrafficAndCleanup()
-                }
-            }
-        }
     }
 
     post {
