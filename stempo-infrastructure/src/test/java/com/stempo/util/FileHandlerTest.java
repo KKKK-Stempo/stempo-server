@@ -27,8 +27,8 @@ class FileHandlerTest {
     @BeforeEach
     void setUp() {
         fileHandler = new FileHandler(
-                new String[]{"exe", "bat"},
-                tempDir.toString()
+            new String[]{"exe", "bat"},
+            tempDir.toString()
         );
         fileHandler.init();
     }
@@ -37,10 +37,10 @@ class FileHandlerTest {
     void 파일을_성공적으로_저장한다() throws IOException {
         // given
         MultipartFile multipartFile = new MockMultipartFile(
-                "file",
-                "test.txt",
-                "text/plain",
-                "Sample content".getBytes()
+            "file",
+            "test.txt",
+            "text/plain",
+            "Sample content".getBytes()
         );
 
         String category = "docs";
@@ -49,10 +49,10 @@ class FileHandlerTest {
         String savedPath = fileHandler.saveFile(multipartFile, category);
 
         // then
-        assertThat(savedPath).isNotNull();
-        assertThat(savedPath).contains(tempDir.toString() + File.separator + category);
+        assertThat(savedPath).isNotNull()
+            .contains(tempDir.toString() + File.separator + category);
         File savedFile = new File(savedPath);
-        assertThat(savedFile.exists()).isTrue();
+        assertThat(savedFile).exists();
     }
 
     @Test
@@ -67,7 +67,7 @@ class FileHandlerTest {
         // then
         assertThat(savedPath).isNotNull();
         File savedFile = new File(savedPath);
-        assertThat(savedFile.exists()).isTrue();
+        assertThat(savedFile).exists();
         assertThat(Files.readString(savedFile.toPath())).isEqualTo("Sample content");
     }
 
@@ -75,46 +75,67 @@ class FileHandlerTest {
     void 파일명에_잘못된_문자열이_포함되어_있을_경우_예외가_발생한다() {
         // given
         MultipartFile multipartFile = new MockMultipartFile(
-                "file",
-                "test..txt",
-                "text/plain",
-                "Sample content".getBytes()
+            "file",
+            "test..txt",
+            "text/plain",
+            "Sample content".getBytes()
         );
 
         String category = "docs";
 
         // then
         assertThatThrownBy(() -> fileHandler.saveFile(multipartFile, category))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining(ErrorCode.INVALID_FILE_NAME.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessageContaining(ErrorCode.INVALID_FILE_NAME.getDefaultMessage());
     }
 
     @Test
     void 잘못된_확장자를_가진_파일을_저장하려_할_때_예외가_발생한다() {
         // given
         MultipartFile multipartFile = new MockMultipartFile(
-                "file",
-                "test.exe",
-                "application/octet-stream",
-                "Sample content".getBytes()
+            "file",
+            "test.exe",
+            "application/octet-stream",
+            "Sample content".getBytes()
         );
 
         String category = "docs";
 
         // then
         assertThatThrownBy(() -> fileHandler.saveFile(multipartFile, category))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining(ErrorCode.INVALID_FILE_ATTRIBUTE.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessageContaining(ErrorCode.INVALID_FILE_ATTRIBUTE.getDefaultMessage());
+    }
+
+    @Test
+    void 파일_데이터로_성공적으로_파일을_저장하고_URL을_반환한다() throws IOException {
+        // given
+        byte[] fileData = "Sample byte content".getBytes();
+        String category = "images";
+        String fileName = "picture.png";
+        String expectedExtension = "png";
+
+        // when
+        String savedPath = fileHandler.saveFile(fileData, category, fileName);
+
+        // then
+        assertThat(savedPath).isNotNull()
+            .contains(tempDir.toString() + File.separator + category)
+            .endsWith("." + expectedExtension);
+
+        File savedFile = new File(savedPath);
+        assertThat(savedFile).exists();
+        assertThat(Files.readAllBytes(savedFile.toPath())).isEqualTo(fileData);
     }
 
     @Test
     void 파일을_성공적으로_삭제한다() throws IOException {
         // given
         MultipartFile multipartFile = new MockMultipartFile(
-                "file",
-                "test.txt",
-                "text/plain",
-                "Sample content".getBytes()
+            "file",
+            "test.txt",
+            "text/plain",
+            "Sample content".getBytes()
         );
 
         String category = "docs";
@@ -126,7 +147,7 @@ class FileHandlerTest {
         // then
         assertThat(isDeleted).isTrue();
         File savedFile = new File(savedPath);
-        assertThat(savedFile.exists()).isFalse();
+        assertThat(savedFile).doesNotExist();
     }
 
     @Test

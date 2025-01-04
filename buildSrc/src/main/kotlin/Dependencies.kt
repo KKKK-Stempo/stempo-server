@@ -26,4 +26,5 @@ object Dependencies {
     // Test dependencies
     const val springBootStarterTest = "org.springframework.boot:spring-boot-starter-test"
     const val springSecurityTest = "org.springframework.security:spring-security-test"
+    const val mockWebServer = "com.squareup.okhttp3:mockwebserver:${Versions.mockWebServer}"
 }
