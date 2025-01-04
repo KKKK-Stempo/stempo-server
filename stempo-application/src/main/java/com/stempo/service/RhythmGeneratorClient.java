@@ -3,31 +3,19 @@ package com.stempo.service;
 import com.stempo.dto.request.RhythmRequestDto;
 import com.stempo.exception.BaseException;
 import com.stempo.exception.ErrorCode;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 @Component
-@Slf4j
+@RequiredArgsConstructor
 public class RhythmGeneratorClient {
 
     private final RestClient restClient;
 
-    public RhythmGeneratorClient(
-        @Value("${rhythm-generator.url}") String rhythmGeneratorUrl
-    ) {
-        this.restClient = RestClient.builder()
-            .baseUrl(rhythmGeneratorUrl)
-            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .build();
-    }
-
-    public byte[] createRhythm(RhythmRequestDto requestDto) {
+    public byte[] requestRhythm(RhythmRequestDto requestDto) {
         ResponseEntity<byte[]> responseEntity;
 
         try {

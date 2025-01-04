@@ -30,7 +30,7 @@ public class RhythmServiceImpl implements RhythmService {
             return uploadedFile.get().getUrl();
         }
 
-        byte[] wavData = rhythmGeneratorClient.createRhythm(requestDto);
+        byte[] wavData = rhythmGeneratorClient.requestRhythm(requestDto);
 
         return fileService.saveRhythmFile(wavData, outputFilename);
     }
