@@ -286,10 +286,6 @@ def deployNewInstance() {
 }
 
 def performHealthCheck() {
-    def PUBLIC_IP = sh(script: "curl -s ifconfig.me", returnStdout: true).trim()
-
-    echo "Public IP address: ${PUBLIC_IP}"
-
     def start_time = System.currentTimeMillis()
     def TIMEOUT_MS = 60000
 
@@ -299,7 +295,7 @@ def performHealthCheck() {
         def elapsed = (System.currentTimeMillis() - start_time) / 1000
         echo "Checking health... ${elapsed} seconds elapsed."
         def status = sh(
-            script: """curl -s http://${PUBLIC_IP}:${env.APP_PORT}${env.ACTUATOR_PATH} | grep 'UP'""",
+            script: """curl -s http://localhost:${env.APP_PORT}${env.ACTUATOR_PATH} | grep 'UP'""",
             returnStatus: true
         )
         if (status == 0) {
