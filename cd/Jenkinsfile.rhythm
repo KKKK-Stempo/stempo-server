@@ -295,7 +295,7 @@ def performHealthCheck() {
         def elapsed = (System.currentTimeMillis() - start_time) / 1000
         echo "Checking health... ${elapsed} seconds elapsed."
         def status = sh(
-            script: """curl -s http://localhost:${env.APP_PORT}${env.ACTUATOR_PATH} | grep 'UP'""",
+            script: """curl -s http://${env.CONTAINER_NAME}${env.ACTUATOR_PATH} | grep 'UP'""",
             returnStatus: true
         )
         if (status == 0) {
