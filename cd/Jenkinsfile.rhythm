@@ -13,11 +13,11 @@ pipeline {
                 script {
                     def changedFiles = sh(script: "git diff --name-only HEAD~1..HEAD", returnStdout: true).trim().split('\n')
                     def isRelevantChange = changedFiles.any { file ->
-                        file.startsWith("stempo-rhythm-generator/") || file.startsWith("cd/")
+                        file.startsWith("stempo-rhythm/") || file.startsWith("cd/")
                     }
 
                     if (!isRelevantChange) {
-                        echo "No changes in stempo-rhythm-generator or cd directories. Skipping pipeline."
+                        echo "No changes in stempo-rhythm or cd directories. Skipping pipeline."
                         error("Aborting pipeline because no changes in relevant directories.")
                     }
                 }
