@@ -4,10 +4,11 @@ import com.stempo.application.JwtTokenService;
 import com.stempo.config.AesConfig;
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.TwoFactorAuthenticationRequestDto;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.model.Role;
 import com.stempo.util.EncryptionUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +40,7 @@ public class TotpService {
         userService.handleAccountLock(deviceTag);
         if (!authenticatorService.isAuthenticatorValid(deviceTag, totp)) {
             userService.handleFailedLogin(deviceTag);
-            throw new BadCredentialsException("잘못된 TOTP 코드입니다.");
+            throw new BaseException(ErrorCode.BAD_CREDENTIALS, "잘못된 TOTP 코드입니다.");
         }
     }
 
