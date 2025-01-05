@@ -25,7 +25,12 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(summary = "회원 가입", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Operation(summary = "회원 가입", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>"
+        + "<br><b>[비밀번호 정책]</b><br>"
+        + "최소 8자리 이상, 최대 16자리 이하<br>"
+        + "영문 대문자, 소문자, 숫자, 특수문자 중 최소 3가지가 포함<br>"
+        + "연속된 문자나 숫자 3개 이상 금지"
+        + "비밀번호에 사용자 아이디의 4자 이상 연속된 부분 문자열 포함 금지")
     @PostMapping("/api/v1/auth/register")
     public ApiResponse<TokenInfo> registerUser(
         @Valid @RequestBody AuthRequestDto requestDto
