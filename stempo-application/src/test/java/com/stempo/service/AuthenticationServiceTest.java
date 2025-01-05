@@ -14,6 +14,7 @@ import com.stempo.config.AesConfig;
 import com.stempo.config.CustomAuthenticationProvider;
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.AuthRequestDto;
+import com.stempo.exception.BaseException;
 import com.stempo.model.Role;
 import com.stempo.model.User;
 import com.stempo.util.EncryptionUtils;
@@ -78,7 +79,7 @@ class AuthenticationServiceTest {
         when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
         when(userService.getById(encryptedDeviceTag)).thenReturn(user);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(authentication);
+            .thenReturn(authentication);
         when(authenticatorService.isAuthenticatorExist(encryptedDeviceTag)).thenReturn(false);
         when(tokenService.generateToken(authentication)).thenReturn(tokenInfo);
 
@@ -98,12 +99,12 @@ class AuthenticationServiceTest {
 
         when(encryptionUtils.encryptWithHashedIv(eq(deviceTag), anyString())).thenReturn(encryptedDeviceTag);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenThrow(new BadCredentialsException("Invalid deviceTag or password."));
+            .thenThrow(new BadCredentialsException("Invalid deviceTag or password."));
 
         // when, then
         assertThatThrownBy(() -> authenticationService.login(authRequestDto, tokenService, authenticatorService))
-                .isInstanceOf(BadCredentialsException.class)
-                .hasMessage("Invalid deviceTag or password.");
+            .isInstanceOf(BaseException.class)
+            .hasMessage("Invalid deviceTag or password.");
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(userService).handleFailedLogin(captor.capture());
@@ -114,16 +115,14 @@ class AuthenticationServiceTest {
     void 관리자_로그인에_성공하고_TOTP가_존재하면_null을_반환한다() {
         // given
         String deviceTag = "admin-device";
-        String encryptedDeviceTag = "encrypted-admin-device";
         User adminUser = User.builder().deviceTag(deviceTag).role(Role.ADMIN).build();
 
         when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
         when(userService.getById(encryptedDeviceTag)).thenReturn(adminUser);
         when(authenticatorService.isAuthenticatorExist(encryptedDeviceTag)).thenReturn(true);
 
-        Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(authentication);
+            .thenReturn(authentication);
 
         // when
         Object result = authenticationService.login(authRequestDto, tokenService, authenticatorService);
@@ -137,7 +136,6 @@ class AuthenticationServiceTest {
     void 관리자_로그인에_성공하고_TOTP가_존재하지_않으면_비밀키를_반환한다() {
         // given
         String deviceTag = "admin-device";
-        String encryptedDeviceTag = "encrypted-admin-device";
         User adminUser = User.builder().deviceTag(deviceTag).role(Role.ADMIN).build();
 
         when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
@@ -145,9 +143,8 @@ class AuthenticationServiceTest {
         when(authenticatorService.isAuthenticatorExist(encryptedDeviceTag)).thenReturn(false);
         when(authenticatorService.generateSecretKey(encryptedDeviceTag)).thenReturn("secret-key");
 
-        Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(authentication);
+            .thenReturn(authentication);
 
         // when
         Object result = authenticationService.login(authRequestDto, tokenService, authenticatorService);

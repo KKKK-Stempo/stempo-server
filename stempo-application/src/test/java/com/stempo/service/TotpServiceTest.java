@@ -12,6 +12,7 @@ import com.stempo.application.JwtTokenService;
 import com.stempo.config.AesConfig;
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.TwoFactorAuthenticationRequestDto;
+import com.stempo.exception.BaseException;
 import com.stempo.model.Role;
 import com.stempo.model.User;
 import com.stempo.util.EncryptionUtils;
@@ -21,7 +22,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.BadCredentialsException;
 
 @ExtendWith(MockitoExtension.class)
 class TotpServiceTest {
@@ -88,8 +88,8 @@ class TotpServiceTest {
 
         // when, then
         assertThatThrownBy(() -> totpService.authenticate(requestDto, tokenService))
-                .isInstanceOf(BadCredentialsException.class)
-                .hasMessage("잘못된 TOTP 코드입니다.");
+            .isInstanceOf(BaseException.class)
+            .hasMessage("잘못된 TOTP 코드입니다.");
 
         verify(userService).handleAccountLock(encryptedDeviceTag);
         verify(authenticatorService).isAuthenticatorValid(encryptedDeviceTag, requestDto.getTotp());

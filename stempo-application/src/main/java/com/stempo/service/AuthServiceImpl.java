@@ -4,11 +4,9 @@ import com.stempo.application.JwtTokenService;
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.AuthRequestDto;
 import com.stempo.dto.request.TwoFactorAuthenticationRequestDto;
-import com.stempo.exception.BaseException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional(noRollbackFor = {BadCredentialsException.class, BaseException.class})
+    @Transactional
     public Object login(AuthRequestDto requestDto) {
         return new LoginCommand(authenticationService, requestDto, jwtTokenService, totpAuthenticatorService).execute();
     }
@@ -50,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional(noRollbackFor = {BadCredentialsException.class})
+    @Transactional
     public TokenInfo authenticate(TwoFactorAuthenticationRequestDto requestDto) {
         return totpService.authenticate(requestDto, jwtTokenService);
     }
