@@ -9,7 +9,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -90,6 +89,7 @@ public class UserServiceImpl implements UserService {
 
     private User getUserById(String deviceTag) {
         return findById(deviceTag)
-                .orElseThrow(() -> new BadCredentialsException("[User] id: " + deviceTag + " not found"));
+            .orElseThrow(() -> new BaseException(ErrorCode.BAD_CREDENTIALS,
+                "[User] id: " + deviceTag + " not found"));
     }
 }

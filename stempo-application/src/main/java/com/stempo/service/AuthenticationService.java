@@ -4,9 +4,10 @@ import com.stempo.application.JwtTokenService;
 import com.stempo.config.AesConfig;
 import com.stempo.config.CustomAuthenticationProvider;
 import com.stempo.dto.request.AuthRequestDto;
+import com.stempo.exception.BaseException;
+import com.stempo.exception.ErrorCode;
 import com.stempo.util.EncryptionUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class AuthenticationService {
             return handleTwoFactorIfRequired(deviceTag, authentication, authenticatorService, tokenService);
         } catch (Exception e) {
             userService.handleFailedLogin(deviceTag);
-            throw new BadCredentialsException("Invalid deviceTag or password.");
+            throw new BaseException(ErrorCode.BAD_CREDENTIALS, "Invalid deviceTag or password.");
         }
     }
 

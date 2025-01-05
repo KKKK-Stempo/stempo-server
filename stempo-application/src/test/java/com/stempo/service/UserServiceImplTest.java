@@ -20,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.BadCredentialsException;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -80,12 +79,12 @@ class UserServiceImplTest {
     void 존재하지_않는_아이디로_사용자를_조회하면_예외를_던진다() {
         // given
         when(repository.findByIdOrThrow("non-existent-device-tag"))
-                .thenThrow(new BaseException(ErrorCode.RESOURCE_NOT_FOUND));
+            .thenThrow(new BaseException(ErrorCode.RESOURCE_NOT_FOUND));
 
         // when, then
         assertThatThrownBy(() -> userService.getById("non-existent-device-tag"))
-                .isInstanceOf(BaseException.class)
-                .hasMessage(ErrorCode.RESOURCE_NOT_FOUND.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessage(ErrorCode.RESOURCE_NOT_FOUND.getDefaultMessage());
         verify(repository).findByIdOrThrow("non-existent-device-tag");
     }
 
@@ -151,8 +150,8 @@ class UserServiceImplTest {
 
         // when, then
         assertThatThrownBy(() -> userService.handleAccountLock("test-device-tag"))
-                .isInstanceOf(BaseException.class)
-                .hasMessage(ErrorCode.ACCOUNT_LOCKED.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessage(ErrorCode.ACCOUNT_LOCKED.getDefaultMessage());
         verify(repository).findById("test-device-tag");
     }
 
@@ -194,8 +193,8 @@ class UserServiceImplTest {
 
         // when, then
         assertThatThrownBy(() -> userService.handleAccountLock("non-existent-device-tag"))
-                .isInstanceOf(BadCredentialsException.class)
-                .hasMessage("[User] id: non-existent-device-tag not found");
+            .isInstanceOf(BaseException.class)
+            .hasMessage("[User] id: non-existent-device-tag not found");
         verify(repository).findById("non-existent-device-tag");
     }
 }
