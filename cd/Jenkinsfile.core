@@ -354,6 +354,7 @@ def deployNewInstance() {
             -v ${env.HOST_LOGS_PATH}:${env.CONTAINER_LOGS_PATH} \\
             -e LOG_PATH=${env.CONTAINER_LOGS_PATH} \\
             -e SPRING_PROFILES_ACTIVE=${env.PROFILE} \\
+            --restart unless-stopped \\
             ${env.IMAGE_NAME}:${env.DEPLOY_CONTAINER}
 
         echo "Checking if infra network ${env.INFRA_NETWORK} exists"
