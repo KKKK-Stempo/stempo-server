@@ -261,6 +261,7 @@ def deployNewInstance() {
         docker run -d --name ${env.CONTAINER_NAME} \\
             -p ${env.APP_PORT}:5000 \\
             --network ${env.APPLICATION_NETWORK} \\
+            --restart always \\
             ${env.IMAGE_NAME}:${env.CONTAINER_NAME}
 
         echo "Checking if infra network ${env.INFRA_NETWORK} exists"
