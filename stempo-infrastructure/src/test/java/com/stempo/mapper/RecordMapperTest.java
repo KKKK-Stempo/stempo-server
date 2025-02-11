@@ -21,13 +21,17 @@ class RecordMapperTest {
     void 도메인을_엔티티로_매핑한다() {
         // given
         Record record = Record.builder()
-                .id(1L)
-                .deviceTag("device123")
-                .accuracy("95.5")
-                .duration("120")
-                .steps("1000")
-                .createdAt(LocalDateTime.now())
-                .build();
+            .id(1L)
+            .deviceTag("device123")
+            .accuracy("95.5")
+            .duration("120")
+            .steps("1000")
+            .leftFootAverageSpeed("0.5")
+            .rightFootAverageSpeed("0.6")
+            .bit("4")
+            .bpm("60")
+            .createdAt(LocalDateTime.now())
+            .build();
 
         // when
         RecordEntity entity = recordMapper.toEntity(record);
@@ -38,18 +42,26 @@ class RecordMapperTest {
         assertThat(entity.getAccuracy()).isEqualTo("95.5");
         assertThat(entity.getDuration()).isEqualTo("120");
         assertThat(entity.getSteps()).isEqualTo("1000");
+        assertThat(entity.getLeftFootAverageSpeed()).isEqualTo("0.5");
+        assertThat(entity.getRightFootAverageSpeed()).isEqualTo("0.6");
+        assertThat(entity.getBit()).isEqualTo("4");
+        assertThat(entity.getBpm()).isEqualTo("60");
     }
 
     @Test
     void 엔티티를_도메인으로_매핑한다() {
         // given
         RecordEntity entity = RecordEntity.builder()
-                .id(1L)
-                .deviceTag("device123")
-                .accuracy("95.5")
-                .duration("120")
-                .steps("1000")
-                .build();
+            .id(1L)
+            .deviceTag("device123")
+            .accuracy("95.5")
+            .duration("120")
+            .steps("1000")
+            .leftFootAverageSpeed("0.5")
+            .rightFootAverageSpeed("0.6")
+            .bit("4")
+            .bpm("60")
+            .build();
         entity.setCreatedAt(LocalDateTime.now());
 
         // when
@@ -61,6 +73,10 @@ class RecordMapperTest {
         assertThat(record.getAccuracy()).isEqualTo("95.5");
         assertThat(record.getDuration()).isEqualTo("120");
         assertThat(record.getSteps()).isEqualTo("1000");
+        assertThat(record.getLeftFootAverageSpeed()).isEqualTo("0.5");
+        assertThat(record.getRightFootAverageSpeed()).isEqualTo("0.6");
+        assertThat(record.getBit()).isEqualTo("4");
+        assertThat(record.getBpm()).isEqualTo("60");
         assertThat(record.getCreatedAt()).isEqualTo(entity.getCreatedAt());
     }
 }

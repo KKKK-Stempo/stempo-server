@@ -11,7 +11,7 @@ class RecordTest {
 
     @BeforeEach
     void setUp() {
-        record = Record.create("DEVICE_TAG", "90", "150", "100");
+        record = Record.create("DEVICE_TAG", "90", "150", "100", "0.5", "0.6", "4", "60");
     }
 
     @Test
@@ -22,6 +22,10 @@ class RecordTest {
         assertThat(record.getAccuracy()).isEqualTo("90");
         assertThat(record.getDuration()).isEqualTo("150");
         assertThat(record.getSteps()).isEqualTo("100");
+        assertThat(record.getLeftFootAverageSpeed()).isEqualTo("0.5");
+        assertThat(record.getRightFootAverageSpeed()).isEqualTo("0.6");
+        assertThat(record.getBit()).isEqualTo("4");
+        assertThat(record.getBpm()).isEqualTo("60");
         assertThat(record.getCreatedAt()).isNull();
     }
 }
