@@ -20,14 +20,31 @@ public class Record {
     private String accuracy;
     private String duration;
     private String steps;
+    private String leftFootAvgSpeed;
+    private String rightFootAvgSpeed;
+    private String bit;
+    private String bpm;
     private LocalDateTime createdAt;
 
-    public static Record create(String deviceTag, String accuracy, String duration, String steps) {
+    public static Record create(
+        String deviceTag,
+        String accuracy,
+        String duration,
+        String steps,
+        String leftFootAvgSpeed,
+        String rightFootAvgSpeed,
+        String bit,
+        String bpm
+    ) {
         return Record.builder()
-                .deviceTag(deviceTag)
-                .accuracy(accuracy)
-                .duration(duration)
-                .steps(steps)
-                .build();
+            .deviceTag(deviceTag)
+            .accuracy(accuracy)
+            .duration(duration)
+            .steps(steps)
+            .leftFootAvgSpeed(leftFootAvgSpeed)
+            .rightFootAvgSpeed(rightFootAvgSpeed)
+            .bit(bit)
+            .bpm(bpm)
+            .build();
     }
 }

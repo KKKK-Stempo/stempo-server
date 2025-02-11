@@ -48,6 +48,10 @@ class RecordControllerTest {
         requestDto.setAccuracy(95.5);
         requestDto.setDuration(30);
         requestDto.setSteps(5000);
+        requestDto.setLeftFootAvgSpeed(1.0);
+        requestDto.setRightFootAvgSpeed(1.0);
+        requestDto.setBit(4);
+        requestDto.setBpm(120);
 
         String expectedDeviceTag = "device123";
 

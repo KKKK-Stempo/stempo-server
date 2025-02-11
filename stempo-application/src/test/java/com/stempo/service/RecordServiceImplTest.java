@@ -58,6 +58,10 @@ class RecordServiceImplTest {
         recordRequestDto.setAccuracy(95.5);
         recordRequestDto.setDuration(120);
         recordRequestDto.setSteps(1000);
+        recordRequestDto.setLeftFootAvgSpeed(1.0);
+        recordRequestDto.setRightFootAvgSpeed(1.0);
+        recordRequestDto.setBit(4);
+        recordRequestDto.setBpm(120);
 
         trainingRecord = Record.builder()
             .id(1L)
@@ -65,6 +69,10 @@ class RecordServiceImplTest {
             .accuracy("encrypted-accuracy")
             .duration("encrypted-duration")
             .steps("encrypted-steps")
+            .leftFootAvgSpeed("encrypted-left-foot-avg-speed")
+            .rightFootAvgSpeed("encrypted-right-foot-avg-speed")
+            .bit("encrypted-bit")
+            .bpm("encrypted-bpm")
             .createdAt(LocalDateTime.now())
             .build();
     }
@@ -82,7 +90,7 @@ class RecordServiceImplTest {
         // then
         assertThat(result).isEqualTo(deviceTag);
         verify(userService).getCurrentDeviceTag();
-        verify(encryptionUtils, times(3)).encrypt(anyString());
+        verify(encryptionUtils, times(7)).encrypt(anyString());
         verify(recordRepository).save(any(Record.class));
     }
 
