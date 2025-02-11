@@ -26,8 +26,8 @@ class RecordMapperTest {
             .accuracy("95.5")
             .duration("120")
             .steps("1000")
-            .leftFootAvgSpeed("0.5")
-            .rightFootAvgSpeed("0.6")
+            .leftFootAverageSpeed("0.5")
+            .rightFootAverageSpeed("0.6")
             .bit("4")
             .bpm("60")
             .createdAt(LocalDateTime.now())
@@ -42,8 +42,8 @@ class RecordMapperTest {
         assertThat(entity.getAccuracy()).isEqualTo("95.5");
         assertThat(entity.getDuration()).isEqualTo("120");
         assertThat(entity.getSteps()).isEqualTo("1000");
-        assertThat(entity.getLeftFootAvgSpeed()).isEqualTo("0.5");
-        assertThat(entity.getRightFootAvgSpeed()).isEqualTo("0.6");
+        assertThat(entity.getLeftFootAverageSpeed()).isEqualTo("0.5");
+        assertThat(entity.getRightFootAverageSpeed()).isEqualTo("0.6");
         assertThat(entity.getBit()).isEqualTo("4");
         assertThat(entity.getBpm()).isEqualTo("60");
     }
@@ -57,8 +57,8 @@ class RecordMapperTest {
             .accuracy("95.5")
             .duration("120")
             .steps("1000")
-            .leftFootAvgSpeed("0.5")
-            .rightFootAvgSpeed("0.6")
+            .leftFootAverageSpeed("0.5")
+            .rightFootAverageSpeed("0.6")
             .bit("4")
             .bpm("60")
             .build();
@@ -73,8 +73,8 @@ class RecordMapperTest {
         assertThat(record.getAccuracy()).isEqualTo("95.5");
         assertThat(record.getDuration()).isEqualTo("120");
         assertThat(record.getSteps()).isEqualTo("1000");
-        assertThat(record.getLeftFootAvgSpeed()).isEqualTo("0.5");
-        assertThat(record.getRightFootAvgSpeed()).isEqualTo("0.6");
+        assertThat(record.getLeftFootAverageSpeed()).isEqualTo("0.5");
+        assertThat(record.getRightFootAverageSpeed()).isEqualTo("0.6");
         assertThat(record.getBit()).isEqualTo("4");
         assertThat(record.getBpm()).isEqualTo("60");
         assertThat(record.getCreatedAt()).isEqualTo(entity.getCreatedAt());

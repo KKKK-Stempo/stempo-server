@@ -58,8 +58,8 @@ class RecordServiceImplTest {
         recordRequestDto.setAccuracy(95.5);
         recordRequestDto.setDuration(120);
         recordRequestDto.setSteps(1000);
-        recordRequestDto.setLeftFootAvgSpeed(1.0);
-        recordRequestDto.setRightFootAvgSpeed(1.0);
+        recordRequestDto.setLeftFootAverageSpeed(1.0);
+        recordRequestDto.setRightFootAverageSpeed(1.0);
         recordRequestDto.setBit(4);
         recordRequestDto.setBpm(120);
 
@@ -69,8 +69,8 @@ class RecordServiceImplTest {
             .accuracy("encrypted-accuracy")
             .duration("encrypted-duration")
             .steps("encrypted-steps")
-            .leftFootAvgSpeed("encrypted-left-foot-avg-speed")
-            .rightFootAvgSpeed("encrypted-right-foot-avg-speed")
+            .leftFootAverageSpeed("encrypted-left-foot-average-speed")
+            .rightFootAverageSpeed("encrypted-right-foot-average-speed")
             .bit("encrypted-bit")
             .bpm("encrypted-bpm")
             .createdAt(LocalDateTime.now())

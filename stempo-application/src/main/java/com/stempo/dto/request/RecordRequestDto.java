@@ -27,11 +27,11 @@ public class RecordRequestDto {
 
     @PositiveOrZero(message = "Left foot average speed must be a positive value or zero")
     @Schema(description = "왼발을 내딛는 평균 속도(m/s)", example = "0.0")
-    private Double leftFootAvgSpeed;
+    private Double leftFootAverageSpeed;
 
     @PositiveOrZero(message = "Right foot average speed must be a positive value or zero")
     @Schema(description = "오른발을 내딛는 평균 속도(m/s)", example = "0.0")
-    private Double rightFootAvgSpeed;
+    private Double rightFootAverageSpeed;
 
     @NotNull(message = "Bit is required")
     @Range(min = 1, max = 8, message = "Bit must be between 1 and 8")

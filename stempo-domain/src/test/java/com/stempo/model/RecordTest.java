@@ -22,8 +22,8 @@ class RecordTest {
         assertThat(record.getAccuracy()).isEqualTo("90");
         assertThat(record.getDuration()).isEqualTo("150");
         assertThat(record.getSteps()).isEqualTo("100");
-        assertThat(record.getLeftFootAvgSpeed()).isEqualTo("0.5");
-        assertThat(record.getRightFootAvgSpeed()).isEqualTo("0.6");
+        assertThat(record.getLeftFootAverageSpeed()).isEqualTo("0.5");
+        assertThat(record.getRightFootAverageSpeed()).isEqualTo("0.6");
         assertThat(record.getBit()).isEqualTo("4");
         assertThat(record.getBpm()).isEqualTo("60");
         assertThat(record.getCreatedAt()).isNull();

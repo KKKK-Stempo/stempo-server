@@ -26,8 +26,8 @@ class RecordRequestDtoTest {
         dto.setAccuracy(50.0);         // 0 ~ 100 사이의 유효한 값
         dto.setDuration(60);           // 0 이상의 유효한 값
         dto.setSteps(100);             // 0 이상의 유효한 값
-        dto.setLeftFootAvgSpeed(1.0);  // 0 이상의 유효한 값
-        dto.setRightFootAvgSpeed(1.0); // 0 이상의 유효한 값
+        dto.setLeftFootAverageSpeed(1.0);  // 0 이상의 유효한 값
+        dto.setRightFootAverageSpeed(1.0); // 0 이상의 유효한 값
         dto.setBit(4);                 // 1 ~ 8 사이의 유효한 값
         dto.setBpm(60);                // 10 ~ 200 사이의 유효한 값
         return dto;
@@ -191,10 +191,10 @@ class RecordRequestDtoTest {
     }
 
     @Test
-    void leftFootAvgSpeed이_음수면_유효성_검사에_실패한다() {
+    void leftFootAverageSpeed이_음수면_유효성_검사에_실패한다() {
         // given
         RecordRequestDto recordRequestDto = createValidDto();
-        recordRequestDto.setLeftFootAvgSpeed(-0.1);
+        recordRequestDto.setLeftFootAverageSpeed(-0.1);
 
         // when
         Set<ConstraintViolation<RecordRequestDto>> violations = validator.validate(recordRequestDto);
@@ -206,10 +206,10 @@ class RecordRequestDtoTest {
     }
 
     @Test
-    void rightFootAvgSpeed이_음수면_유효성_검사에_실패한다() {
+    void rightFootAverageSpeed이_음수면_유효성_검사에_실패한다() {
         // given
         RecordRequestDto recordRequestDto = createValidDto();
-        recordRequestDto.setRightFootAvgSpeed(-0.1);
+        recordRequestDto.setRightFootAverageSpeed(-0.1);
 
         // when
         Set<ConstraintViolation<RecordRequestDto>> violations = validator.validate(recordRequestDto);

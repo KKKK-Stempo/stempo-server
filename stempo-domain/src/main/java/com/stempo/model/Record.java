@@ -20,8 +20,8 @@ public class Record {
     private String accuracy;
     private String duration;
     private String steps;
-    private String leftFootAvgSpeed;
-    private String rightFootAvgSpeed;
+    private String leftFootAverageSpeed;
+    private String rightFootAverageSpeed;
     private String bit;
     private String bpm;
     private LocalDateTime createdAt;
@@ -31,8 +31,8 @@ public class Record {
         String accuracy,
         String duration,
         String steps,
-        String leftFootAvgSpeed,
-        String rightFootAvgSpeed,
+        String leftFootAverageSpeed,
+        String rightFootAverageSpeed,
         String bit,
         String bpm
     ) {
@@ -41,8 +41,8 @@ public class Record {
             .accuracy(accuracy)
             .duration(duration)
             .steps(steps)
-            .leftFootAvgSpeed(leftFootAvgSpeed)
-            .rightFootAvgSpeed(rightFootAvgSpeed)
+            .leftFootAverageSpeed(leftFootAverageSpeed)
+            .rightFootAverageSpeed(rightFootAverageSpeed)
             .bit(bit)
             .bpm(bpm)
             .build();
