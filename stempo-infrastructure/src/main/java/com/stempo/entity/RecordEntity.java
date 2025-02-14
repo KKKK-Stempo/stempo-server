@@ -35,4 +35,12 @@ public class RecordEntity extends BaseEntity {
     private String duration;
 
     private String steps;
+
+    private String leftFootAverageSpeed;
+
+    private String rightFootAverageSpeed;
+
+    private String bit;
+
+    private String bpm;
 }

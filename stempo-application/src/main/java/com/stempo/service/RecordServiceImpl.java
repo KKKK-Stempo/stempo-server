@@ -35,8 +35,14 @@ public class RecordServiceImpl implements RecordService {
         String encryptedAccuracy = encryptionUtils.encrypt(requestDto.getAccuracy().toString());
         String encryptedDuration = encryptionUtils.encrypt(requestDto.getDuration().toString());
         String encryptedSteps = encryptionUtils.encrypt(requestDto.getSteps().toString());
+        String encryptedLeftFootAverageSpeed = encryptionUtils.encrypt(requestDto.getLeftFootAverageSpeed().toString());
+        String encryptedRightFootAverageSpeed = encryptionUtils.encrypt(
+            requestDto.getRightFootAverageSpeed().toString());
+        String encryptedBit = encryptionUtils.encrypt(requestDto.getBit().toString());
+        String encryptedBpm = encryptionUtils.encrypt(requestDto.getBpm().toString());
 
-        Record newRecord = Record.create(deviceTag, encryptedAccuracy, encryptedDuration, encryptedSteps);
+        Record newRecord = Record.create(deviceTag, encryptedAccuracy, encryptedDuration, encryptedSteps,
+            encryptedLeftFootAverageSpeed, encryptedRightFootAverageSpeed, encryptedBit, encryptedBpm);
         return recordRepository.save(newRecord).getDeviceTag();
     }
 
