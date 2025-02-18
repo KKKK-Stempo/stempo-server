@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface HomeworkJpaRepository extends JpaRepository<HomeworkEntity, Long>, HomeworkCustomRepository {
 
-    Page<HomeworkEntity> findByCompleted(Boolean completed, Pageable pageable);
+    Page<HomeworkEntity> findByDeviceTagAndCompleted(String deviceTag, Boolean completed, Pageable pageable);
+
+    Page<HomeworkEntity> findByDeviceTag(String deviceTag, Pageable pageable);
 
     List<HomeworkEntity> findByDeviceTag(String deviceTag);
 }

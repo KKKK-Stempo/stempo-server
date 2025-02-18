@@ -39,7 +39,8 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<HomeworkResponseDto> getHomeworks(Boolean completed, Pageable pageable) {
-        Page<Homework> homeworksPage = repository.findByCompleted(completed, pageable);
+        String deviceTag = userService.getCurrentDeviceTag();
+        Page<Homework> homeworksPage = repository.findByDeviceTagAndCompleted(deviceTag, completed, pageable);
 
         List<HomeworkResponseDto> responseDtos = homeworksPage.getContent().stream()
             .map(this::decryptAndConvertToDto)

@@ -13,7 +13,7 @@ public interface HomeworkRepository {
 
     void deleteAll(List<Homework> homeworks);
 
-    Page<Homework> findByCompleted(Boolean completed, Pageable pageable);
+    Page<Homework> findByDeviceTagAndCompleted(String deviceTag, Boolean completed, Pageable pageable);
 
     Homework findByIdOrThrow(Long homeworkId);
 
