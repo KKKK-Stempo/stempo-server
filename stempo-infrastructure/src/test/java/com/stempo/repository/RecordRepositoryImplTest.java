@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import com.stempo.entity.RecordEntity;
 import com.stempo.mapper.RecordMapper;
 import com.stempo.model.Record;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -38,21 +39,21 @@ class RecordRepositoryImplTest {
     @BeforeEach
     void setUp() {
         record = Record.builder()
-                .id(1L)
-                .deviceTag("device123")
-                .accuracy("90")
-                .duration("10")
-                .steps("1000")
-                .createdAt(LocalDateTime.now())
-                .build();
+            .id(1L)
+            .deviceTag("device123")
+            .accuracy("90")
+            .duration("10")
+            .steps("1000")
+            .createdAt(LocalDateTime.now())
+            .build();
 
         recordEntity = RecordEntity.builder()
-                .id(1L)
-                .deviceTag("device123")
-                .accuracy("90")
-                .duration("10")
-                .steps("1000")
-                .build();
+            .id(1L)
+            .deviceTag("device123")
+            .accuracy("90")
+            .duration("10")
+            .steps("1000")
+            .build();
         recordEntity.setCreatedAt(LocalDateTime.now());
     }
 
@@ -102,7 +103,7 @@ class RecordRepositoryImplTest {
         LocalDateTime startDateTime = LocalDateTime.now().minusDays(1);
         LocalDateTime endDateTime = LocalDateTime.now();
         when(recordJpaRepository.findByDateBetween(anyString(), any(LocalDateTime.class), any(LocalDateTime.class)))
-                .thenReturn(List.of(recordEntity));
+            .thenReturn(List.of(recordEntity));
         when(recordMapper.toDomain(any(RecordEntity.class))).thenReturn(record);
 
         // when
@@ -118,7 +119,7 @@ class RecordRepositoryImplTest {
         // given
         LocalDateTime startDateTime = LocalDateTime.now().minusDays(1);
         when(recordJpaRepository.findLatestBeforeStartDate(anyString(), any(LocalDateTime.class)))
-                .thenReturn(Optional.of(recordEntity));
+            .thenReturn(Optional.of(recordEntity));
         when(recordMapper.toDomain(any(RecordEntity.class))).thenReturn(record);
 
         // when
@@ -144,11 +145,48 @@ class RecordRepositoryImplTest {
     }
 
     @Test
+    void 디바이스_태그_목록으로_기록을_조회한다() {
+        // given
+        List<String> deviceTags = List.of("device123", "device456");
+        when(recordJpaRepository.findRecordsByDeviceTags(deviceTags)).thenReturn(List.of(recordEntity));
+        when(recordMapper.toDomain(recordEntity)).thenReturn(record);
+
+        // when
+        List<Record> result = recordRepository.findRecordsByDeviceTags(deviceTags);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().getDeviceTag()).isEqualTo("device123");
+        verify(recordJpaRepository, times(1)).findRecordsByDeviceTags(deviceTags);
+        verify(recordMapper, times(1)).toDomain(recordEntity);
+    }
+
+    @Test
+    void 디바이스_태그와_날짜범위로_기록을_조회한다() {
+        // given
+        List<String> deviceTags = List.of("device123");
+        LocalDate startDate = LocalDate.of(2024, 1, 1);
+        LocalDate endDate = LocalDate.of(2024, 1, 31);
+        when(recordJpaRepository.findRecordsByDeviceTagsAndDateRange(deviceTags, startDate, endDate))
+            .thenReturn(List.of(recordEntity));
+        when(recordMapper.toDomain(recordEntity)).thenReturn(record);
+
+        // when
+        List<Record> result = recordRepository.findRecordsByDeviceTagsAndDateRange(deviceTags, startDate, endDate);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().getDeviceTag()).isEqualTo("device123");
+        verify(recordJpaRepository, times(1)).findRecordsByDeviceTagsAndDateRange(deviceTags, startDate, endDate);
+        verify(recordMapper, times(1)).toDomain(recordEntity);
+    }
+
+    @Test
     void 디바이스_태그로_생성날짜를_조회한다() {
         // given
         LocalDateTime now = LocalDateTime.now();
         when(recordJpaRepository.findCreatedAtByDeviceTagOrderByCreatedAtDesc(anyString()))
-                .thenReturn(List.of(now));
+            .thenReturn(List.of(now));
 
         // when
         List<LocalDateTime> dateTimes = recordRepository.findCreatedAtByDeviceTagOrderByCreatedAtDesc("device123");
@@ -164,8 +202,8 @@ class RecordRepositoryImplTest {
         LocalDateTime startDateTime = LocalDateTime.now().minusDays(1);
         LocalDateTime endDateTime = LocalDateTime.now();
         when(recordJpaRepository.countByDeviceTagAndCreatedAtBetween(anyString(), any(LocalDateTime.class),
-                any(LocalDateTime.class)))
-                .thenReturn(5);
+            any(LocalDateTime.class)))
+            .thenReturn(5);
 
         // when
         int count = recordRepository.countByDeviceTagAndCreatedAtBetween("device123", startDateTime, endDateTime);
