@@ -92,19 +92,18 @@ public class RecordReportServiceImpl implements RecordReportService {
                 DecryptedRecord firstRecord = sortedRecords.getFirst();
                 DecryptedRecord lastRecord = sortedRecords.getLast();
 
-                return PersonalRhythmSettingsResponseDto.builder()
-                    .deviceTag(entry.getKey())
-                    .onboardingBit(firstRecord.getBit())
-                    .onboardingBpm(firstRecord.getBpm())
-                    .lastRecordBit(lastRecord.getBit())
-                    .lastRecordBpm(lastRecord.getBpm())
-                    .build();
+                return PersonalRhythmSettingsResponseDto.of(
+                    entry.getKey(),
+                    firstRecord.getBit(),
+                    firstRecord.getBpm(),
+                    lastRecord.getBit(),
+                    lastRecord.getBpm());
             })
             .toList();
     }
 
-    private Map<String, List<DecryptedRecord>> groupRecordsByDevice(List<String> deviceTags, LocalDate startDate,
-        LocalDate endDate) {
+    private Map<String, List<DecryptedRecord>> groupRecordsByDevice(
+        List<String> deviceTags, LocalDate startDate, LocalDate endDate) {
         validateDateRange(startDate, endDate);
 
         // 지정된 deviceTags와 날짜 범위에 해당하는 복호화된 기록들을 조회
