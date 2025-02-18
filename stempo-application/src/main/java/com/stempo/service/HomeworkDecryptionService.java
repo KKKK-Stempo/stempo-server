@@ -1,5 +1,6 @@
 package com.stempo.service;
 
+import com.stempo.config.AesConfig;
 import com.stempo.dto.DecryptedHomework;
 import com.stempo.model.Homework;
 import com.stempo.util.EncryptionUtils;
@@ -10,13 +11,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class HomeworkDecryptionService {
 
+    private final AesConfig aesConfig;
     private final EncryptionUtils encryptionUtils;
 
     public DecryptedHomework decryptHomework(Homework homework) {
+        String decryptedDeviceTag =
+            encryptionUtils.decryptWithHashedIv(homework.getDeviceTag(), aesConfig.getDeviceTagSecretKey());
         String decryptedDescription = encryptionUtils.decrypt(homework.getDescription());
         return DecryptedHomework.builder()
             .id(homework.getId())
-            .deviceTag(homework.getDeviceTag())
+            .deviceTag(decryptedDeviceTag)
             .description(decryptedDescription)
             .completed(homework.getCompleted())
             .createdAt(homework.getCreatedAt())

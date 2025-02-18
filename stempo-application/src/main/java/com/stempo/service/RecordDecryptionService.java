@@ -1,5 +1,6 @@
 package com.stempo.service;
 
+import com.stempo.config.AesConfig;
 import com.stempo.dto.DecryptedRecord;
 import com.stempo.dto.response.RecordItemDto;
 import com.stempo.mapper.RecordDtoMapper;
@@ -16,9 +17,12 @@ import org.springframework.stereotype.Service;
 public class RecordDecryptionService {
 
     private final EncryptionUtils encryptionUtils;
+    private final AesConfig aesConfig;
     private final RecordDtoMapper mapper;
 
     public DecryptedRecord decryptedRecord(Record record) {
+        String decryptedDeviceTag =
+            encryptionUtils.decryptWithHashedIv(record.getDeviceTag(), aesConfig.getDeviceTagSecretKey());
         Double decryptedAccuracy = parseDouble(encryptionUtils.decrypt(record.getAccuracy()));
         Integer decryptedDuration = parseInteger(encryptionUtils.decrypt(record.getDuration()));
         Integer decryptedSteps = parseInteger(encryptionUtils.decrypt(record.getSteps()));
@@ -29,7 +33,7 @@ public class RecordDecryptionService {
 
         return DecryptedRecord.builder()
             .id(record.getId())
-            .deviceTag(record.getDeviceTag())
+            .deviceTag(decryptedDeviceTag)
             .accuracy(decryptedAccuracy)
             .duration(decryptedDuration)
             .steps(decryptedSteps)

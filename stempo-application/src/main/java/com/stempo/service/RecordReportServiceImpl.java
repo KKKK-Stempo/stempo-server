@@ -1,6 +1,7 @@
 package com.stempo.service;
 
 import com.stempo.dto.DecryptedRecord;
+import com.stempo.dto.response.PersonalRhythmSettingsResponseDto;
 import com.stempo.dto.response.RecordDataResponseDto;
 import com.stempo.dto.response.RecordReportResponseDto;
 import com.stempo.dto.response.RhythmDataResponseDto;
@@ -19,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RecordReportServiceImpl implements RecordReportService {
 
-    private final UserService userService;
     private final RecordService recordService;
 
     @Override
@@ -32,13 +32,11 @@ public class RecordReportServiceImpl implements RecordReportService {
         // 각 deviceTag 그룹별로 RecordReportResponseDto 빌드
         return recordsByDevice.entrySet().stream()
             .map(entry -> {
-                String decryptedDeviceTag = userService.decryptDeviceTag(entry.getKey());
-
                 List<RecordDataResponseDto> recordDatas = entry.getValue().stream()
                     .map(RecordDataResponseDto::from)
                     .toList();
 
-                return RecordReportResponseDto.of(decryptedDeviceTag, recordDatas);
+                return RecordReportResponseDto.of(entry.getKey(), recordDatas);
             })
             .toList();
     }
@@ -53,13 +51,11 @@ public class RecordReportServiceImpl implements RecordReportService {
         // 각 deviceTag 그룹별로 RhythmReportResponseDto 빌드
         return recordsByDevice.entrySet().stream()
             .map(entry -> {
-                String decryptedDeviceTag = userService.decryptDeviceTag(entry.getKey());
-
                 List<RhythmDataResponseDto> rhythmDatas = entry.getValue().stream()
                     .map(RhythmDataResponseDto::from)
                     .toList();
 
-                return RhythmReportResponseDto.of(decryptedDeviceTag, rhythmDatas);
+                return RhythmReportResponseDto.of(entry.getKey(), rhythmDatas);
             })
             .toList();
     }
