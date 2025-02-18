@@ -27,42 +27,19 @@ public class UserDataAggregationServiceImpl implements UserDataAggregationServic
     @Override
     @Transactional(readOnly = true)
     public List<UserDataResponseDto> getUserData(List<String> deviceTags) {
-        // deviceTags에 해당하는 보행 훈련 기록과 과제 조회
         List<DecryptedRecord> records = recordService.getByDeviceTags(deviceTags);
         List<DecryptedHomework> homeworks = homeworkService.getByDeviceTags(deviceTags);
 
-        // 보행 훈련 기록을 deviceTag별로 그룹화
-        Map<String, List<DecryptedRecord>> recordsByDevice = records.stream()
-            .filter(decryptedRecord -> decryptedRecord.getDeviceTag() != null)
-            .collect(Collectors.groupingBy(DecryptedRecord::getDeviceTag));
+        Map<String, List<DecryptedRecord>> recordsByDevice = groupRecordsByDevice(records);
+        Map<String, List<DecryptedHomework>> homeworksByDevice = groupHomeworksByDevice(homeworks);
+        Set<String> deviceTagSet = mergeDeviceTags(recordsByDevice, homeworksByDevice);
 
-        // 과제를 deviceTag별로 그룹화
-        Map<String, List<DecryptedHomework>> homeworkByDevice = homeworks.stream()
-            .filter(decryptedHomework -> decryptedHomework.getDeviceTag() != null)
-            .collect(Collectors.groupingBy(DecryptedHomework::getDeviceTag));
-
-        // 조회된 두 데이터셋의 deviceTag를 모두 합쳐 중복 제거
-        Set<String> deviceTagSet = new HashSet<>();
-        deviceTagSet.addAll(recordsByDevice.keySet());
-        deviceTagSet.addAll(homeworkByDevice.keySet());
-
-        // 각 deviceTag별로 DTO 빌드
         return deviceTagSet.stream()
             .map(deviceTag -> {
-                List<RecordDataResponseDto> recordDatas = recordsByDevice.getOrDefault(deviceTag,
-                        Collections.emptyList())
-                    .stream()
-                    .map(RecordDataResponseDto::from)
-                    .sorted(Comparator.comparing(RecordDataResponseDto::getCreatedAt))
-                    .toList();
-
-                List<HomeworkDataResponseDto> homeworkDatas = homeworkByDevice.getOrDefault(deviceTag,
-                        Collections.emptyList())
-                    .stream()
-                    .map(HomeworkDataResponseDto::from)
-                    .sorted(Comparator.comparing(HomeworkDataResponseDto::getCreatedAt))
-                    .toList();
-
+                List<RecordDataResponseDto> recordDatas = sortedRecordData(
+                    recordsByDevice.getOrDefault(deviceTag, Collections.emptyList()));
+                List<HomeworkDataResponseDto> homeworkDatas = sortedHomeworkData(
+                    homeworksByDevice.getOrDefault(deviceTag, Collections.emptyList()));
                 return UserDataResponseDto.of(deviceTag, recordDatas, homeworkDatas);
             })
             .toList();
@@ -71,46 +48,63 @@ public class UserDataAggregationServiceImpl implements UserDataAggregationServic
     @Override
     @Transactional(readOnly = true)
     public List<PersonalTrainingSettingsResponseDto> getPersonalTrainingSettings(List<String> deviceTags) {
-        // deviceTags에 해당하는 보행 훈련 기록과 과제 조회
         List<DecryptedRecord> allRecords = recordService.getByDeviceTags(deviceTags);
         List<DecryptedHomework> allHomeworks = homeworkService.getByDeviceTags(deviceTags);
 
-        // 보행 훈련 기록을 deviceTag별로 그룹화
-        Map<String, List<DecryptedRecord>> recordsByDevice = allRecords.stream()
-            .filter(r -> r.getDeviceTag() != null)
-            .collect(Collectors.groupingBy(DecryptedRecord::getDeviceTag));
+        Map<String, List<DecryptedRecord>> recordsByDevice = groupRecordsByDevice(allRecords);
+        Map<String, List<DecryptedHomework>> homeworksByDevice = groupHomeworksByDevice(allHomeworks);
+        Set<String> deviceTagKeys = mergeDeviceTags(recordsByDevice, homeworksByDevice);
 
-        // 과제를 deviceTag별로 그룹화
-        Map<String, List<DecryptedHomework>> homeworksByDevice = allHomeworks.stream()
-            .filter(h -> h.getDeviceTag() != null)
-            .collect(Collectors.groupingBy(DecryptedHomework::getDeviceTag));
-
-        // 조회된 두 데이터셋의 deviceTag를 모두 합쳐 중복 제거
-        Set<String> deviceTagKeys = new HashSet<>();
-        deviceTagKeys.addAll(recordsByDevice.keySet());
-        deviceTagKeys.addAll(homeworksByDevice.keySet());
-
-        // 각 deviceTag별로 DTO 빌드
         return deviceTagKeys.stream()
             .map(deviceTag -> {
-                List<RecordDataResponseDto> sortedRecordDtos = recordsByDevice.getOrDefault(deviceTag,
-                        Collections.emptyList())
-                    .stream()
-                    .map(RecordDataResponseDto::from)
-                    .sorted(Comparator.comparing(RecordDataResponseDto::getCreatedAt))
-                    .toList();
-
-                List<HomeworkDataResponseDto> sortedHomeworkDtos = homeworksByDevice.getOrDefault(deviceTag,
-                        Collections.emptyList())
-                    .stream()
-                    .map(HomeworkDataResponseDto::from)
-                    .sorted(Comparator.comparing(HomeworkDataResponseDto::getCreatedAt))
-                    .toList();
-
+                List<RecordDataResponseDto> sortedRecordDtos = sortedRecordData(
+                    recordsByDevice.getOrDefault(deviceTag, Collections.emptyList()));
+                List<HomeworkDataResponseDto> sortedHomeworkDtos = sortedHomeworkData(
+                    homeworksByDevice.getOrDefault(deviceTag, Collections.emptyList()));
+                // 첫 번째 기록을 초기 분석 지표로 사용 (데이터가 없는 경우 null)
                 RecordDataResponseDto initialRecord = sortedRecordDtos.isEmpty() ? null : sortedRecordDtos.getFirst();
-
                 return PersonalTrainingSettingsResponseDto.of(deviceTag, initialRecord, sortedHomeworkDtos);
             })
             .toList();
     }
+
+    // DecryptedRecord를 deviceTag 기준으로 그룹화
+    private Map<String, List<DecryptedRecord>> groupRecordsByDevice(List<DecryptedRecord> records) {
+        return records.stream()
+            .filter(r -> r.getDeviceTag() != null)
+            .collect(Collectors.groupingBy(DecryptedRecord::getDeviceTag));
+    }
+
+    // DecryptedHomework를 deviceTag 기준으로 그룹화
+    private Map<String, List<DecryptedHomework>> groupHomeworksByDevice(List<DecryptedHomework> homeworks) {
+        return homeworks.stream()
+            .filter(h -> h.getDeviceTag() != null)
+            .collect(Collectors.groupingBy(DecryptedHomework::getDeviceTag));
+    }
+
+    // 두 그룹에서 deviceTag 키를 모두 합쳐 중복 제거
+    private Set<String> mergeDeviceTags(Map<String, List<DecryptedRecord>> recordsByDevice,
+        Map<String, List<DecryptedHomework>> homeworksByDevice) {
+        Set<String> keys = new HashSet<>();
+        keys.addAll(recordsByDevice.keySet());
+        keys.addAll(homeworksByDevice.keySet());
+        return keys;
+    }
+
+    // DecryptedRecord를 RecordDataResponseDto로 변환 후 createdAt 기준 정렬
+    private List<RecordDataResponseDto> sortedRecordData(List<DecryptedRecord> records) {
+        return records.stream()
+            .map(RecordDataResponseDto::from)
+            .sorted(Comparator.comparing(RecordDataResponseDto::getCreatedAt))
+            .toList();
+    }
+
+    // DecryptedHomework를 HomeworkDataResponseDto로 변환 후 createdAt 기준 정렬
+    private List<HomeworkDataResponseDto> sortedHomeworkData(List<DecryptedHomework> homeworks) {
+        return homeworks.stream()
+            .map(HomeworkDataResponseDto::from)
+            .sorted(Comparator.comparing(HomeworkDataResponseDto::getCreatedAt))
+            .toList();
+    }
 }
+
