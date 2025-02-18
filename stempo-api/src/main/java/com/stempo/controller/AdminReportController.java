@@ -1,6 +1,7 @@
 package com.stempo.controller;
 
 import com.stempo.dto.ApiResponse;
+import com.stempo.dto.response.PersonalRhythmSettingsResponseDto;
 import com.stempo.dto.response.RecordReportResponseDto;
 import com.stempo.dto.response.RhythmReportResponseDto;
 import com.stempo.dto.response.UserDataResponseDto;
@@ -54,5 +55,15 @@ public class AdminReportController {
         List<RhythmReportResponseDto> recordReport =
             recordReportService.getRhythmReport(deviceTags, startDate, endDate);
         return ApiResponse.success(recordReport);
+    }
+
+    @Operation(summary = "[A] 사용자 맞춤형 리듬 설정값 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @GetMapping("/api/v1/admin/report/user-data/rhythm-setting")
+    public ApiResponse<List<PersonalRhythmSettingsResponseDto>> getPersonalRhythmSettings(
+        @RequestParam(name = "deviceTags") List<String> deviceTags
+    ) {
+        List<PersonalRhythmSettingsResponseDto> personalRhythmSettings =
+            recordReportService.getPersonalRhythmSettings(deviceTags);
+        return ApiResponse.success(personalRhythmSettings);
     }
 }

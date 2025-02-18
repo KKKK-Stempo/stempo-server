@@ -9,6 +9,7 @@ import com.stempo.dto.response.RhythmReportResponseDto;
 import com.stempo.exception.BaseException;
 import com.stempo.exception.ErrorCode;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,6 +57,46 @@ public class RecordReportServiceImpl implements RecordReportService {
                     .toList();
 
                 return RhythmReportResponseDto.of(entry.getKey(), rhythmDatas);
+            })
+            .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PersonalRhythmSettingsResponseDto> getPersonalRhythmSettings(List<String> deviceTags) {
+        // deviceTags에 대한 복호화된 레코드를 조회
+        List<DecryptedRecord> records = recordService.getByDeviceTags(deviceTags);
+
+        // deviceTag가 null이 아닌 레코드들만 deviceTag로 그룹화
+        Map<String, List<DecryptedRecord>> recordsByDevice = records.stream()
+            .filter(decryptedRecord -> decryptedRecord.getDeviceTag() != null)
+            .collect(Collectors.groupingBy(DecryptedRecord::getDeviceTag));
+
+        // 각 그룹에 대해 createdAt 기준 정렬 후 첫번째, 마지막 요소 추출하여 DTO 빌드
+        return recordsByDevice.entrySet().stream()
+            .map(entry -> {
+                List<DecryptedRecord> deviceRecords = entry.getValue();
+
+                if (deviceRecords.isEmpty()) {
+                    return PersonalRhythmSettingsResponseDto.create(entry.getKey());
+                }
+
+                // createdAt 기준 오름차순 정렬
+                List<DecryptedRecord> sortedRecords = deviceRecords.stream()
+                    .sorted(Comparator.comparing(DecryptedRecord::getCreatedAt))
+                    .toList();
+
+                // 첫 번째 요소와 마지막 요소 추출
+                DecryptedRecord firstRecord = sortedRecords.getFirst();
+                DecryptedRecord lastRecord = sortedRecords.getLast();
+
+                return PersonalRhythmSettingsResponseDto.builder()
+                    .deviceTag(entry.getKey())
+                    .onboardingBit(firstRecord.getBit())
+                    .onboardingBpm(firstRecord.getBpm())
+                    .lastRecordBit(lastRecord.getBit())
+                    .lastRecordBpm(lastRecord.getBpm())
+                    .build();
             })
             .toList();
     }
