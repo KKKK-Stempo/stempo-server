@@ -22,6 +22,10 @@ object Dependencies {
         "com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:${Versions.owaspJavaHtmlSanitizer}"
     const val googleAuthenticator = "com.warrenstrange:googleauth:${Versions.googleAuthenticator}"
     const val apacheHttpClient = "org.apache.httpcomponents.client5:httpclient5:${Versions.apacheHttpClient}"
+    const val querydslJpa = "com.querydsl:querydsl-jpa:${Versions.querydsl}"
+    const val querydslApt = "com.querydsl:querydsl-apt:${Versions.querydsl}"
+    const val jakartaAnnotationApi = "jakarta.annotation:jakarta.annotation-api"
+    const val jakartaPersistenceApi = "jakarta.persistence:jakarta.persistence-api"
 
     // Test dependencies
     const val springBootStarterTest = "org.springframework.boot:spring-boot-starter-test"
