@@ -35,6 +35,7 @@ public class RecordReportServiceImpl implements RecordReportService {
             .map(entry -> {
                 List<RecordDataResponseDto> recordDatas = entry.getValue().stream()
                     .map(RecordDataResponseDto::from)
+                    .sorted(Comparator.comparing(RecordDataResponseDto::getCreatedAt))
                     .toList();
 
                 return RecordReportResponseDto.of(entry.getKey(), recordDatas);
@@ -54,6 +55,7 @@ public class RecordReportServiceImpl implements RecordReportService {
             .map(entry -> {
                 List<RhythmDataResponseDto> rhythmDatas = entry.getValue().stream()
                     .map(RhythmDataResponseDto::from)
+                    .sorted(Comparator.comparing(RhythmDataResponseDto::getCreatedAt))
                     .toList();
 
                 return RhythmReportResponseDto.of(entry.getKey(), rhythmDatas);

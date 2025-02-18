@@ -6,6 +6,7 @@ import com.stempo.dto.response.HomeworkDataResponseDto;
 import com.stempo.dto.response.RecordDataResponseDto;
 import com.stempo.dto.response.UserDataResponseDto;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,12 +52,14 @@ public class UserDataAggregationServiceImpl implements UserDataAggregationServic
                         Collections.emptyList())
                     .stream()
                     .map(RecordDataResponseDto::from)
+                    .sorted(Comparator.comparing(RecordDataResponseDto::getCreatedAt))
                     .toList();
 
                 List<HomeworkDataResponseDto> homeworkDatas = homeworkByDevice.getOrDefault(deviceTag,
                         Collections.emptyList())
                     .stream()
                     .map(HomeworkDataResponseDto::from)
+                    .sorted(Comparator.comparing(HomeworkDataResponseDto::getCreatedAt))
                     .toList();
 
                 return UserDataResponseDto.of(deviceTag, recordDatas, homeworkDatas);
