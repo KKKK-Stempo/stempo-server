@@ -17,6 +17,8 @@ public interface RecordRepository {
 
     List<Record> findByDeviceTag(String deviceTag);
 
+    List<Record> findRecordsByDeviceTags(List<String> deviceTags);
+
     List<LocalDateTime> findCreatedAtByDeviceTagOrderByCreatedAtDesc(String deviceTag);
 
     int countByDeviceTagAndCreatedAtBetween(String deviceTag, LocalDateTime startDateTime, LocalDateTime endDateTime);

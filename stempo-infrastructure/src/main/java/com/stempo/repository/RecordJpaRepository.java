@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface RecordJpaRepository extends JpaRepository<RecordEntity, Long> {
+public interface RecordJpaRepository extends JpaRepository<RecordEntity, Long>, RecordCustomRepository {
 
     @Query("SELECT r "
         + "FROM RecordEntity r "
@@ -16,9 +16,9 @@ public interface RecordJpaRepository extends JpaRepository<RecordEntity, Long> {
         + "AND r.deviceTag = :deviceTag "
         + "ORDER BY r.createdAt ASC")
     List<RecordEntity> findByDateBetween(
-            @Param("deviceTag") String deviceTag,
-            @Param("startDateTime") LocalDateTime startDateTime,
-            @Param("endDateTime") LocalDateTime endDateTime
+        @Param("deviceTag") String deviceTag,
+        @Param("startDateTime") LocalDateTime startDateTime,
+        @Param("endDateTime") LocalDateTime endDateTime
     );
 
     @Query("SELECT r "
@@ -28,8 +28,8 @@ public interface RecordJpaRepository extends JpaRepository<RecordEntity, Long> {
         + "ORDER BY r.createdAt DESC "
         + "LIMIT 1")
     Optional<RecordEntity> findLatestBeforeStartDate(
-            @Param("deviceTag") String deviceTag,
-            @Param("startDateTime") LocalDateTime startDateTime
+        @Param("deviceTag") String deviceTag,
+        @Param("startDateTime") LocalDateTime startDateTime
     );
 
     List<RecordEntity> findByDeviceTag(String deviceTag);
@@ -39,7 +39,7 @@ public interface RecordJpaRepository extends JpaRepository<RecordEntity, Long> {
         + "WHERE r.deviceTag = :deviceTag "
         + "ORDER BY r.createdAt DESC")
     List<LocalDateTime> findCreatedAtByDeviceTagOrderByCreatedAtDesc(
-            @Param("deviceTag") String deviceTag
+        @Param("deviceTag") String deviceTag
     );
 
     int countByDeviceTagAndCreatedAtBetween(String deviceTag, LocalDateTime startDateTime, LocalDateTime endDateTime);
