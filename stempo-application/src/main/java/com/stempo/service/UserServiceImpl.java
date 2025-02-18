@@ -32,6 +32,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String decryptDeviceTag(String deviceTag) {
+        return encryptionUtils.decryptWithHashedIv(deviceTag, aesConfig.getDeviceTagSecretKey());
+    }
+
+    @Override
     public Optional<User> findById(String id) {
         return repository.findById(id);
     }

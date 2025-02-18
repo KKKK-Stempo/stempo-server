@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserDataAggregationServiceImpl implements UserDataAggregationService {
 
+    private final UserService userService;
     private final RecordService recordService;
     private final HomeworkService homeworkService;
 
@@ -47,6 +48,8 @@ public class UserDataAggregationServiceImpl implements UserDataAggregationServic
         // 각 deviceTag별로 DTO 빌드
         return deviceTagSet.stream()
             .map(tag -> {
+                String decryptedTag = userService.decryptDeviceTag(tag);
+
                 List<RecordDataResponseDto> recordDatas = recordsByDevice.getOrDefault(tag, Collections.emptyList())
                     .stream()
                     .map(RecordDataResponseDto::from)
@@ -58,7 +61,7 @@ public class UserDataAggregationServiceImpl implements UserDataAggregationServic
                     .map(HomeworkDataResponseDto::from)
                     .toList();
 
-                return UserDataResponseDto.of(tag, recordDatas, homeworkDatas);
+                return UserDataResponseDto.of(decryptedTag, recordDatas, homeworkDatas);
             })
             .toList();
     }
