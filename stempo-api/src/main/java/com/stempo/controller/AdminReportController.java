@@ -2,6 +2,7 @@ package com.stempo.controller;
 
 import com.stempo.dto.ApiResponse;
 import com.stempo.dto.response.RecordReportResponseDto;
+import com.stempo.dto.response.RhythmReportResponseDto;
 import com.stempo.dto.response.UserDataResponseDto;
 import com.stempo.service.RecordReportService;
 import com.stempo.service.UserDataAggregationService;
@@ -40,6 +41,18 @@ public class AdminReportController {
     ) {
         List<RecordReportResponseDto> recordReport =
             recordReportService.getRecordReport(deviceTags, startDate, endDate);
+        return ApiResponse.success(recordReport);
+    }
+
+    @Operation(summary = "[A] 사용자 보행 훈련에 사용된 리듬 데이터 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @GetMapping("/api/v1/admin/report/user-data/rhythm")
+    public ApiResponse<List<RhythmReportResponseDto>> getRhythmReport(
+        @RequestParam(name = "deviceTags") List<String> deviceTags,
+        @RequestParam(name = "startDate", required = false) LocalDate startDate,
+        @RequestParam(name = "endDate", required = false) LocalDate endDate
+    ) {
+        List<RhythmReportResponseDto> recordReport =
+            recordReportService.getRhythmReport(deviceTags, startDate, endDate);
         return ApiResponse.success(recordReport);
     }
 }
