@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = RhythmController.class)
 @ContextConfiguration(classes = TestApplication.class)
 @ActiveProfiles("test")
-public class RhythmControllerTest {
+class RhythmControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -45,16 +45,16 @@ public class RhythmControllerTest {
         String expectedFilePath = "/resources/files/rhythm_120_4_bpm.wav";
 
         when(rhythmService.createRhythm(any(RhythmRequestDto.class)))
-                .thenReturn(expectedFilePath);
+            .thenReturn(expectedFilePath);
 
         // when
         mockMvc.perform(post("/api/v1/rhythm")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").value(expectedFilePath));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data").value(expectedFilePath));
     }
 
     @Test
@@ -67,12 +67,12 @@ public class RhythmControllerTest {
 
         // when
         mockMvc.perform(post("/api/v1/rhythm")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.data").isEmpty());
     }
 
     @Test
@@ -84,9 +84,9 @@ public class RhythmControllerTest {
 
         // when
         mockMvc.perform(post("/api/v1/rhythm")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isUnauthorized());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isUnauthorized());
     }
 }

@@ -21,7 +21,7 @@ class PagedResponseDtoTest {
         PagedResponseDto<String> response = new PagedResponseDto<>(page);
 
         // then
-        assertThat(response.getCurrentPage()).isEqualTo(0);
+        assertThat(response.getCurrentPage()).isZero();
         assertThat(response.isHasPrevious()).isFalse();
         assertThat(response.isHasNext()).isTrue();
         assertThat(response.getTotalPages()).isEqualTo(4);
@@ -40,7 +40,7 @@ class PagedResponseDtoTest {
         PagedResponseDto<String> response = new PagedResponseDto<>(page, 100, 3);
 
         // then
-        assertThat(response.getCurrentPage()).isEqualTo(0);
+        assertThat(response.getCurrentPage()).isZero();
         assertThat(response.isHasPrevious()).isFalse();
         assertThat(response.isHasNext()).isTrue();
         assertThat(response.getTotalPages()).isEqualTo(2);
@@ -59,7 +59,7 @@ class PagedResponseDtoTest {
         PagedResponseDto<String> response = new PagedResponseDto<>(items, pageable, items.size());
 
         // then
-        assertThat(response.getCurrentPage()).isEqualTo(0);
+        assertThat(response.getCurrentPage()).isZero();
         assertThat(response.isHasPrevious()).isFalse();
         assertThat(response.isHasNext()).isFalse();
         assertThat(response.getTotalPages()).isEqualTo(1);
@@ -78,12 +78,12 @@ class PagedResponseDtoTest {
         PagedResponseDto<String> response = new PagedResponseDto<>(items, pageable, items.size());
 
         // then
-        assertThat(response.getCurrentPage()).isEqualTo(0);
+        assertThat(response.getCurrentPage()).isZero();
         assertThat(response.isHasPrevious()).isFalse();
         assertThat(response.isHasNext()).isFalse();
-        assertThat(response.getTotalPages()).isEqualTo(0);
-        assertThat(response.getTotalItems()).isEqualTo(0);
-        assertThat(response.getTake()).isEqualTo(0);
+        assertThat(response.getTotalPages()).isZero();
+        assertThat(response.getTotalItems()).isZero();
+        assertThat(response.getTake()).isZero();
         assertThat(response.getItems()).isEmpty();
     }
 
@@ -97,7 +97,7 @@ class PagedResponseDtoTest {
         PagedResponseDto<String> response = new PagedResponseDto<>(items, pageable, 10);
 
         // then
-        assertThat(response.getCurrentPage()).isEqualTo(0);
+        assertThat(response.getCurrentPage()).isZero();
         assertThat(response.isHasPrevious()).isFalse(); // 첫 페이지는 이전 페이지가 없어야 함
         assertThat(response.isHasNext()).isTrue(); // 다음 페이지가 존재해야 함
         assertThat(response.getTotalPages()).isEqualTo(4);
@@ -159,7 +159,7 @@ class PagedResponseDtoTest {
         assertThat(response.isHasNext()).isFalse(); // 빈 페이지이므로 다음 페이지가 없어야 함
         assertThat(response.getTotalPages()).isEqualTo(4);
         assertThat(response.getTotalItems()).isEqualTo(10);
-        assertThat(response.getTake()).isEqualTo(0);
+        assertThat(response.getTake()).isZero();
         assertThat(response.getItems()).isEmpty();
     }
 

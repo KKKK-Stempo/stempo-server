@@ -58,6 +58,6 @@ class XssEscapeServletFilterTest {
         xssEscapeServletFilter.doFilter(nonHttpServletRequest, response, filterChain);
 
         // then
-        verify(filterChain).doFilter(eq(nonHttpServletRequest), eq(response));
+        verify(filterChain).doFilter(nonHttpServletRequest, response);
     }
 }

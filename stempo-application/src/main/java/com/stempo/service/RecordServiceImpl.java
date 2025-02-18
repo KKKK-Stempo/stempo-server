@@ -1,5 +1,6 @@
 package com.stempo.service;
 
+import com.stempo.dto.DecryptedRecord;
 import com.stempo.dto.request.RecordRequestDto;
 import com.stempo.dto.response.RecordItemDto;
 import com.stempo.dto.response.RecordResponseDto;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecordServiceImpl implements RecordService {
 
     private final UserService userService;
+    private final RecordDecryptionService recordDecryptionService;
     private final RecordRepository recordRepository;
     private final RecordDtoMapper mapper;
     private final EncryptionUtils encryptionUtils;
@@ -59,13 +61,13 @@ public class RecordServiceImpl implements RecordService {
         // startDateTime과 endDateTime 사이의 데이터 가져오기
         List<Record> records = recordRepository.findByDateBetween(deviceTag, startDateTime, endDateTime);
         List<RecordItemDto> decryptedRecords = records.stream()
-            .map(this::convertToDecryptedRecordItemDto)
+            .map(recordDecryptionService::decryptToRecordItemDto)
             .toList();
 
         // 결과 합치기
         List<RecordItemDto> combinedRecords = new ArrayList<>();
         latestBeforeStartDate.ifPresentOrElse(
-            latestTrainingRecord -> combinedRecords.add(convertToDecryptedRecordItemDto(latestTrainingRecord)),
+            latestRecord -> combinedRecords.add(recordDecryptionService.decryptToRecordItemDto(latestRecord)),
             () -> combinedRecords.add(mapper.toDto(0.0, 0, 0, startDate.minusDays(1)))
         );
         combinedRecords.addAll(decryptedRecords);
@@ -104,13 +106,29 @@ public class RecordServiceImpl implements RecordService {
         return mapper.toDto(todayWalkTrainingCount, weeklyWalkTrainingCount, consecutiveWalkTrainingDays);
     }
 
-    private RecordItemDto convertToDecryptedRecordItemDto(Record trainingRecord) {
-        Double decryptedAccuracy = Double.parseDouble(encryptionUtils.decrypt(trainingRecord.getAccuracy()));
-        Integer decryptedDuration = Integer.parseInt(encryptionUtils.decrypt(trainingRecord.getDuration()));
-        Integer decryptedSteps = Integer.parseInt(encryptionUtils.decrypt(trainingRecord.getSteps()));
-        LocalDate date = trainingRecord.getCreatedAt().toLocalDate();
+    @Override
+    @Transactional(readOnly = true)
+    public List<DecryptedRecord> getByDeviceTags(List<String> deviceTags) {
+        List<String> encryptedDeviceTags = deviceTags.stream()
+            .map(userService::encryptDeviceTag)
+            .toList();
 
-        return mapper.toDto(decryptedAccuracy, decryptedDuration, decryptedSteps, date);
+        return recordRepository.findRecordsByDeviceTags(encryptedDeviceTags).stream()
+            .map(recordDecryptionService::decryptedRecord)
+            .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DecryptedRecord> getByDeviceTagsAndDateRange(List<String> deviceTags, LocalDate startDate,
+        LocalDate endDate) {
+        List<String> encryptedDeviceTags = deviceTags.stream()
+            .map(userService::encryptDeviceTag)
+            .toList();
+
+        return recordRepository.findRecordsByDeviceTagsAndDateRange(encryptedDeviceTags, startDate, endDate).stream()
+            .map(recordDecryptionService::decryptedRecord)
+            .toList();
     }
 
     private int calculateConsecutiveTrainingDays(String deviceTag) {

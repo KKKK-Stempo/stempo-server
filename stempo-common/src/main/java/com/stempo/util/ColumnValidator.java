@@ -7,9 +7,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class ColumnValidator {
 
+    private ColumnValidator() {
+    }
+
     public static boolean isValidColumn(Class<?> domainClass, String columnName) {
         Field[] fields = domainClass.getDeclaredFields();
         return Arrays.stream(fields)
-                .anyMatch(field -> field.getName().equals(columnName));
+            .anyMatch(field -> field.getName().equals(columnName));
     }
 }

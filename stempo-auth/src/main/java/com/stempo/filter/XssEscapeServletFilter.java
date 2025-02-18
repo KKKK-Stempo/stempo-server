@@ -20,10 +20,10 @@ public class XssEscapeServletFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-        if (request instanceof HttpServletRequest) {
-            HttpServletRequest sanitizedRequest = new XssEscapeServletRequestWrapper((HttpServletRequest) request,
-                    xssSanitizer);
+        throws IOException, ServletException {
+        if (request instanceof HttpServletRequest httpServletRequest) {
+            HttpServletRequest sanitizedRequest = new XssEscapeServletRequestWrapper(httpServletRequest,
+                xssSanitizer);
             chain.doFilter(sanitizedRequest, response);
         } else {
             chain.doFilter(request, response);

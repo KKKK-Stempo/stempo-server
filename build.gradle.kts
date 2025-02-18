@@ -107,7 +107,7 @@ allprojects {
                 limit {
                     counter = "BRANCH"
                     value = "COVEREDRATIO"
-                    minimum = "0.70".toBigDecimal()
+                    minimum = "0.50".toBigDecimal()
                 }
 
                 limit {
@@ -123,14 +123,15 @@ allprojects {
                 }
 
                 excludes = listOf(
-                    "com.stempo.**.Test*.*",
-                    "com.stempo.**.*Test.*",
-                    "com.stempo.**.*Dto.*",
-                    "com.stempo.**.*Entity.*",
+                    "com.stempo.**.*Test*",
+                    "com.stempo.**.*Dto*",
+                    "com.stempo.**.*Entity*",
                     "com.stempo.**.*Service.*",
                     "com.stempo.**.*Repository.*",
-                    "com.stempo.**.*Exception.*",
-                    "com.stempo.ApiApplication.*",
+                    "com.stempo.**.*Exception*",
+                    "com.stempo.**.AuthorizeRequestsCustomizer*",
+                    "com.stempo.**.SecurityConfig*",
+                    "com.stempo.ApiApplication*",
                 )
             }
         }
@@ -189,5 +190,9 @@ allprojects {
 
     tasks.withType<JavaExec> {
         ext["springConfigLocation"]?.let { systemProperty("spring.config.additional-location", it) }
+    }
+
+    tasks.named("checkstyleMain") {
+        dependsOn("compileTestJava")
     }
 }

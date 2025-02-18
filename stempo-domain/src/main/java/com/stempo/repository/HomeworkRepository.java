@@ -18,4 +18,6 @@ public interface HomeworkRepository {
     Homework findByIdOrThrow(Long homeworkId);
 
     List<Homework> findByDeviceTag(String deviceTag);
+
+    List<Homework> findHomeworkByDeviceTags(List<String> deviceTags);
 }

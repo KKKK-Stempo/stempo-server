@@ -16,4 +16,5 @@ object Versions {
     const val jacoco = "0.8.12"
     const val apacheHttpClient = "5.2.3"
     const val mockWebServer = "4.12.0"
+    const val querydsl = "5.1.0:jakarta"
 }

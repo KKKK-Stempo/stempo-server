@@ -4,20 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.stempo.application.JwtTokenService;
-import com.stempo.config.AesConfig;
 import com.stempo.config.CustomAuthenticationProvider;
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.AuthRequestDto;
 import com.stempo.exception.BaseException;
 import com.stempo.model.Role;
 import com.stempo.model.User;
-import com.stempo.util.EncryptionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,12 +34,6 @@ class AuthenticationServiceTest {
 
     @Mock
     private UserService userService;
-
-    @Mock
-    private EncryptionUtils encryptionUtils;
-
-    @Mock
-    private AesConfig aesConfig;
 
     @Mock
     private JwtTokenService tokenService;
@@ -65,7 +56,6 @@ class AuthenticationServiceTest {
 
         encryptedDeviceTag = "encrypted-user-device";
 
-        when(aesConfig.getDeviceTagSecretKey()).thenReturn("test-secret-key");
         authentication = mock(Authentication.class);
     }
 
@@ -76,7 +66,7 @@ class AuthenticationServiceTest {
         User user = User.builder().deviceTag(deviceTag).role(Role.USER).build();
         TokenInfo tokenInfo = TokenInfo.create("access-token", "refresh-token");
 
-        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(userService.encryptDeviceTag(anyString())).thenReturn(encryptedDeviceTag);
         when(userService.getById(encryptedDeviceTag)).thenReturn(user);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
             .thenReturn(authentication);
@@ -97,7 +87,7 @@ class AuthenticationServiceTest {
         String deviceTag = "user-device";
         authRequestDto.setDeviceTag(deviceTag);
 
-        when(encryptionUtils.encryptWithHashedIv(eq(deviceTag), anyString())).thenReturn(encryptedDeviceTag);
+        when(userService.encryptDeviceTag(anyString())).thenReturn(encryptedDeviceTag);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
             .thenThrow(new BadCredentialsException("Invalid deviceTag or password."));
 
@@ -117,7 +107,7 @@ class AuthenticationServiceTest {
         String deviceTag = "admin-device";
         User adminUser = User.builder().deviceTag(deviceTag).role(Role.ADMIN).build();
 
-        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(userService.encryptDeviceTag(anyString())).thenReturn(encryptedDeviceTag);
         when(userService.getById(encryptedDeviceTag)).thenReturn(adminUser);
         when(authenticatorService.isAuthenticatorExist(encryptedDeviceTag)).thenReturn(true);
 
@@ -138,7 +128,7 @@ class AuthenticationServiceTest {
         String deviceTag = "admin-device";
         User adminUser = User.builder().deviceTag(deviceTag).role(Role.ADMIN).build();
 
-        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(userService.encryptDeviceTag(anyString())).thenReturn(encryptedDeviceTag);
         when(userService.getById(encryptedDeviceTag)).thenReturn(adminUser);
         when(authenticatorService.isAuthenticatorExist(encryptedDeviceTag)).thenReturn(false);
         when(authenticatorService.generateSecretKey(encryptedDeviceTag)).thenReturn("secret-key");

@@ -8,6 +8,8 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,20 +58,20 @@ class SuccessApiResponseCustomizerTest {
 
         // 'success' 필드 검증
         Schema<?> successSchema = (Schema<?>) apiResponse.getContent()
-                .get("application/json")
-                .getSchema()
-                .getProperties()
-                .get("success");
+            .get("application/json")
+            .getSchema()
+            .getProperties()
+            .get("success");
 
         assertThat(successSchema).isNotNull();
         assertThat(successSchema.getExample()).isEqualTo(true);
 
         // 'data' 필드 검증
         Schema<?> dataSchema = (Schema<?>) apiResponse.getContent()
-                .get("application/json")
-                .getSchema()
-                .getProperties()
-                .get("data");
+            .get("application/json")
+            .getSchema()
+            .getProperties()
+            .get("data");
 
         assertThat(dataSchema).isNotNull();
         assertThat(dataSchema.getExample()).isEqualTo("test-data");
@@ -85,12 +87,82 @@ class SuccessApiResponseCustomizerTest {
         assertThat(operation.getResponses().get("200")).isNull();
     }
 
-    @SuccessApiResponse(
-            description = "Success",
-            data = "test-data",
-            dataType = String.class,
-            dataDescription = "test-data-description")
-    private void annotatedTestMethod() {
+    @Test
+    void SuccessApiResponse_애노테이션의_data가_유효한_JSON인_경우_파싱하여_반환한다() throws NoSuchMethodException {
+        // given
+        Method testMethod = this.getClass().getDeclaredMethod("annotatedJsonTestMethod");
+        SuccessApiResponse successApiResponse = testMethod.getAnnotation(SuccessApiResponse.class);
+        when(handlerMethod.getMethodAnnotation(SuccessApiResponse.class)).thenReturn(successApiResponse);
 
+        // when
+        customizer.customize(operation, handlerMethod);
+
+        // then
+        ApiResponse apiResponse = operation.getResponses().get("200");
+        assertThat(apiResponse).isNotNull();
+
+        Schema<?> dataSchema = (Schema<?>) apiResponse.getContent()
+            .get("application/json")
+            .getSchema()
+            .getProperties()
+            .get("data");
+        assertThat(dataSchema).isNotNull();
+
+        Object example = dataSchema.getExample();
+        assertThat(example).isInstanceOf(Map.class);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> exampleMap = (Map<String, Object>) example;
+        Map<String, Object> expectedMap = new LinkedHashMap<>();
+        expectedMap.put("key", "value");
+        assertThat(exampleMap).isEqualTo(expectedMap);
+    }
+
+    @Test
+    void SuccessApiResponse_애노테이션의_data가_빈문자열인_경우_null로_설정한다() throws NoSuchMethodException {
+        // given
+        Method testMethod = this.getClass().getDeclaredMethod("annotatedEmptyDataTestMethod");
+        SuccessApiResponse successApiResponse = testMethod.getAnnotation(SuccessApiResponse.class);
+        when(handlerMethod.getMethodAnnotation(SuccessApiResponse.class)).thenReturn(successApiResponse);
+
+        // when
+        customizer.customize(operation, handlerMethod);
+
+        // then
+        ApiResponse apiResponse = operation.getResponses().get("200");
+        assertThat(apiResponse).isNotNull();
+        Schema<?> dataSchema = (Schema<?>) apiResponse.getContent()
+            .get("application/json")
+            .getSchema()
+            .getProperties()
+            .get("data");
+        assertThat(dataSchema).isNotNull();
+        assertThat(dataSchema.getExample()).isNull();
+    }
+
+    // 기존 테스트용 애노테이션 (유효하지 않은 JSON인 경우)
+    @SuccessApiResponse(
+        description = "Success",
+        data = "test-data",
+        dataType = String.class,
+        dataDescription = "test-data-description")
+    private void annotatedTestMethod() {
+    }
+
+    // data가 유효한 JSON인 경우
+    @SuccessApiResponse(
+        description = "Success JSON",
+        data = "{\"key\": \"value\"}",
+        dataType = Map.class,
+        dataDescription = "JSON data description")
+    private void annotatedJsonTestMethod() {
+    }
+
+    // data가 빈 문자열인 경우
+    @SuccessApiResponse(
+        description = "Success Empty",
+        data = "",
+        dataType = Void.class,
+        dataDescription = "Empty data")
+    private void annotatedEmptyDataTestMethod() {
     }
 }

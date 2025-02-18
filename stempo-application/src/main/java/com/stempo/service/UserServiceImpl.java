@@ -1,10 +1,12 @@
 package com.stempo.service;
 
+import com.stempo.config.AesConfig;
 import com.stempo.exception.BaseException;
 import com.stempo.exception.ErrorCode;
 import com.stempo.model.User;
 import com.stempo.repository.UserRepository;
 import com.stempo.util.AuthUtils;
+import com.stempo.util.EncryptionUtils;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +20,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
+    private final AesConfig aesConfig;
+    private final EncryptionUtils encryptionUtils;
 
     @Value("${security.max-failed-attempts:5}")
     private int maxFailedAttempts;
+
+    @Override
+    public String encryptDeviceTag(String deviceTag) {
+        return encryptionUtils.encryptWithHashedIv(deviceTag, aesConfig.getDeviceTagSecretKey());
+    }
 
     @Override
     public Optional<User> findById(String id) {

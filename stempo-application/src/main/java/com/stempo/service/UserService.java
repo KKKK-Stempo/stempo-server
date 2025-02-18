@@ -6,6 +6,8 @@ import java.util.Optional;
 
 public interface UserService {
 
+    String encryptDeviceTag(String deviceTag);
+
     Optional<User> findById(String id);
 
     boolean existsById(String deviceTag);

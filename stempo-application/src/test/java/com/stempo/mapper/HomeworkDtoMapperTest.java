@@ -2,6 +2,7 @@ package com.stempo.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.stempo.dto.DecryptedHomework;
 import com.stempo.dto.request.HomeworkUpdateRequestDto;
 import com.stempo.dto.response.HomeworkResponseDto;
 import com.stempo.model.Homework;
@@ -36,13 +37,31 @@ class HomeworkDtoMapperTest {
     void Homework에서_HomeworkResponseDto로_매핑된다() {
         // given
         Homework homework = Homework.builder()
-                .id(1L)
-                .description("Test Homework")
-                .completed(true)
-                .build();
+            .id(1L)
+            .description("Test Homework")
+            .completed(true)
+            .build();
 
         // when
         HomeworkResponseDto responseDto = homeworkDtoMapper.toDto(homework);
+
+        // then
+        assertThat(responseDto.getId()).isEqualTo(1L);
+        assertThat(responseDto.getDescription()).isEqualTo("Test Homework");
+        assertThat(responseDto.isCompleted()).isTrue();
+    }
+
+    @Test
+    void DecryptedHomework에서_HomeworkResponseDto로_매핑된다() {
+        // given
+        DecryptedHomework decryptedHomework = DecryptedHomework.builder()
+            .id(1L)
+            .description("Test Homework")
+            .completed(true)
+            .build();
+
+        // when
+        HomeworkResponseDto responseDto = homeworkDtoMapper.toDto(decryptedHomework);
 
         // then
         assertThat(responseDto.getId()).isEqualTo(1L);

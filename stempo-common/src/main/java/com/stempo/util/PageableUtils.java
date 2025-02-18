@@ -3,7 +3,6 @@ package com.stempo.util;
 import com.stempo.exception.BaseException;
 import com.stempo.exception.ErrorCode;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -15,8 +14,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class PageableUtils {
 
+    private PageableUtils() {
+    }
+
     public static Pageable createPageable(int page, int size, List<String> sortByList, List<String> sortDirectionList,
-            Class<?> domainClass) {
+        Class<?> domainClass) {
         if (sortByList.size() != sortDirectionList.size()) {
             throw new BaseException(ErrorCode.SORTING_ARGUMENT_ERROR);
         }
@@ -36,10 +38,10 @@ public class PageableUtils {
         }
 
         Sort sort = Sort.by(
-                IntStream.range(0, sortByList.size())
-                        .mapToObj(i -> new Sort.Order(Sort.Direction.fromString(sortDirectionList.get(i)),
-                                sortByList.get(i)))
-                        .collect(Collectors.toList())
+            IntStream.range(0, sortByList.size())
+                .mapToObj(i -> new Sort.Order(Sort.Direction.fromString(sortDirectionList.get(i)),
+                    sortByList.get(i)))
+                .toList()
         );
 
         return PageRequest.of(page, size, sort);

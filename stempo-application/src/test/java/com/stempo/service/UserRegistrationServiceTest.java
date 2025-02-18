@@ -8,13 +8,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.stempo.application.JwtTokenService;
-import com.stempo.config.AesConfig;
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.AuthRequestDto;
 import com.stempo.exception.BaseException;
 import com.stempo.exception.ErrorCode;
 import com.stempo.model.User;
-import com.stempo.util.EncryptionUtils;
 import com.stempo.util.PasswordValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,12 +35,6 @@ class UserRegistrationServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private EncryptionUtils encryptionUtils;
-
-    @Mock
-    private AesConfig aesConfig;
-
-    @Mock
     private JwtTokenService tokenService;
 
     @InjectMocks
@@ -55,7 +47,6 @@ class UserRegistrationServiceTest {
         authRequestDto = new AuthRequestDto();
         authRequestDto.setDeviceTag("test-device");
         authRequestDto.setPassword("Password123!");
-        when(aesConfig.getDeviceTagSecretKey()).thenReturn("test-secret-key");
     }
 
     @Test
@@ -64,10 +55,9 @@ class UserRegistrationServiceTest {
         String encryptedDeviceTag = "encrypted-device";
         TokenInfo tokenInfo = TokenInfo.create("access-token", "refresh-token");
 
-        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(userService.encryptDeviceTag(anyString())).thenReturn(encryptedDeviceTag);
         when(passwordValidator.isValid(anyString(), anyString())).thenReturn(true);
         when(passwordEncoder.encode(anyString())).thenReturn("encrypted-password");
-        when(userService.existsById(anyString())).thenReturn(false);
         when(tokenService.generateToken(anyString(), any())).thenReturn(tokenInfo);
 
         // when
@@ -82,19 +72,18 @@ class UserRegistrationServiceTest {
     void 중복_사용자일_경우_예외가_발생한다() {
         // given
         when(userService.existsById(any())).thenReturn(true);
-        when(encryptionUtils.encryptWithHashedIv(any(), any())).thenReturn("encrypted-device");
 
         // when, then
         assertThatThrownBy(() -> userRegistrationService.registerUser(authRequestDto, tokenService))
-                .isInstanceOf(BaseException.class)
-                .hasMessage(ErrorCode.USER_ALREADY_EXISTS.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessage(ErrorCode.USER_ALREADY_EXISTS.getDefaultMessage());
     }
 
     @Test
     void 비밀번호가_유효하지_않을_경우_예외가_발생한다() {
         // when, then
         assertThatThrownBy(() -> userRegistrationService.registerUser(authRequestDto, tokenService))
-                .isInstanceOf(BaseException.class)
-                .hasMessage(ErrorCode.INVALID_PASSWORD.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessage(ErrorCode.INVALID_PASSWORD.getDefaultMessage());
     }
 }

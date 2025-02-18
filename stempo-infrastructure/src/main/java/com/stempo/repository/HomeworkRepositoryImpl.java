@@ -35,32 +35,40 @@ public class HomeworkRepositoryImpl implements HomeworkRepository {
     @Override
     public void deleteAll(List<Homework> homeworks) {
         List<HomeworkEntity> entities = homeworks.stream()
-                .map(mapper::toEntity)
-                .toList();
+            .map(mapper::toEntity)
+            .toList();
         repository.deleteAll(entities);
     }
 
     @Override
     public Page<Homework> findByCompleted(Boolean completed, Pageable pageable) {
         return Optional.ofNullable(completed)
-                .map(c -> repository.findByCompleted(c, pageable))
-                .orElseGet(() -> repository.findAll(pageable))
-                .map(mapper::toDomain);
+            .map(c -> repository.findByCompleted(c, pageable))
+            .orElseGet(() -> repository.findAll(pageable))
+            .map(mapper::toDomain);
     }
 
 
     @Override
     public Homework findByIdOrThrow(Long homeworkId) {
         return repository.findById(homeworkId)
-                .map(mapper::toDomain)
-                .orElseThrow(() -> new BaseException(ErrorCode.RESOURCE_NOT_FOUND));
+            .map(mapper::toDomain)
+            .orElseThrow(() -> new BaseException(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
     @Override
     public List<Homework> findByDeviceTag(String deviceTag) {
         List<HomeworkEntity> entities = repository.findByDeviceTag(deviceTag);
         return entities.stream()
-                .map(mapper::toDomain)
-                .toList();
+            .map(mapper::toDomain)
+            .toList();
+    }
+
+    @Override
+    public List<Homework> findHomeworkByDeviceTags(List<String> deviceTags) {
+        return repository.findHomeworkByDeviceTags(deviceTags)
+            .stream()
+            .map(mapper::toDomain)
+            .toList();
     }
 }

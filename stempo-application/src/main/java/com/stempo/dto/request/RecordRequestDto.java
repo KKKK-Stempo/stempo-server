@@ -18,7 +18,7 @@ public class RecordRequestDto {
     private Double accuracy;
 
     @PositiveOrZero(message = "Duration must be a positive value or zero")
-    @Schema(description = "재활 운동 시간(초)", example = "0")
+    @Schema(description = "보행 훈련 시간(초)", example = "0")
     private Integer duration;
 
     @PositiveOrZero(message = "Steps must be a positive value or zero")
@@ -35,11 +35,11 @@ public class RecordRequestDto {
 
     @NotNull(message = "Bit is required")
     @Range(min = 1, max = 8, message = "Bit must be between 1 and 8")
-    @Schema(description = "Bit", example = "4", minimum = "1", maximum = "8")
+    @Schema(description = "보행 훈련에 사용된 리듬의 Bit", example = "4", minimum = "1", maximum = "8")
     private Integer bit;
 
     @NotNull(message = "BPM is required")
     @Range(min = 10, max = 200, message = "BPM must be between 10 and 200")
-    @Schema(description = "BPM", example = "60", minimum = "10", maximum = "200")
+    @Schema(description = "보행 훈련에 사용된 리듬의 BPM", example = "60", minimum = "10", maximum = "200")
     private Integer bpm;
 }

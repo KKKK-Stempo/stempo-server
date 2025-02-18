@@ -46,18 +46,18 @@ class HomeworkRepositoryImplTest {
     @BeforeEach
     void setUp() {
         homework = Homework.builder()
-                .id(1L)
-                .deviceTag("device123")
-                .description("Test description")
-                .completed(false)
-                .build();
+            .id(1L)
+            .deviceTag("device123")
+            .description("Test description")
+            .completed(false)
+            .build();
 
         homeworkEntity = HomeworkEntity.builder()
-                .id(1L)
-                .deviceTag("device123")
-                .description("Test description")
-                .completed(false)
-                .build();
+            .id(1L)
+            .deviceTag("device123")
+            .description("Test description")
+            .completed(false)
+            .build();
     }
 
     @Test
@@ -123,8 +123,8 @@ class HomeworkRepositoryImplTest {
 
         // when, then
         assertThatThrownBy(() -> homeworkRepository.findByIdOrThrow(1L))
-                .isInstanceOf(BaseException.class)
-                .hasMessage(ErrorCode.RESOURCE_NOT_FOUND.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessage(ErrorCode.RESOURCE_NOT_FOUND.getDefaultMessage());
     }
 
     @Test
@@ -156,4 +156,22 @@ class HomeworkRepositoryImplTest {
         assertThat(homeworkList.getFirst()).isEqualTo(homework);
         verify(homeworkJpaRepository, times(1)).findByDeviceTag("device123");
     }
+
+    @Test
+    void 디바이스_태그_목록으로_과제를_조회한다() {
+        // given
+        List<String> deviceTags = List.of("device123", "device456");
+        when(homeworkJpaRepository.findHomeworkByDeviceTags(deviceTags))
+            .thenReturn(List.of(homeworkEntity));
+        when(homeworkMapper.toDomain(homeworkEntity)).thenReturn(homework);
+
+        // when
+        List<Homework> result = homeworkRepository.findHomeworkByDeviceTags(deviceTags);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().getDeviceTag()).isEqualTo("device123");
+        verify(homeworkJpaRepository, times(1)).findHomeworkByDeviceTags(deviceTags);
+    }
+
 }

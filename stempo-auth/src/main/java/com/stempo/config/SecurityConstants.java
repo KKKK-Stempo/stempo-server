@@ -18,4 +18,7 @@ public class SecurityConstants {
         "/api/v1/auth/login",
         "/api/v1/auth/two-factor-authentication"
     };
+
+    private SecurityConstants() {
+    }
 }

@@ -34,7 +34,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = HomeworkController.class)
 @ContextConfiguration(classes = TestApplication.class)
 @ActiveProfiles("test")
-public class HomeworkControllerTest {
+class HomeworkControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -55,16 +55,16 @@ public class HomeworkControllerTest {
         Long expectedHomeworkId = 1L;
 
         when(homeworkService.addHomework(any(HomeworkRequestDto.class)))
-                .thenReturn(expectedHomeworkId);
+            .thenReturn(expectedHomeworkId);
 
         // when
         mockMvc.perform(post("/api/v1/homeworks")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").value(expectedHomeworkId));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data").value(expectedHomeworkId));
     }
 
     @Test
@@ -76,12 +76,12 @@ public class HomeworkControllerTest {
 
         // when
         mockMvc.perform(post("/api/v1/homeworks")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.data").isEmpty());
     }
 
     @Test
@@ -92,10 +92,10 @@ public class HomeworkControllerTest {
 
         // when
         mockMvc.perform(post("/api/v1/homeworks")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isUnauthorized());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -105,53 +105,53 @@ public class HomeworkControllerTest {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("completed").ascending().and(Sort.by("id").ascending()));
 
         PagedResponseDto<HomeworkResponseDto> expectedPagedResponse = new PagedResponseDto<>(
-                List.of(
-                        HomeworkResponseDto.builder()
-                                .id(1L)
-                                .description("매일 스트레칭 운동 진행")
-                                .completed(false)
-                                .build(),
-                        HomeworkResponseDto.builder()
-                                .id(2L)
-                                .description("주 3회 보행 훈련 참석")
-                                .completed(true)
-                                .build()
-                ),
-                pageable,
-                2
+            List.of(
+                HomeworkResponseDto.builder()
+                    .id(1L)
+                    .description("매일 스트레칭 운동 진행")
+                    .completed(false)
+                    .build(),
+                HomeworkResponseDto.builder()
+                    .id(2L)
+                    .description("주 3회 보행 훈련 참석")
+                    .completed(true)
+                    .build()
+            ),
+            pageable,
+            2
         );
 
         when(homeworkService.getHomeworks(
-                eq(null),
-                any(Pageable.class)))
-                .thenReturn(expectedPagedResponse);
+            eq(null),
+            any(Pageable.class)))
+            .thenReturn(expectedPagedResponse);
 
         // when
         mockMvc.perform(get("/api/v1/homeworks")
-                        .param("page", "0")
-                        .param("size", "10")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.items").isArray())
-                .andExpect(jsonPath("$.data.items[0].id").value(1))
-                .andExpect(jsonPath("$.data.items[0].description").value("매일 스트레칭 운동 진행"))
-                .andExpect(jsonPath("$.data.items[0].completed").value(false))
-                .andExpect(jsonPath("$.data.items[1].id").value(2))
-                .andExpect(jsonPath("$.data.items[1].description").value("주 3회 보행 훈련 참석"))
-                .andExpect(jsonPath("$.data.items[1].completed").value(true));
+                .param("page", "0")
+                .param("size", "10")
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.items").isArray())
+            .andExpect(jsonPath("$.data.items[0].id").value(1))
+            .andExpect(jsonPath("$.data.items[0].description").value("매일 스트레칭 운동 진행"))
+            .andExpect(jsonPath("$.data.items[0].completed").value(false))
+            .andExpect(jsonPath("$.data.items[1].id").value(2))
+            .andExpect(jsonPath("$.data.items[1].description").value("주 3회 보행 훈련 참석"))
+            .andExpect(jsonPath("$.data.items[1].completed").value(true));
     }
 
     @Test
     void 인증되지_않은_사용자가_과제를_조회시_권한에러가_발생한다() throws Exception {
         // when
         mockMvc.perform(get("/api/v1/homeworks")
-                        .param("page", "0")
-                        .param("size", "10")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isUnauthorized());
+                .param("page", "0")
+                .param("size", "10")
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -165,16 +165,16 @@ public class HomeworkControllerTest {
         Long expectedHomeworkId = 1L;
 
         when(homeworkService.updateHomework(eq(homeworkId), any(HomeworkUpdateRequestDto.class)))
-                .thenReturn(expectedHomeworkId);
+            .thenReturn(expectedHomeworkId);
 
         // when
         mockMvc.perform(patch("/api/v1/homeworks/{homeworkId}", homeworkId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateRequestDto)))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").value(expectedHomeworkId));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequestDto)))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data").value(expectedHomeworkId));
     }
 
     @Test
@@ -186,10 +186,10 @@ public class HomeworkControllerTest {
 
         // when
         mockMvc.perform(patch("/api/v1/homeworks/{homeworkId}", homeworkId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateRequestDto)))
-                // then
-                .andExpect(status().isUnauthorized());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequestDto)))
+            // then
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -198,16 +198,16 @@ public class HomeworkControllerTest {
         // given
         Long homeworkId = 1L;
 
-        when(homeworkService.deleteHomework(eq(homeworkId)))
-                .thenReturn(homeworkId);
+        when(homeworkService.deleteHomework(homeworkId))
+            .thenReturn(homeworkId);
 
         // when
         mockMvc.perform(delete("/api/v1/homeworks/{homeworkId}", homeworkId)
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").value(homeworkId));
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data").value(homeworkId));
     }
 
     @Test
@@ -217,8 +217,8 @@ public class HomeworkControllerTest {
 
         // when
         mockMvc.perform(delete("/api/v1/homeworks/{homeworkId}", homeworkId)
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isUnauthorized());
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isUnauthorized());
     }
 }

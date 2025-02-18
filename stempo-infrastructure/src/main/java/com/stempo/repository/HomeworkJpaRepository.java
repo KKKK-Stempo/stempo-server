@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface HomeworkJpaRepository extends JpaRepository<HomeworkEntity, Long> {
+public interface HomeworkJpaRepository extends JpaRepository<HomeworkEntity, Long>, HomeworkCustomRepository {
 
     Page<HomeworkEntity> findByCompleted(Boolean completed, Pageable pageable);
 

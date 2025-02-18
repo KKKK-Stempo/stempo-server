@@ -1,6 +1,7 @@
 package com.stempo.repository;
 
 import com.stempo.model.Record;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,11 @@ public interface RecordRepository {
     Optional<Record> findLatestBeforeStartDate(String deviceTag, LocalDateTime startDateTime);
 
     List<Record> findByDeviceTag(String deviceTag);
+
+    List<Record> findRecordsByDeviceTags(List<String> deviceTags);
+
+    List<Record> findRecordsByDeviceTagsAndDateRange(
+        List<String> deviceTags, LocalDate startDate, LocalDate endDate);
 
     List<LocalDateTime> findCreatedAtByDeviceTagOrderByCreatedAtDesc(String deviceTag);
 

@@ -30,7 +30,7 @@ public class XssEscapeServletRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public Map<String, String[]> getParameterMap() {
         Map<String, String[]> paramMap = super.getParameterMap();
-        Map<String, String[]> sanitizedMap = new HashMap<>(paramMap.size());
+        Map<String, String[]> sanitizedMap = HashMap.newHashMap(paramMap.size());
 
         for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
             String[] sanitizedValues = applyFilterToValues(entry.getValue());

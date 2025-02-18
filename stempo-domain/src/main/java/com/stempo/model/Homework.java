@@ -1,5 +1,6 @@
 package com.stempo.model;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,13 +20,15 @@ public class Homework {
     private String deviceTag;
     private String description;
     private Boolean completed;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static Homework create(String deviceTag, String description) {
         return Homework.builder()
-                .deviceTag(deviceTag)
-                .description(description)
-                .completed(false)
-                .build();
+            .deviceTag(deviceTag)
+            .description(description)
+            .completed(false)
+            .build();
     }
 
     public void update(Homework homework) {

@@ -6,6 +6,9 @@ public class LogSanitizerUtils {
 
     private static final int MAX_LENGTH = 500; // 로그 문자열의 최대 길이
 
+    private LogSanitizerUtils() {
+    }
+
     /**
      * 로그에 기록하기 전에 입력 문자열을 안전하게 변환합니다. 새 줄, 캐리지 리턴, 탭 및 특수 문자를 제거하거나 이스케이프 처리합니다.
      *
@@ -35,12 +38,12 @@ public class LogSanitizerUtils {
     }
 
     private static String escapeSqlCharacters(String input) {
-        return input.replaceAll("'", "''") // 작은따옴표 이스케이프
-                .replaceAll("\"", "\\\\\"") // 큰따옴표 이스케이프
-                .replaceAll(";", "_") // 세미콜론 변환
-                .replaceAll("--", "_") // SQL 주석 처리
-                .replaceAll("/\\*", "_") // 멀티라인 주석 시작
-                .replaceAll("\\*/", "_") // 멀티라인 주석 끝
-                .replaceAll("//.*", "_"); // 인라인 주석 처리
+        return input.replace("'", "''") // 작은따옴표 이스케이프
+            .replace("\"", "\\\\\"") // 큰따옴표 이스케이프
+            .replace(";", "_") // 세미콜론 변환
+            .replace("--", "_") // SQL 주석 처리
+            .replace("/\\*", "_") // 멀티라인 주석 시작
+            .replace("\\*/", "_") // 멀티라인 주석 끝
+            .replace("//.*", "_"); // 인라인 주석 처리
     }
 }

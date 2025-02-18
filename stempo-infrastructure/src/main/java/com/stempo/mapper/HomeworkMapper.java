@@ -10,25 +10,27 @@ public class HomeworkMapper {
 
     public HomeworkEntity toEntity(Homework homework) {
         return HomeworkEntity.builder()
-                .id(homework.getId())
-                .deviceTag(homework.getDeviceTag())
-                .description(homework.getDescription())
-                .completed(homework.getCompleted() != null ? homework.getCompleted() : false)
-                .build();
+            .id(homework.getId())
+            .deviceTag(homework.getDeviceTag())
+            .description(homework.getDescription())
+            .completed(homework.getCompleted() != null ? homework.getCompleted() : false)
+            .build();
     }
 
     public List<Homework> toDomain(List<HomeworkEntity> entities) {
         return entities.stream()
-                .map(this::toDomain)
-                .toList();
+            .map(this::toDomain)
+            .toList();
     }
 
     public Homework toDomain(HomeworkEntity entity) {
         return Homework.builder()
-                .id(entity.getId())
-                .deviceTag(entity.getDeviceTag())
-                .description(entity.getDescription())
-                .completed(entity.isCompleted())
-                .build();
+            .id(entity.getId())
+            .deviceTag(entity.getDeviceTag())
+            .description(entity.getDescription())
+            .completed(entity.isCompleted())
+            .createdAt(entity.getCreatedAt())
+            .updatedAt(entity.getUpdatedAt())
+            .build();
     }
 }

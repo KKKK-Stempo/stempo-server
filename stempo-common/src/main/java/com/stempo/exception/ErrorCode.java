@@ -13,6 +13,7 @@ public enum ErrorCode {
     ILLEGAL_ARGUMENT(HttpStatus.BAD_REQUEST, "유효하지 않은 매개변수가 제공되었습니다."),
     INDEX_OUT_OF_BOUNDS(HttpStatus.BAD_REQUEST, "인덱스가 허용된 범위를 벗어났습니다."),
     INVALID_DATA_ACCESS(HttpStatus.BAD_REQUEST, "잘못된 데이터 접근 방식입니다."),
+    INVALID_DATE_RANGE(HttpStatus.BAD_REQUEST, "시작 날짜는 종료 날짜 이후일 수 없습니다."),
     INVALID_FIELD(HttpStatus.BAD_REQUEST, "유효하지 않은 필드가 포함되었습니다."),
     INVALID_FILE_ATTRIBUTE(HttpStatus.BAD_REQUEST, "파일 속성이 유효하지 않습니다."),
     INVALID_FILE_NAME(HttpStatus.BAD_REQUEST, "파일 이름이 유효하지 않습니다."),
