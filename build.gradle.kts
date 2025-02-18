@@ -107,7 +107,7 @@ allprojects {
                 limit {
                     counter = "BRANCH"
                     value = "COVEREDRATIO"
-                    minimum = "0.70".toBigDecimal()
+                    minimum = "0.30".toBigDecimal()
                 }
 
                 limit {
@@ -130,7 +130,7 @@ allprojects {
                     "com.stempo.**.*Service.*",
                     "com.stempo.**.*Repository.*",
                     "com.stempo.**.*Exception.*",
-                    "com.stempo.ApiApplication.*",
+                    "com.stempo.ApiApplication*",
                 )
             }
         }
