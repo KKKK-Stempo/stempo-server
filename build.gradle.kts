@@ -191,4 +191,8 @@ allprojects {
     tasks.withType<JavaExec> {
         ext["springConfigLocation"]?.let { systemProperty("spring.config.additional-location", it) }
     }
+
+    tasks.named("checkstyleMain") {
+        dependsOn("compileTestJava")
+    }
 }
