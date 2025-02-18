@@ -1,12 +1,10 @@
 package com.stempo.service;
 
 import com.stempo.application.JwtTokenService;
-import com.stempo.config.AesConfig;
 import com.stempo.config.CustomAuthenticationProvider;
 import com.stempo.dto.request.AuthRequestDto;
 import com.stempo.exception.BaseException;
 import com.stempo.exception.ErrorCode;
-import com.stempo.util.EncryptionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,12 +16,10 @@ public class AuthenticationService {
 
     private final CustomAuthenticationProvider authenticationManager;
     private final UserService userService;
-    private final EncryptionUtils encryptionUtils;
-    private final AesConfig aesConfig;
 
     public Object login(AuthRequestDto requestDto, JwtTokenService tokenService,
         TotpAuthenticatorService authenticatorService) {
-        String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
+        String deviceTag = userService.encryptDeviceTag(requestDto.getDeviceTag());
         userService.handleAccountLock(deviceTag);
 
         return attemptAuthentication(deviceTag, requestDto.getPassword(), tokenService, authenticatorService);
@@ -58,9 +54,5 @@ public class AuthenticationService {
         } else {
             return tokenService.generateToken(authentication);
         }
-    }
-
-    private String encryptDeviceTag(String deviceTag) {
-        return encryptionUtils.encryptWithHashedIv(deviceTag, aesConfig.getDeviceTagSecretKey());
     }
 }

@@ -1,13 +1,11 @@
 package com.stempo.service;
 
 import com.stempo.application.JwtTokenService;
-import com.stempo.config.AesConfig;
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.TwoFactorAuthenticationRequestDto;
 import com.stempo.exception.BaseException;
 import com.stempo.exception.ErrorCode;
 import com.stempo.model.Role;
-import com.stempo.util.EncryptionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,12 +16,10 @@ public class TotpService {
 
     private final TotpAuthenticatorService authenticatorService;
     private final UserService userService;
-    private final EncryptionUtils encryptionUtils;
-    private final AesConfig aesConfig;
 
     @Transactional
     public TokenInfo authenticate(TwoFactorAuthenticationRequestDto requestDto, JwtTokenService tokenService) {
-        String deviceTag = encryptDeviceTag(requestDto.getDeviceTag());
+        String deviceTag = userService.encryptDeviceTag(requestDto.getDeviceTag());
         validateTwoFactorAuthentication(deviceTag, requestDto.getTotp());
         userService.resetFailedAttempts(deviceTag);
         Role role = userService.getById(deviceTag).getRole();
@@ -32,7 +28,7 @@ public class TotpService {
 
     @Transactional
     public String resetAuthenticator(String deviceTag) {
-        String encryptedDeviceTag = encryptDeviceTag(deviceTag);
+        String encryptedDeviceTag = userService.encryptDeviceTag(deviceTag);
         return authenticatorService.resetAuthenticator(encryptedDeviceTag);
     }
 
@@ -42,9 +38,5 @@ public class TotpService {
             userService.handleFailedLogin(deviceTag);
             throw new BaseException(ErrorCode.BAD_CREDENTIALS, "잘못된 TOTP 코드입니다.");
         }
-    }
-
-    private String encryptDeviceTag(String deviceTag) {
-        return encryptionUtils.encryptWithHashedIv(deviceTag, aesConfig.getDeviceTagSecretKey());
     }
 }
