@@ -10,6 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.stempo.dto.DecryptedRecord;
 import com.stempo.dto.request.RecordRequestDto;
 import com.stempo.dto.response.RecordItemDto;
 import com.stempo.dto.response.RecordResponseDto;
@@ -37,6 +38,9 @@ class RecordServiceImplTest {
 
     @Mock
     private RecordRepository recordRepository;
+
+    @Mock
+    private RecordDecryptionService recordDecryptionService;
 
     @Mock
     private RecordDtoMapper mapper;
@@ -239,6 +243,153 @@ class RecordServiceImplTest {
             .countByDeviceTagAndCreatedAtBetween(anyString(), any(LocalDateTime.class), any(LocalDateTime.class));
         verify(recordRepository).findCreatedAtByDeviceTagOrderByCreatedAtDesc(deviceTag);
         verify(mapper).toDto(2, 5, 3);
+    }
+
+    @Test
+    void 디바이스태그로_복호화된_레코드_목록을_조회한다() {
+        // given
+        List<String> deviceTags = List.of("tag1", "tag2");
+        when(userService.encryptDeviceTag("tag1")).thenReturn("encryptedTag1");
+        when(userService.encryptDeviceTag("tag2")).thenReturn("encryptedTag2");
+
+        Record record1 = Record.builder()
+            .id(1L)
+            .deviceTag("encryptedTag1")
+            .accuracy("encryptedAccuracy1")
+            .duration("encryptedDuration1")
+            .steps("encryptedSteps1")
+            .leftFootAverageSpeed("encryptedLeftSpeed1")
+            .rightFootAverageSpeed("encryptedRightSpeed1")
+            .bit("encryptedBit1")
+            .bpm("encryptedBpm1")
+            .createdAt(LocalDateTime.of(2025, 1, 1, 12, 0))
+            .build();
+        Record record2 = Record.builder()
+            .id(2L)
+            .deviceTag("encryptedTag2")
+            .accuracy("encryptedAccuracy2")
+            .duration("encryptedDuration2")
+            .steps("encryptedSteps2")
+            .leftFootAverageSpeed("encryptedLeftSpeed2")
+            .rightFootAverageSpeed("encryptedRightSpeed2")
+            .bit("encryptedBit2")
+            .bpm("encryptedBpm2")
+            .createdAt(LocalDateTime.of(2025, 1, 2, 12, 0))
+            .build();
+
+        List<Record> repositoryRecords = List.of(record1, record2);
+        when(recordRepository.findRecordsByDeviceTags(List.of("encryptedTag1", "encryptedTag2")))
+            .thenReturn(repositoryRecords);
+
+        DecryptedRecord decryptedRecord1 = DecryptedRecord.builder()
+            .id(1L)
+            .deviceTag("decryptedTag1")
+            .accuracy(95.0)
+            .duration(120)
+            .steps(1000)
+            .leftFootAverageSpeed(1.0)
+            .rightFootAverageSpeed(1.0)
+            .bit(4)
+            .bpm(120)
+            .createdAt(record1.getCreatedAt())
+            .build();
+        DecryptedRecord decryptedRecord2 = DecryptedRecord.builder()
+            .id(2L)
+            .deviceTag("decryptedTag2")
+            .accuracy(96.0)
+            .duration(130)
+            .steps(1100)
+            .leftFootAverageSpeed(1.1)
+            .rightFootAverageSpeed(1.1)
+            .bit(5)
+            .bpm(125)
+            .createdAt(record2.getCreatedAt())
+            .build();
+
+        when(recordDecryptionService.decryptedRecord(record1)).thenReturn(decryptedRecord1);
+        when(recordDecryptionService.decryptedRecord(record2)).thenReturn(decryptedRecord2);
+
+        // when
+        List<DecryptedRecord> result = recordService.getByDeviceTags(deviceTags);
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result).containsExactlyInAnyOrder(decryptedRecord1, decryptedRecord2);
+    }
+
+    @Test
+    void 날짜범위로_디바이스태그에_해당하는_복호화된_레코드_목록을_조회한다() {
+        // given
+        List<String> deviceTags = List.of("tag1", "tag2");
+        LocalDate startDate = LocalDate.of(2025, 1, 1);
+        LocalDate endDate = LocalDate.of(2025, 1, 31);
+
+        when(userService.encryptDeviceTag("tag1")).thenReturn("encryptedTag1");
+        when(userService.encryptDeviceTag("tag2")).thenReturn("encryptedTag2");
+
+        Record record1 = Record.builder()
+            .id(1L)
+            .deviceTag("encryptedTag1")
+            .accuracy("encryptedAccuracy1")
+            .duration("encryptedDuration1")
+            .steps("encryptedSteps1")
+            .leftFootAverageSpeed("encryptedLeftSpeed1")
+            .rightFootAverageSpeed("encryptedRightSpeed1")
+            .bit("encryptedBit1")
+            .bpm("encryptedBpm1")
+            .createdAt(LocalDateTime.of(2025, 1, 15, 12, 0))
+            .build();
+        Record record2 = Record.builder()
+            .id(2L)
+            .deviceTag("encryptedTag2")
+            .accuracy("encryptedAccuracy2")
+            .duration("encryptedDuration2")
+            .steps("encryptedSteps2")
+            .leftFootAverageSpeed("encryptedLeftSpeed2")
+            .rightFootAverageSpeed("encryptedRightSpeed2")
+            .bit("encryptedBit2")
+            .bpm("encryptedBpm2")
+            .createdAt(LocalDateTime.of(2025, 1, 20, 12, 0))
+            .build();
+
+        List<Record> repositoryRecords = List.of(record1, record2);
+        when(recordRepository.findRecordsByDeviceTagsAndDateRange(
+            eq(List.of("encryptedTag1", "encryptedTag2")), eq(startDate), eq(endDate)))
+            .thenReturn(repositoryRecords);
+
+        DecryptedRecord decryptedRecord1 = DecryptedRecord.builder()
+            .id(1L)
+            .deviceTag("decryptedTag1")
+            .accuracy(95.0)
+            .duration(120)
+            .steps(1000)
+            .leftFootAverageSpeed(1.0)
+            .rightFootAverageSpeed(1.0)
+            .bit(4)
+            .bpm(120)
+            .createdAt(record1.getCreatedAt())
+            .build();
+        DecryptedRecord decryptedRecord2 = DecryptedRecord.builder()
+            .id(2L)
+            .deviceTag("decryptedTag2")
+            .accuracy(96.0)
+            .duration(130)
+            .steps(1100)
+            .leftFootAverageSpeed(1.1)
+            .rightFootAverageSpeed(1.1)
+            .bit(5)
+            .bpm(125)
+            .createdAt(record2.getCreatedAt())
+            .build();
+
+        when(recordDecryptionService.decryptedRecord(record1)).thenReturn(decryptedRecord1);
+        when(recordDecryptionService.decryptedRecord(record2)).thenReturn(decryptedRecord2);
+
+        // when
+        List<DecryptedRecord> result = recordService.getByDeviceTagsAndDateRange(deviceTags, startDate, endDate);
+
+        // then
+        assertThat(result).hasSize(2).containsExactlyInAnyOrder(decryptedRecord1, decryptedRecord2);
     }
 
     private List<LocalDateTime> createMockedCreatedAtList() {
