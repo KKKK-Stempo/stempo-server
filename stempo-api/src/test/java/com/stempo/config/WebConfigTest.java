@@ -67,8 +67,8 @@ class WebConfigTest {
 
         // then
         List<Resource> locations = handler.getLocations();
-        assertThat(locations).isNotEmpty();
-        assertThat(locations).hasSize(1);
+        assertThat(locations).isNotEmpty()
+            .hasSize(1);
         assertThat(locations.getFirst().getURI().toString()).contains(filePath);
     }
 

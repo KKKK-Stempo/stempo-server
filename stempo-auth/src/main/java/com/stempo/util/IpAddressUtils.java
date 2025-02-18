@@ -4,6 +4,9 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
 public class IpAddressUtils {
 
+    private IpAddressUtils() {
+    }
+
     /**
      * 주어진 IP가 특정 서브넷이나 IP 주소와 일치하는지 확인합니다.
      *

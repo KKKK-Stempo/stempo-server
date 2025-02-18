@@ -25,87 +25,83 @@ class BoardEntityTest {
     void 제목이_100자를_초과하면_예외가_발생한다() {
         // given
         BoardEntity boardEntity = BoardEntity.builder()
-                .title("a".repeat(101))
-                .deviceTag("device123")
-                .category(BoardCategory.NOTICE)
-                .content("Some content")
-                .build();
+            .title("a".repeat(101))
+            .deviceTag("device123")
+            .category(BoardCategory.NOTICE)
+            .content("Some content")
+            .build();
 
         // when
         Set<ConstraintViolation<BoardEntity>> violations = validator.validate(boardEntity);
 
         // then
-        assertThat(violations).isNotEmpty();
-        assertThat(violations)
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("title"));
+        assertThat(violations).isNotEmpty()
+            .anyMatch(violation -> violation.getPropertyPath().toString().equals("title"));
     }
 
     @Test
     void 제목이_빈값이면_예외가_발생한다() {
         // given
         BoardEntity boardEntity = BoardEntity.builder()
-                .title("")
-                .deviceTag("device123")
-                .category(BoardCategory.NOTICE)
-                .content("Some content")
-                .build();
+            .title("")
+            .deviceTag("device123")
+            .category(BoardCategory.NOTICE)
+            .content("Some content")
+            .build();
 
         // when
         Set<ConstraintViolation<BoardEntity>> violations = validator.validate(boardEntity);
 
         // then
-        assertThat(violations).isNotEmpty();
-        assertThat(violations)
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("title"));
+        assertThat(violations).isNotEmpty()
+            .anyMatch(violation -> violation.getPropertyPath().toString().equals("title"));
     }
 
     @Test
     void 내용이_10000자를_초과하면_예외가_발생한다() {
         // given
         BoardEntity boardEntity = BoardEntity.builder()
-                .title("Valid Title")
-                .deviceTag("device123")
-                .category(BoardCategory.NOTICE)
-                .content("a".repeat(10001))
-                .build();
+            .title("Valid Title")
+            .deviceTag("device123")
+            .category(BoardCategory.NOTICE)
+            .content("a".repeat(10001))
+            .build();
 
         // when
         Set<ConstraintViolation<BoardEntity>> violations = validator.validate(boardEntity);
 
         // then
-        assertThat(violations).isNotEmpty();
-        assertThat(violations)
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("content"));
+        assertThat(violations).isNotEmpty()
+            .anyMatch(violation -> violation.getPropertyPath().toString().equals("content"));
     }
 
     @Test
     void 내용이_빈값이면_예외가_발생한다() {
         // given
         BoardEntity boardEntity = BoardEntity.builder()
-                .title("Valid Title")
-                .deviceTag("device123")
-                .category(BoardCategory.NOTICE)
-                .content("")
-                .build();
+            .title("Valid Title")
+            .deviceTag("device123")
+            .category(BoardCategory.NOTICE)
+            .content("")
+            .build();
 
         // when
         Set<ConstraintViolation<BoardEntity>> violations = validator.validate(boardEntity);
 
         // then
-        assertThat(violations).isNotEmpty();
-        assertThat(violations)
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("content"));
+        assertThat(violations).isNotEmpty()
+            .anyMatch(violation -> violation.getPropertyPath().toString().equals("content"));
     }
 
     @Test
     void 정상적인_데이터는_유효성_검사를_통과한다() {
         // given
         BoardEntity boardEntity = BoardEntity.builder()
-                .title("Valid Title")
-                .deviceTag("device123")
-                .category(BoardCategory.NOTICE)
-                .content("Valid content")
-                .build();
+            .title("Valid Title")
+            .deviceTag("device123")
+            .category(BoardCategory.NOTICE)
+            .content("Valid content")
+            .build();
 
         // when
         Set<ConstraintViolation<BoardEntity>> violations = validator.validate(boardEntity);

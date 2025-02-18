@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaginationUtils {
 
+    private PaginationUtils() {
+    }
+
     /**
      * 아이템 리스트에 정렬을 적용하는 메서드입니다.
      *
@@ -26,18 +29,18 @@ public class PaginationUtils {
         }
 
         Comparator<T> comparator = sort.stream()
-                .map(order -> {
-                    Comparator<T> itemComparator = Comparator.comparing(
-                            item -> (Comparable) extractFieldValue(item, order.getProperty())
-                    );
-                    return order.isAscending() ? itemComparator : itemComparator.reversed();
-                })
-                .reduce(Comparator::thenComparing)
-                .orElseThrow(IllegalArgumentException::new);
+            .map(order -> {
+                Comparator<T> itemComparator = Comparator.comparing(
+                    item -> (Comparable) extractFieldValue(item, order.getProperty())
+                );
+                return order.isAscending() ? itemComparator : itemComparator.reversed();
+            })
+            .reduce(Comparator::thenComparing)
+            .orElseThrow(IllegalArgumentException::new);
 
         return items.stream()
-                .sorted(comparator)
-                .toList();
+            .sorted(comparator)
+            .toList();
     }
 
     /**
@@ -49,9 +52,9 @@ public class PaginationUtils {
      */
     public static <T> List<T> applySlicing(List<T> items, Pageable pageable) {
         return items.stream()
-                .skip(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .toList();
+            .skip(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .toList();
     }
 
     /**

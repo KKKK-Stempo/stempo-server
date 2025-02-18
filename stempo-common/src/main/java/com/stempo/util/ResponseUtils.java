@@ -7,6 +7,9 @@ import org.springframework.http.MediaType;
 
 public class ResponseUtils {
 
+    private ResponseUtils() {
+    }
+
     public static void sendErrorResponse(HttpServletResponse response, int status) throws IOException {
         response.getWriter().write(ApiResponse.failure().toJson());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

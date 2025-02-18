@@ -11,11 +11,14 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ApiLogger {
 
+    private ApiLogger() {
+    }
+
     public static void logRequest(HttpServletRequest request, HttpServletResponse response, String clientIpAddress,
-            String message) {
+        String message) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String id =
-                (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+            (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
         String requestUrl = request.getRequestURI();
         String queryString = request.getQueryString();
@@ -30,7 +33,7 @@ public class ApiLogger {
     public static void logRequestDuration(HttpServletRequest request, HttpServletResponse response, Exception ex) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String id =
-                (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+            (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
         String clientIpAddress = HttpReqResUtils.getClientIpAddressIfServletRequestExist();
 
         String requestUrl = request.getRequestURI();
@@ -48,7 +51,7 @@ public class ApiLogger {
             log.info("[{}:{}] {} {} {} {}ms", clientIpAddress, id, fullUrl, httpMethod, httpStatus, duration);
         } else {
             log.error("[{}:{}] {} {} {} {}ms, Exception: {}", clientIpAddress, id, fullUrl, httpMethod, httpStatus,
-                    duration, ex.getMessage());
+                duration, ex.getMessage());
         }
     }
 }

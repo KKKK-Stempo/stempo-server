@@ -25,8 +25,8 @@ class StringJsonConverterTest {
         String json = converter.convertToDatabaseColumn(list);
 
         // then
-        assertThat(json).isNotNull();
-        assertThat(json).isEqualTo("[\"file1.jpg\",\"file2.jpg\",\"file3.jpg\"]");
+        assertThat(json).isNotNull()
+            .isEqualTo("[\"file1.jpg\",\"file2.jpg\",\"file3.jpg\"]");
     }
 
     @Test
@@ -38,8 +38,8 @@ class StringJsonConverterTest {
         List<String> list = converter.convertToEntityAttribute(json);
 
         // then
-        assertThat(list).isNotNull();
-        assertThat(list).containsExactly("file1.jpg", "file2.jpg", "file3.jpg");
+        assertThat(list).isNotNull()
+            .containsExactly("file1.jpg", "file2.jpg", "file3.jpg");
     }
 
     @Test

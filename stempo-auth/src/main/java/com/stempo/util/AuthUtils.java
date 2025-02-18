@@ -8,12 +8,15 @@ import org.springframework.security.core.userdetails.User;
 
 public class AuthUtils {
 
+    private AuthUtils() {
+    }
+
     public static User getAuthenticationInfo() {
         Authentication authentication = getAuthentication();
         Object principal = authentication.getPrincipal();
 
-        if (principal instanceof User) {
-            return (User) principal;
+        if (principal instanceof User user) {
+            return user;
         } else {
             throw new BaseException(ErrorCode.INVALID_PRINCIPAL);
         }

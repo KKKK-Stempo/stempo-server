@@ -20,7 +20,7 @@ class UserTest {
         assertThat(user).isNotNull();
         assertThat(user.getDeviceTag()).isEqualTo("DEVICE_TAG");
         assertThat(user.getPassword()).isEqualTo("PASSWORD");
-        assertThat(user.getFailedLoginAttempts()).isEqualTo(0);
+        assertThat(user.getFailedLoginAttempts()).isZero();
         assertThat(user.isAccountLocked()).isFalse();
         assertThat(user.getRole()).isEqualTo(Role.USER);
     }
@@ -45,7 +45,7 @@ class UserTest {
         user.resetFailedLoginAttempts();
 
         // then
-        assertThat(user.getFailedLoginAttempts()).isEqualTo(0);
+        assertThat(user.getFailedLoginAttempts()).isZero();
         assertThat(user.isAccountLocked()).isFalse();
     }
 

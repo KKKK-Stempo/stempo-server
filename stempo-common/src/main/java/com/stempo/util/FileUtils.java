@@ -22,6 +22,9 @@ public class FileUtils {
     private static final long MB = KB * 1024;
     private static final long GB = MB * 1024;
 
+    private FileUtils() {
+    }
+
     /**
      * 주어진 파일 경로가 기본 디렉토리 내에 포함되는지 확인하고, 정상적인 경로를 반환합니다.
      *
@@ -74,11 +77,9 @@ public class FileUtils {
         Path safePath = FileUtils.validateFilePath(file.getPath(), baseDirectory);
 
         File parentDir = safePath.getParent().toFile();
-        if (!parentDir.exists()) {
-            if (!parentDir.mkdirs()) {
-                log.error("Failed to create directory: {}", parentDir.getAbsolutePath());
-                throw new BaseException(ErrorCode.DIRECTORY_CREATION_ERROR);
-            }
+        if (!parentDir.exists() && !parentDir.mkdirs()) {
+            log.error("Failed to create directory: {}", parentDir.getAbsolutePath());
+            throw new BaseException(ErrorCode.DIRECTORY_CREATION_ERROR);
         }
     }
 

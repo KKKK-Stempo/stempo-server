@@ -37,8 +37,8 @@ class FileUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> FileUtils.validateFilePath(filePath, tempDir.toString()))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining(ErrorCode.INVALID_FILE_PATH.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessageContaining(ErrorCode.INVALID_FILE_PATH.getDefaultMessage());
     }
 
     @Test
@@ -51,7 +51,7 @@ class FileUtilsTest {
         FileUtils.validateFileExists(existingFile.toPath());
 
         // then
-        assertThat(existingFile.exists()).isTrue();
+        assertThat(existingFile).exists();
     }
 
     @Test
@@ -61,8 +61,8 @@ class FileUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> FileUtils.validateFileExists(invalidPath))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining(ErrorCode.INVALID_FILE_PATH.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessageContaining(ErrorCode.INVALID_FILE_PATH.getDefaultMessage());
     }
 
     @Test
@@ -89,7 +89,7 @@ class FileUtilsTest {
         FileUtils.ensureParentDirectoryExists(fileInExistingDirectory, tempDir.toString());
 
         // then
-        assertThat(existingDirectory.exists()).isTrue();
+        assertThat(existingDirectory).exists();
     }
 
     @Test
@@ -102,7 +102,7 @@ class FileUtilsTest {
 
         // when, then
         assertThatCode(() -> FileUtils.ensureParentDirectoryExists(fileInExistingDirectory, tempDir.toString()))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -114,7 +114,7 @@ class FileUtilsTest {
         FileUtils.ensureParentDirectoryExists(newDirectory, tempDir.toString());
 
         // then
-        assertThat(newDirectory.getParentFile().exists()).isTrue();
+        assertThat(newDirectory.getParentFile()).exists();
     }
 
     @Test
@@ -125,8 +125,8 @@ class FileUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> FileUtils.ensureParentDirectoryExists(invalidDir, tempDir.toString()))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining(ErrorCode.INVALID_FILE_PATH.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessageContaining(ErrorCode.INVALID_FILE_PATH.getDefaultMessage());
     }
 
     @Test
@@ -137,8 +137,8 @@ class FileUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> FileUtils.ensureParentDirectoryExists(invalidDir, tempDir.toString()))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining(ErrorCode.INVALID_FILE_PATH.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessageContaining(ErrorCode.INVALID_FILE_PATH.getDefaultMessage());
     }
 
     @Test
@@ -149,7 +149,7 @@ class FileUtilsTest {
 
         // when, then
         assertThatCode(() -> FileUtils.validateFileAttributes(fileName, disallowedExtensions))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -160,8 +160,8 @@ class FileUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> FileUtils.validateFileAttributes(fileName, disallowedExtensions))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining(ErrorCode.INVALID_FILE_ATTRIBUTE.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessageContaining(ErrorCode.INVALID_FILE_ATTRIBUTE.getDefaultMessage());
     }
 
     @Test
@@ -171,8 +171,8 @@ class FileUtilsTest {
 
         // when, then
         assertThatThrownBy(() -> FileUtils.validateFilename(invalidFileName))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining(ErrorCode.INVALID_FILE_NAME.getDefaultMessage());
+            .isInstanceOf(BaseException.class)
+            .hasMessageContaining(ErrorCode.INVALID_FILE_NAME.getDefaultMessage());
     }
 
     @Test
@@ -182,21 +182,21 @@ class FileUtilsTest {
 
         // when, then
         assertThatCode(() -> FileUtils.validateFilename(validFileName))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
     }
 
     @Test
     void 파일명이_null이면_예외가_발생하지_않는다() {
         // when, then
         assertThatCode(() -> FileUtils.validateFilename(null))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
     }
 
     @Test
     void 파일명이_빈_문자열이면_예외가_발생하지_않는다() {
         // when, then
         assertThatCode(() -> FileUtils.validateFilename(" "))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -229,7 +229,7 @@ class FileUtilsTest {
         FileUtils.setFilePermissions(readOnlyFile, readOnlyFile.getAbsolutePath(), tempDir.toString());
 
         // then
-        assertThat(readOnlyFile.canRead()).isTrue();
+        assertThat(readOnlyFile).canRead();
         assertThat(readOnlyFile.canWrite()).isFalse();
         assertThat(readOnlyFile.canExecute()).isFalse();
     }
@@ -241,9 +241,9 @@ class FileUtilsTest {
 
         // when, then
         assertThatThrownBy(
-                () -> FileUtils.setFilePermissions(invalidFile, invalidFile.getAbsolutePath(), tempDir.toString()))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining(ErrorCode.FILE_PERMISSION_ERROR.getDefaultMessage());
+            () -> FileUtils.setFilePermissions(invalidFile, invalidFile.getAbsolutePath(), tempDir.toString()))
+            .isInstanceOf(BaseException.class)
+            .hasMessageContaining(ErrorCode.FILE_PERMISSION_ERROR.getDefaultMessage());
     }
 
     @Test

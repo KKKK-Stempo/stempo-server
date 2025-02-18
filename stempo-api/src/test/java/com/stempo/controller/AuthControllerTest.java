@@ -1,7 +1,6 @@
 package com.stempo.controller;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -51,17 +50,17 @@ class AuthControllerTest {
         TokenInfo tokenInfo = TokenInfo.create("access-token", "refresh-token");
 
         when(authService.registerUser(any(AuthRequestDto.class)))
-                .thenReturn(tokenInfo);
+            .thenReturn(tokenInfo);
 
         // when
         mockMvc.perform(post("/api/v1/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.accessToken").value("access-token"))
-                .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.accessToken").value("access-token"))
+            .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"));
     }
 
     @Test
@@ -72,12 +71,12 @@ class AuthControllerTest {
 
         // when
         mockMvc.perform(post("/api/v1/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.data").isEmpty());
     }
 
     @Test
@@ -88,16 +87,16 @@ class AuthControllerTest {
         requestDto.setPassword("password123");
 
         when(authService.registerUser(any(AuthRequestDto.class)))
-                .thenThrow(new BaseException(ErrorCode.USER_ALREADY_EXISTS, "사용자가 이미 존재합니다."));
+            .thenThrow(new BaseException(ErrorCode.USER_ALREADY_EXISTS, "사용자가 이미 존재합니다."));
 
         // when
         mockMvc.perform(post("/api/v1/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.data").isEmpty());
     }
 
     @Test
@@ -107,24 +106,24 @@ class AuthControllerTest {
         String deviceTag = "490154203237518";
 
         when(authService.unregisterUser())
-                .thenReturn(deviceTag);
+            .thenReturn(deviceTag);
 
         // when
         mockMvc.perform(delete("/api/v1/auth/unregister")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").value(deviceTag));
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data").value(deviceTag));
     }
 
     @Test
     void 인증되지_않은_사용자가_회원탈퇴를_시도하면_권한에러가_발생한다() throws Exception {
         // when
         mockMvc.perform(delete("/api/v1/auth/unregister")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isUnauthorized());
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -137,17 +136,17 @@ class AuthControllerTest {
         TokenInfo tokenInfo = TokenInfo.create("access-token", "refresh-token");
 
         when(authService.login(any(AuthRequestDto.class)))
-                .thenReturn(tokenInfo);
+            .thenReturn(tokenInfo);
 
         // when
         mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.accessToken").value("access-token"))
-                .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.accessToken").value("access-token"))
+            .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"));
     }
 
     @Test
@@ -158,16 +157,16 @@ class AuthControllerTest {
         requestDto.setPassword("wrongpassword");
 
         when(authService.login(any(AuthRequestDto.class)))
-                .thenThrow(new BaseException(ErrorCode.BAD_CREDENTIALS, "잘못된 자격 증명입니다."));
+            .thenThrow(new BaseException(ErrorCode.BAD_CREDENTIALS, "잘못된 자격 증명입니다."));
 
         // when
         mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.data").isEmpty());
     }
 
     @Test
@@ -180,17 +179,17 @@ class AuthControllerTest {
         TokenInfo tokenInfo = TokenInfo.create("access-token", "refresh-token");
 
         when(authService.login(any(AuthRequestDto.class)))
-                .thenReturn(tokenInfo);
+            .thenReturn(tokenInfo);
 
         // when
         mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.accessToken").value("access-token"))
-                .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.accessToken").value("access-token"))
+            .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"));
     }
 
     @Test
@@ -200,25 +199,25 @@ class AuthControllerTest {
         TokenInfo tokenInfo = TokenInfo.create("new-access-token", "new-refresh-token");
 
         when(authService.reissueToken(any(HttpServletRequest.class)))
-                .thenReturn(tokenInfo);
+            .thenReturn(tokenInfo);
 
         // when
         mockMvc.perform(post("/api/v1/auth/reissue")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.accessToken").value("new-access-token"))
-                .andExpect(jsonPath("$.data.refreshToken").value("new-refresh-token"));
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.accessToken").value("new-access-token"))
+            .andExpect(jsonPath("$.data.refreshToken").value("new-refresh-token"));
     }
 
     @Test
     void 인증되지_않은_사용자가_토큰_재발급을_시도하면_권한에error가_발생한다() throws Exception {
         // when
         mockMvc.perform(post("/api/v1/auth/reissue")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isUnauthorized());
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -232,17 +231,17 @@ class AuthControllerTest {
         TokenInfo tokenInfo = TokenInfo.create("access-token", "refresh-token");
 
         when(authService.authenticate(any(TwoFactorAuthenticationRequestDto.class)))
-                .thenReturn(tokenInfo);
+            .thenReturn(tokenInfo);
 
         // when
         mockMvc.perform(post("/api/v1/auth/two-factor-authentication")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.accessToken").value("access-token"))
-                .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.accessToken").value("access-token"))
+            .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"));
     }
 
     @Test
@@ -254,16 +253,16 @@ class AuthControllerTest {
         requestDto.setTotp("000000");
 
         when(authService.authenticate(any(TwoFactorAuthenticationRequestDto.class)))
-                .thenThrow(new BaseException(ErrorCode.BAD_CREDENTIALS, "잘못된 TOTP 코드입니다."));
+            .thenThrow(new BaseException(ErrorCode.BAD_CREDENTIALS, "잘못된 TOTP 코드입니다."));
 
         // when
         mockMvc.perform(post("/api/v1/auth/two-factor-authentication")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.data").isEmpty());
     }
 
     @Test
@@ -276,17 +275,17 @@ class AuthControllerTest {
         TokenInfo tokenInfo = TokenInfo.create("access-token", "refresh-token");
 
         when(authService.authenticate(any(TwoFactorAuthenticationRequestDto.class)))
-                .thenReturn(tokenInfo);
+            .thenReturn(tokenInfo);
 
         // when
         mockMvc.perform(post("/api/v1/auth/two-factor-authentication")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.accessToken").value("access-token"))
-                .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.accessToken").value("access-token"))
+            .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"));
     }
 
     @Test
@@ -296,16 +295,16 @@ class AuthControllerTest {
         String deviceTag = "490154203237518";
         String returnedDeviceTag = "490154203237518";
 
-        when(authService.resetAuthenticator(eq(deviceTag)))
-                .thenReturn(returnedDeviceTag);
+        when(authService.resetAuthenticator(deviceTag))
+            .thenReturn(returnedDeviceTag);
 
         // when
         mockMvc.perform(delete("/api/v1/auth/two-factor-authentication/{deviceTag}", deviceTag)
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").value(returnedDeviceTag));
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data").value(returnedDeviceTag));
     }
 
     @Test
@@ -316,9 +315,9 @@ class AuthControllerTest {
 
         // when
         mockMvc.perform(delete("/api/v1/auth/two-factor-authentication/{deviceTag}", deviceTag)
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isForbidden());
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isForbidden());
     }
 
     @Test
@@ -328,9 +327,9 @@ class AuthControllerTest {
 
         // when
         mockMvc.perform(delete("/api/v1/auth/two-factor-authentication/{deviceTag}", deviceTag)
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isUnauthorized());
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -338,15 +337,15 @@ class AuthControllerTest {
     void 토큰_재발급시_잘못된_리프레시_토큰으로_인해_예외가_발생한다() throws Exception {
         // given
         when(authService.reissueToken(any(HttpServletRequest.class)))
-                .thenThrow(new BaseException(ErrorCode.TOKEN_INVALID, "잘못된 리프레시 토큰입니다."));
+            .thenThrow(new BaseException(ErrorCode.TOKEN_INVALID, "잘못된 리프레시 토큰입니다."));
 
         // when
         mockMvc.perform(post("/api/v1/auth/reissue")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // then
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.data").isEmpty());
     }
 
 }

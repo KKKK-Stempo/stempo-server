@@ -15,31 +15,31 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TokenService {
 
-    private final JwtTokenService tokenService;
+    private final JwtTokenService jwtTokenService;
     private final UserService userService;
 
     @Transactional
     public TokenInfo reissueToken(HttpServletRequest request) {
-        String refreshToken = tokenService.resolveToken(request);
+        String refreshToken = jwtTokenService.resolveToken(request);
         validateRefreshToken(refreshToken);
         return reissue(refreshToken);
     }
 
     private void validateRefreshToken(String refreshToken) {
-        if (!tokenService.isRefreshToken(refreshToken)) {
+        if (!jwtTokenService.isRefreshToken(refreshToken)) {
             throw new BaseException(ErrorCode.TOKEN_FORGERY);
         }
     }
 
     private TokenInfo reissue(String refreshToken) {
-        Authentication authentication = tokenService.getAuthentication(refreshToken);
+        Authentication authentication = jwtTokenService.getAuthentication(refreshToken);
         User user = getTokenUserInfo(authentication);
-        return tokenService.generateToken(user.getDeviceTag(), user.getRole());
+        return jwtTokenService.generateToken(user.getDeviceTag(), user.getRole());
     }
 
     private User getTokenUserInfo(Authentication authentication) {
         String id = authentication.getName();
         return userService.findById(id)
-                .orElseThrow(() -> new BaseException(ErrorCode.TOKEN_INVALID));
+            .orElseThrow(() -> new BaseException(ErrorCode.TOKEN_INVALID));
     }
 }

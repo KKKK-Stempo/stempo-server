@@ -84,6 +84,9 @@ public class ExceptionMapper {
         exceptionToErrorCodeMap.put(UnexpectedRollbackException.class, ErrorCode.UNEXPECTED_ROLLBACK);
     }
 
+    private ExceptionMapper() {
+    }
+
     /**
      * 예외에 맞는 ErrorCode를 반환합니다. 매핑되지 않은 예외는 기본적으로 INTERNAL_SERVER_ERROR로 반환됩니다.
      *
