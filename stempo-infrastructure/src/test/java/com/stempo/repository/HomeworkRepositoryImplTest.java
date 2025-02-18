@@ -104,16 +104,17 @@ class HomeworkRepositoryImplTest {
         // given
         Pageable pageable = mock(Pageable.class);
         Page<HomeworkEntity> homeworkEntityPage = new PageImpl<>(List.of(homeworkEntity));
-        when(homeworkJpaRepository.findByCompleted(anyBoolean(), any(Pageable.class))).thenReturn(homeworkEntityPage);
+        when(homeworkJpaRepository.findByDeviceTagAndCompleted(anyString(), anyBoolean(), any(Pageable.class))).thenReturn(
+            homeworkEntityPage);
         when(homeworkMapper.toDomain(any(HomeworkEntity.class))).thenReturn(homework);
 
         // when
-        Page<Homework> homeworkPage = homeworkRepository.findByCompleted(true, pageable);
+        Page<Homework> homeworkPage = homeworkRepository.findByDeviceTagAndCompleted("deviceTag", true, pageable);
 
         // then
         assertThat(homeworkPage.getContent()).hasSize(1);
         assertThat(homeworkPage.getContent().getFirst()).isEqualTo(homework);
-        verify(homeworkJpaRepository, times(1)).findByCompleted(true, pageable);
+        verify(homeworkJpaRepository, times(1)).findByDeviceTagAndCompleted("deviceTag", true, pageable);
     }
 
     @Test

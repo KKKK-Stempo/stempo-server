@@ -102,10 +102,12 @@ class HomeworkServiceImplTest {
         Boolean completed = false;
         Sort sort = Sort.by("description").ascending();
         Pageable pageable = PageRequest.of(0, 10, sort);
+        String deviceTag = "someDeviceTag"; // 추가
 
-        // Homework 객체 생성 (null이 아니도록)
+        // Homework 객체 생성
         Homework homework = Homework.builder()
             .id(1L)
+            .deviceTag(deviceTag) // 추가
             .description("Encrypted Description")
             .completed(false)
             .build();
@@ -119,14 +121,16 @@ class HomeworkServiceImplTest {
 
         DecryptedHomework decryptedHomework = DecryptedHomework.builder()
             .id(homework.getId())
-            .deviceTag("someDeviceTag")
+            .deviceTag(deviceTag)
             .description("Decrypted Description")
             .completed(homework.getCompleted())
             .createdAt(LocalDateTime.now())
             .updatedAt(LocalDateTime.now())
             .build();
 
-        when(repository.findByCompleted(completed, pageable))
+        when(userService.getCurrentDeviceTag()).thenReturn(deviceTag);
+
+        when(repository.findByDeviceTagAndCompleted(deviceTag, completed, pageable))
             .thenReturn(new PageImpl<>(homeworkList, pageable, homeworkList.size()));
         when(homeworkDecryptionService.decryptHomework(any(Homework.class))).thenReturn(decryptedHomework);
         doReturn(responseDto).when(mapper).toDto(decryptedHomework);
@@ -145,11 +149,13 @@ class HomeworkServiceImplTest {
             // then
             assertThat(result.getItems()).hasSize(1);
             assertThat(result.getItems().getFirst().getDescription()).isEqualTo("Decrypted Description");
-            verify(repository).findByCompleted(completed, pageable);
+            verify(userService).getCurrentDeviceTag();
+            verify(repository).findByDeviceTagAndCompleted(deviceTag, completed, pageable);
             verify(homeworkDecryptionService).decryptHomework(any(Homework.class));
             verify(mapper).toDto(decryptedHomework);
         }
     }
+
 
     @Test
     void 과제를_수정한다() {

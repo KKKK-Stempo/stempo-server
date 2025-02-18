@@ -41,11 +41,12 @@ public class HomeworkRepositoryImpl implements HomeworkRepository {
     }
 
     @Override
-    public Page<Homework> findByCompleted(Boolean completed, Pageable pageable) {
-        return Optional.ofNullable(completed)
-            .map(c -> repository.findByCompleted(c, pageable))
-            .orElseGet(() -> repository.findAll(pageable))
-            .map(mapper::toDomain);
+    public Page<Homework> findByDeviceTagAndCompleted(String deviceTag, Boolean completed, Pageable pageable) {
+        Page<HomeworkEntity> page = Optional.ofNullable(completed)
+            .map(c -> repository.findByDeviceTagAndCompleted(deviceTag, c, pageable))
+            .orElseGet(() -> repository.findByDeviceTag(deviceTag, pageable));
+
+        return page.map(mapper::toDomain);
     }
 
 
