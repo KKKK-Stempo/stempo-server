@@ -1,5 +1,6 @@
 package com.stempo.service;
 
+import com.stempo.dto.DecryptedHomework;
 import com.stempo.dto.PagedResponseDto;
 import com.stempo.dto.request.HomeworkRequestDto;
 import com.stempo.dto.request.HomeworkUpdateRequestDto;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class HomeworkServiceImpl implements HomeworkService {
 
     private final UserService userService;
+    private final HomeworkDecryptionService homeworkDecryptionService;
     private final HomeworkRepository repository;
     private final HomeworkDtoMapper mapper;
     private final EncryptionUtils encryptionUtils;
@@ -40,8 +42,8 @@ public class HomeworkServiceImpl implements HomeworkService {
         Page<Homework> homeworksPage = repository.findByCompleted(completed, pageable);
 
         List<HomeworkResponseDto> responseDtos = homeworksPage.getContent().stream()
-                .map(this::decryptAndConvertToDto)
-                .toList();
+            .map(this::decryptAndConvertToDto)
+            .toList();
 
         List<String> encryptedFields = List.of("description");
         if (PaginationUtils.isAnySortFieldPresent(pageable.getSort(), HomeworkResponseDto.class, encryptedFields)) {
@@ -49,6 +51,14 @@ public class HomeworkServiceImpl implements HomeworkService {
         }
 
         return new PagedResponseDto<>(responseDtos, pageable, responseDtos.size());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DecryptedHomework> getByDeviceTags(List<String> deviceTags) {
+        return repository.findHomeworkByDeviceTags(deviceTags).stream()
+            .map(homeworkDecryptionService::decryptHomework)
+            .toList();
     }
 
     @Override
@@ -70,8 +80,7 @@ public class HomeworkServiceImpl implements HomeworkService {
     }
 
     private HomeworkResponseDto decryptAndConvertToDto(Homework homework) {
-        String decryptedDescription = encryptionUtils.decrypt(homework.getDescription());
-        homework.setDescription(decryptedDescription);
-        return mapper.toDto(homework);
+        DecryptedHomework decryptedHomework = homeworkDecryptionService.decryptHomework(homework);
+        return mapper.toDto(decryptedHomework);
     }
 }
