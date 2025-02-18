@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.stempo.dto.DecryptedHomework;
 import com.stempo.dto.PagedResponseDto;
 import com.stempo.dto.request.HomeworkRequestDto;
 import com.stempo.dto.request.HomeworkUpdateRequestDto;
@@ -38,6 +39,9 @@ class HomeworkServiceImplTest {
     private UserService userService;
 
     @Mock
+    private HomeworkDecryptionService homeworkDecryptionService;
+
+    @Mock
     private HomeworkRepository repository;
 
     @Mock
@@ -65,11 +69,11 @@ class HomeworkServiceImplTest {
         homeworkUpdateRequestDto.setCompleted(true);
 
         homework = Homework.builder()
-                .id(1L)
-                .deviceTag("encrypted-device-tag")
-                .description("encrypted-description")
-                .completed(false)
-                .build();
+            .id(1L)
+            .deviceTag("encrypted-device-tag")
+            .description("encrypted-description")
+            .completed(false)
+            .build();
     }
 
     @Test
@@ -99,23 +103,23 @@ class HomeworkServiceImplTest {
         List<Homework> homeworkList = List.of(homework);
 
         HomeworkResponseDto responseDto = HomeworkResponseDto.builder()
-                .id(homework.getId())
-                .description("Decrypted Description")
-                .completed(homework.getCompleted())
-                .build();
+            .id(homework.getId())
+            .description("Decrypted Description")
+            .completed(homework.getCompleted())
+            .build();
 
         when(repository.findByCompleted(completed, pageable))
-                .thenReturn(new PageImpl<>(homeworkList, pageable, homeworkList.size()));
+            .thenReturn(new PageImpl<>(homeworkList, pageable, homeworkList.size()));
         when(encryptionUtils.decrypt(anyString())).thenReturn("Decrypted Description");
         when(mapper.toDto(any(Homework.class))).thenReturn(responseDto);
 
         try (MockedStatic<PaginationUtils> mockedStatic = mockStatic(PaginationUtils.class)) {
             mockedStatic.when(
-                            () -> PaginationUtils.isAnySortFieldPresent(any(Sort.class), eq(HomeworkResponseDto.class),
-                                    anyList()))
-                    .thenReturn(true);
+                    () -> PaginationUtils.isAnySortFieldPresent(any(Sort.class), eq(HomeworkResponseDto.class),
+                        anyList()))
+                .thenReturn(true);
             mockedStatic.when(() -> PaginationUtils.applySorting(anyList(), any(Sort.class)))
-                    .thenReturn(List.of(responseDto));
+                .thenReturn(List.of(responseDto));
 
             // when
             PagedResponseDto<HomeworkResponseDto> result = homeworkService.getHomeworks(completed, pageable);
@@ -138,10 +142,10 @@ class HomeworkServiceImplTest {
         when(repository.findByIdOrThrow(homeworkId)).thenReturn(existingHomework);
         when(encryptionUtils.encrypt(anyString())).thenReturn("encrypted-updated-description");
         when(mapper.toDomain(any(HomeworkUpdateRequestDto.class))).thenReturn(
-                Homework.builder()
-                        .description("encrypted-updated-description")
-                        .completed(true)
-                        .build()
+            Homework.builder()
+                .description("encrypted-updated-description")
+                .completed(true)
+                .build()
         );
         when(repository.save(any(Homework.class))).thenReturn(existingHomework);
 
@@ -169,5 +173,56 @@ class HomeworkServiceImplTest {
         assertThat(resultId).isEqualTo(homeworkId);
         verify(repository).findByIdOrThrow(homeworkId);
         verify(repository).delete(homework);
+    }
+
+    @Test
+    void 디바이스_태그로_과제_목록을_복호화하여_조회한다() {
+        // given
+        List<String> deviceTags = List.of("device1", "device2");
+        List<String> encryptedDeviceTags = List.of("encrypted1", "encrypted2");
+
+        Homework homework1 = Homework.builder()
+            .id(1L)
+            .deviceTag("encrypted1")
+            .description("encryptedDesc1")
+            .completed(false)
+            .build();
+        Homework homework2 = Homework.builder()
+            .id(2L)
+            .deviceTag("encrypted2")
+            .description("encryptedDesc2")
+            .completed(true)
+            .build();
+        List<Homework> homeworkList = List.of(homework1, homework2);
+
+        DecryptedHomework decryptedHomework1 = DecryptedHomework.builder()
+            .id(1L)
+            .deviceTag("decrypted1")
+            .description("desc1")
+            .completed(false)
+            .build();
+        DecryptedHomework decryptedHomework2 = DecryptedHomework.builder()
+            .id(2L)
+            .deviceTag("decrypted2")
+            .description("desc2")
+            .completed(true)
+            .build();
+
+        when(userService.encryptDeviceTag("device1")).thenReturn("encrypted1");
+        when(userService.encryptDeviceTag("device2")).thenReturn("encrypted2");
+        when(repository.findHomeworkByDeviceTags(encryptedDeviceTags)).thenReturn(homeworkList);
+        when(homeworkDecryptionService.decryptHomework(homework1)).thenReturn(decryptedHomework1);
+        when(homeworkDecryptionService.decryptHomework(homework2)).thenReturn(decryptedHomework2);
+
+        // when
+        List<DecryptedHomework> result = homeworkService.getByDeviceTags(deviceTags);
+
+        // then
+        assertThat(result).containsExactly(decryptedHomework1, decryptedHomework2);
+        verify(userService).encryptDeviceTag("device1");
+        verify(userService).encryptDeviceTag("device2");
+        verify(repository).findHomeworkByDeviceTags(encryptedDeviceTags);
+        verify(homeworkDecryptionService).decryptHomework(homework1);
+        verify(homeworkDecryptionService).decryptHomework(homework2);
     }
 }
