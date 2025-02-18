@@ -9,13 +9,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.stempo.application.JwtTokenService;
-import com.stempo.config.AesConfig;
 import com.stempo.dto.TokenInfo;
 import com.stempo.dto.request.TwoFactorAuthenticationRequestDto;
 import com.stempo.exception.BaseException;
 import com.stempo.model.Role;
 import com.stempo.model.User;
-import com.stempo.util.EncryptionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,12 +29,6 @@ class TotpServiceTest {
 
     @Mock
     private UserService userService;
-
-    @Mock
-    private EncryptionUtils encryptionUtils;
-
-    @Mock
-    private AesConfig aesConfig;
 
     @Mock
     private JwtTokenService tokenService;
@@ -56,15 +48,13 @@ class TotpServiceTest {
 
         user = User.builder().deviceTag("test-device").role(Role.USER).build();
         tokenInfo = TokenInfo.create("access-token", "refresh-token");
-
-        when(aesConfig.getDeviceTagSecretKey()).thenReturn("test-secret-key");
     }
 
     @Test
     void TOTP_인증이_성공하면_TokenInfo를_반환한다() {
         // given
         String encryptedDeviceTag = "encrypted-test-device";
-        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(userService.encryptDeviceTag(anyString())).thenReturn(encryptedDeviceTag);
         when(authenticatorService.isAuthenticatorValid(encryptedDeviceTag, requestDto.getTotp())).thenReturn(true);
         when(userService.getById(encryptedDeviceTag)).thenReturn(user);
         when(tokenService.generateToken(encryptedDeviceTag, Role.USER)).thenReturn(tokenInfo);
@@ -83,7 +73,7 @@ class TotpServiceTest {
     void TOTP_인증이_실패하면_예외를_발생시킨다() {
         // given
         String encryptedDeviceTag = "encrypted-test-device";
-        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(userService.encryptDeviceTag(anyString())).thenReturn(encryptedDeviceTag);
         when(authenticatorService.isAuthenticatorValid(encryptedDeviceTag, requestDto.getTotp())).thenReturn(false);
 
         // when, then
@@ -102,7 +92,7 @@ class TotpServiceTest {
         // given
         String deviceTag = "test-device";
         String encryptedDeviceTag = "encrypted-test-device";
-        when(encryptionUtils.encryptWithHashedIv(anyString(), anyString())).thenReturn(encryptedDeviceTag);
+        when(userService.encryptDeviceTag(anyString())).thenReturn(encryptedDeviceTag);
         when(authenticatorService.resetAuthenticator(encryptedDeviceTag)).thenReturn("new-secret-key");
 
         // when
@@ -110,7 +100,7 @@ class TotpServiceTest {
 
         // then
         assertThat(result).isEqualTo("new-secret-key");
-        verify(encryptionUtils).encryptWithHashedIv(deviceTag, "test-secret-key");
+        verify(userService).encryptDeviceTag(deviceTag);
         verify(authenticatorService).resetAuthenticator(encryptedDeviceTag);
     }
 }

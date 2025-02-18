@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -19,6 +20,7 @@ import com.stempo.model.Homework;
 import com.stempo.repository.HomeworkRepository;
 import com.stempo.util.EncryptionUtils;
 import com.stempo.util.PaginationUtils;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -100,6 +102,13 @@ class HomeworkServiceImplTest {
         Boolean completed = false;
         Sort sort = Sort.by("description").ascending();
         Pageable pageable = PageRequest.of(0, 10, sort);
+
+        // Homework 객체 생성 (null이 아니도록)
+        Homework homework = Homework.builder()
+            .id(1L)
+            .description("Encrypted Description")
+            .completed(false)
+            .build();
         List<Homework> homeworkList = List.of(homework);
 
         HomeworkResponseDto responseDto = HomeworkResponseDto.builder()
@@ -108,10 +117,19 @@ class HomeworkServiceImplTest {
             .completed(homework.getCompleted())
             .build();
 
+        DecryptedHomework decryptedHomework = DecryptedHomework.builder()
+            .id(homework.getId())
+            .deviceTag("someDeviceTag")
+            .description("Decrypted Description")
+            .completed(homework.getCompleted())
+            .createdAt(LocalDateTime.now())
+            .updatedAt(LocalDateTime.now())
+            .build();
+
         when(repository.findByCompleted(completed, pageable))
             .thenReturn(new PageImpl<>(homeworkList, pageable, homeworkList.size()));
-        when(encryptionUtils.decrypt(anyString())).thenReturn("Decrypted Description");
-        when(mapper.toDto(any(Homework.class))).thenReturn(responseDto);
+        when(homeworkDecryptionService.decryptHomework(any(Homework.class))).thenReturn(decryptedHomework);
+        doReturn(responseDto).when(mapper).toDto(decryptedHomework);
 
         try (MockedStatic<PaginationUtils> mockedStatic = mockStatic(PaginationUtils.class)) {
             mockedStatic.when(
@@ -126,10 +144,10 @@ class HomeworkServiceImplTest {
 
             // then
             assertThat(result.getItems()).hasSize(1);
-            assertThat(result.getItems().get(0).getDescription()).isEqualTo("Decrypted Description");
+            assertThat(result.getItems().getFirst().getDescription()).isEqualTo("Decrypted Description");
             verify(repository).findByCompleted(completed, pageable);
-            verify(encryptionUtils).decrypt(anyString());
-            verify(mapper).toDto(any(Homework.class));
+            verify(homeworkDecryptionService).decryptHomework(any(Homework.class));
+            verify(mapper).toDto(decryptedHomework);
         }
     }
 

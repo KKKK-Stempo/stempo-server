@@ -106,6 +106,17 @@ class RecordServiceImplTest {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
 
+        String deviceTag = "device123";
+
+        // 테스트용 Record 객체 생성
+        Record trainingRecord = Record.builder()
+            .id(1L)
+            .deviceTag(deviceTag)
+            .accuracy("encrypted-accuracy")
+            .duration("encrypted-duration")
+            .steps("encrypted-steps")
+            .createdAt(LocalDateTime.of(2024, 10, 22, 12, 0))
+            .build();
         Record latestRecord = Record.builder()
             .id(2L)
             .deviceTag(deviceTag)
@@ -115,43 +126,33 @@ class RecordServiceImplTest {
             .createdAt(startDateTime.minusDays(1))
             .build();
 
-        List<Record> recordsBetweenDates = List.of(trainingRecord);
-
         when(userService.getCurrentDeviceTag()).thenReturn(deviceTag);
         when(recordRepository.findLatestBeforeStartDate(deviceTag, startDateTime))
             .thenReturn(Optional.of(latestRecord));
         when(recordRepository.findByDateBetween(deviceTag, startDateTime, endDateTime))
-            .thenReturn(recordsBetweenDates);
-        when(encryptionUtils.decrypt(anyString())).thenReturn("95.5", "120", "1000");
-        when(mapper.toDto(anyDouble(), anyInt(), anyInt(), any(LocalDate.class)))
-            .thenReturn(
-                RecordItemDto.builder()
-                    .accuracy(95.5)
-                    .duration(120)
-                    .steps(1000)
-                    .build(),
-                RecordItemDto.builder()
-                    .accuracy(95.5)
-                    .duration(120)
-                    .steps(1000)
-                    .build()
-            );
-        when(mapper.toDto(anyInt(), any(List.class)))
-            .thenReturn(RecordResponseDto.builder()
-                .accuracyAverage(96)
-                .records(List.of(
-                    RecordItemDto.builder()
-                        .accuracy(95.5)
-                        .duration(120)
-                        .steps(1000)
-                        .build(),
-                    RecordItemDto.builder()
-                        .accuracy(95.5)
-                        .duration(120)
-                        .steps(1000)
-                        .build()
-                ))
-                .build());
+            .thenReturn(List.of(trainingRecord));
+
+        RecordItemDto latestRecordDto = RecordItemDto.builder()
+            .accuracy(95.5)
+            .duration(120)
+            .steps(1000)
+            .build();
+        RecordItemDto trainingRecordDto = RecordItemDto.builder()
+            .accuracy(95.5)
+            .duration(120)
+            .steps(1000)
+            .build();
+        when(recordDecryptionService.decryptToRecordItemDto(latestRecord))
+            .thenReturn(latestRecordDto);
+        when(recordDecryptionService.decryptToRecordItemDto(trainingRecord))
+            .thenReturn(trainingRecordDto);
+
+        List<RecordItemDto> combinedRecords = List.of(latestRecordDto, trainingRecordDto);
+        RecordResponseDto expectedResponse = RecordResponseDto.builder()
+            .accuracyAverage(96)
+            .records(combinedRecords)
+            .build();
+        when(mapper.toDto(anyInt(), any(List.class))).thenReturn(expectedResponse);
 
         // when
         RecordResponseDto result = recordService.getRecordsByDateRange(startDate, endDate);
@@ -162,10 +163,11 @@ class RecordServiceImplTest {
         verify(userService).getCurrentDeviceTag();
         verify(recordRepository).findLatestBeforeStartDate(deviceTag, startDateTime);
         verify(recordRepository).findByDateBetween(deviceTag, startDateTime, endDateTime);
-        verify(encryptionUtils, times(6)).decrypt(anyString()); // accuracy, duration, steps * 2 records
-        verify(mapper, times(2)).toDto(anyDouble(), anyInt(), anyInt(), any(LocalDate.class));
-        verify(mapper, times(1)).toDto(anyInt(), any(List.class));
+        verify(recordDecryptionService).decryptToRecordItemDto(latestRecord);
+        verify(recordDecryptionService).decryptToRecordItemDto(trainingRecord);
+        verify(mapper).toDto(anyInt(), any(List.class));
     }
+
 
     @Test
     void startDate_이전의_최신_데이터가_없는_경우_startDate_이전_날짜로_0으로_초기화된_값을_생성한다() {
@@ -313,8 +315,8 @@ class RecordServiceImplTest {
         List<DecryptedRecord> result = recordService.getByDeviceTags(deviceTags);
 
         // then
-        assertThat(result).hasSize(2);
-        assertThat(result).containsExactlyInAnyOrder(decryptedRecord1, decryptedRecord2);
+        assertThat(result).hasSize(2)
+            .containsExactlyInAnyOrder(decryptedRecord1, decryptedRecord2);
     }
 
     @Test
@@ -354,7 +356,7 @@ class RecordServiceImplTest {
 
         List<Record> repositoryRecords = List.of(record1, record2);
         when(recordRepository.findRecordsByDeviceTagsAndDateRange(
-            eq(List.of("encryptedTag1", "encryptedTag2")), eq(startDate), eq(endDate)))
+            List.of("encryptedTag1", "encryptedTag2"), startDate, endDate))
             .thenReturn(repositoryRecords);
 
         DecryptedRecord decryptedRecord1 = DecryptedRecord.builder()
