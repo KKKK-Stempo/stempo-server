@@ -8,8 +8,6 @@ public interface UserService {
 
     String encryptDeviceTag(String deviceTag);
 
-    String decryptDeviceTag(String deviceTag);
-
     Optional<User> findById(String id);
 
     boolean existsById(String deviceTag);
