@@ -26,15 +26,8 @@ public class RecordReportServiceImpl implements RecordReportService {
     @Transactional(readOnly = true)
     public List<RecordReportResponseDto> getRecordReport(
         List<String> deviceTags, LocalDate startDate, LocalDate endDate) {
-        validateDateRange(startDate, endDate);
-
-        // 지정된 deviceTags와 날짜 범위에 해당하는 복호화된 기록들을 조회
-        List<DecryptedRecord> records = recordService.getByDeviceTagsAndDateRange(deviceTags, startDate, endDate);
-
-        // deviceTag가 null인 경우를 방지하고 그룹화
-        Map<String, List<DecryptedRecord>> recordsByDevice = records.stream()
-            .filter(decryptedRecord -> decryptedRecord.getDeviceTag() != null)
-            .collect(Collectors.groupingBy(DecryptedRecord::getDeviceTag));
+        Map<String, List<DecryptedRecord>> recordsByDevice =
+            groupRecordsByDevice(deviceTags, startDate, endDate);
 
         // 각 deviceTag 그룹별로 RecordReportResponseDto 빌드
         return recordsByDevice.entrySet().stream()
@@ -54,15 +47,8 @@ public class RecordReportServiceImpl implements RecordReportService {
     @Transactional(readOnly = true)
     public List<RhythmReportResponseDto> getRhythmReport(
         List<String> deviceTags, LocalDate startDate, LocalDate endDate) {
-        validateDateRange(startDate, endDate);
-
-        // 지정된 deviceTags와 날짜 범위에 해당하는 복호화된 기록들을 조회
-        List<DecryptedRecord> records = recordService.getByDeviceTagsAndDateRange(deviceTags, startDate, endDate);
-
-        // deviceTag가 null인 경우를 방지하고 그룹화
-        Map<String, List<DecryptedRecord>> recordsByDevice = records.stream()
-            .filter(decryptedRecord -> decryptedRecord.getDeviceTag() != null)
-            .collect(Collectors.groupingBy(DecryptedRecord::getDeviceTag));
+        Map<String, List<DecryptedRecord>> recordsByDevice =
+            groupRecordsByDevice(deviceTags, startDate, endDate);
 
         // 각 deviceTag 그룹별로 RhythmReportResponseDto 빌드
         return recordsByDevice.entrySet().stream()
@@ -76,6 +62,19 @@ public class RecordReportServiceImpl implements RecordReportService {
                 return RhythmReportResponseDto.of(decryptedDeviceTag, rhythmDatas);
             })
             .toList();
+    }
+
+    private Map<String, List<DecryptedRecord>> groupRecordsByDevice(List<String> deviceTags, LocalDate startDate,
+        LocalDate endDate) {
+        validateDateRange(startDate, endDate);
+
+        // 지정된 deviceTags와 날짜 범위에 해당하는 복호화된 기록들을 조회
+        List<DecryptedRecord> records = recordService.getByDeviceTagsAndDateRange(deviceTags, startDate, endDate);
+
+        // deviceTag가 null인 경우를 방지하고 그룹화
+        return records.stream()
+            .filter(decryptedRecord -> decryptedRecord.getDeviceTag() != null)
+            .collect(Collectors.groupingBy(DecryptedRecord::getDeviceTag));
     }
 
     private void validateDateRange(LocalDate startDate, LocalDate endDate) {
