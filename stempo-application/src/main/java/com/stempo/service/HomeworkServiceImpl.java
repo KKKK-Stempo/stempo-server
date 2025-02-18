@@ -56,7 +56,11 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override
     @Transactional(readOnly = true)
     public List<DecryptedHomework> getByDeviceTags(List<String> deviceTags) {
-        return repository.findHomeworkByDeviceTags(deviceTags).stream()
+        List<String> encryptedDeviceTags = deviceTags.stream()
+            .map(userService::encryptDeviceTag)
+            .toList();
+
+        return repository.findHomeworkByDeviceTags(encryptedDeviceTags).stream()
             .map(homeworkDecryptionService::decryptHomework)
             .toList();
     }

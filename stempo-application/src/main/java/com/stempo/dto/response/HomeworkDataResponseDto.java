@@ -1,5 +1,6 @@
 package com.stempo.dto.response;
 
+import com.stempo.dto.DecryptedHomework;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -20,4 +21,13 @@ public class HomeworkDataResponseDto {
 
     @Schema(description = "과제 완료일", example = "2025-01-01T00:00:00")
     private LocalDateTime updatedAt;
+
+    public static HomeworkDataResponseDto from(DecryptedHomework decryptedHomework) {
+        return HomeworkDataResponseDto.builder()
+            .description(decryptedHomework.getDescription())
+            .completed(decryptedHomework.isCompleted())
+            .createdAt(decryptedHomework.getCreatedAt())
+            .updatedAt(decryptedHomework.getUpdatedAt())
+            .build();
+    }
 }

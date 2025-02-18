@@ -109,7 +109,11 @@ public class RecordServiceImpl implements RecordService {
     @Override
     @Transactional(readOnly = true)
     public List<DecryptedRecord> getByDeviceTags(List<String> deviceTags) {
-        return recordRepository.findRecordsByDeviceTags(deviceTags).stream()
+        List<String> encryptedDeviceTags = deviceTags.stream()
+            .map(userService::encryptDeviceTag)
+            .toList();
+
+        return recordRepository.findRecordsByDeviceTags(encryptedDeviceTags).stream()
             .map(recordDecryptionService::decryptedRecord)
             .toList();
     }

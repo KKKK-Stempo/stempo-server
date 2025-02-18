@@ -1,5 +1,6 @@
 package com.stempo.dto.response;
 
+import com.stempo.dto.DecryptedRecord;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -19,17 +20,30 @@ public class RecordDataResponseDto {
     private Integer steps;
 
     @Schema(description = "왼발을 내딛는 평균 속도(m/s)", example = "0.0")
-    private String leftFootAverageSpeed;
+    private Double leftFootAverageSpeed;
 
     @Schema(description = "오른발을 내딛는 평균 속도(m/s)", example = "0.0")
-    private String rightFootAverageSpeed;
+    private Double rightFootAverageSpeed;
 
     @Schema(description = "보행 훈련에 사용된 리듬의 Bit", example = "4", minimum = "1", maximum = "8")
-    private String bit;
+    private Integer bit;
 
     @Schema(description = "보행 훈련에 사용된 리듬의 BPM", example = "60", minimum = "10", maximum = "200")
-    private String bpm;
+    private Integer bpm;
 
     @Schema(description = "보행 훈련 시행일시", example = "2025-01-01T00:00:00")
     private LocalDateTime createdAt;
+
+    public static RecordDataResponseDto from(DecryptedRecord decryptedRecord) {
+        return RecordDataResponseDto.builder()
+            .accuracy(decryptedRecord.getAccuracy())
+            .duration(decryptedRecord.getDuration())
+            .steps(decryptedRecord.getSteps())
+            .leftFootAverageSpeed(decryptedRecord.getLeftFootAverageSpeed())
+            .rightFootAverageSpeed(decryptedRecord.getRightFootAverageSpeed())
+            .bit(decryptedRecord.getBit())
+            .bpm(decryptedRecord.getBpm())
+            .createdAt(decryptedRecord.getCreatedAt())
+            .build();
+    }
 }

@@ -1,5 +1,6 @@
 package com.stempo.dto;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,4 +17,5 @@ public class DecryptedRecord {
     private Double rightFootAverageSpeed;
     private Integer bit;
     private Integer bpm;
+    private LocalDateTime createdAt;
 }
