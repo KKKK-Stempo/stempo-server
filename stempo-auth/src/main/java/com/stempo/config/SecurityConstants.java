@@ -9,8 +9,10 @@ public class SecurityConstants {
         "/error",
         "/"
     };
+
     public static final String[] PERMIT_ALL_API_ENDPOINTS_GET = {
     };
+
     public static final String[] PERMIT_ALL_API_ENDPOINTS_POST = {
         "/api/v1/auth/register",
         "/api/v1/auth/login",
