@@ -3,6 +3,7 @@ package com.stempo.repository;
 import com.stempo.entity.RecordEntity;
 import com.stempo.mapper.RecordMapper;
 import com.stempo.model.Record;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -56,6 +57,15 @@ public class RecordRepositoryImpl implements RecordRepository {
     @Override
     public List<Record> findRecordsByDeviceTags(List<String> deviceTags) {
         List<RecordEntity> entities = repository.findRecordsByDeviceTags(deviceTags);
+        return entities.stream()
+            .map(mapper::toDomain)
+            .toList();
+    }
+
+    @Override
+    public List<Record> findRecordsByDeviceTagsAndDateRange(
+        List<String> deviceTags, LocalDate startDate, LocalDate endDate) {
+        List<RecordEntity> entities = repository.findRecordsByDeviceTagsAndDateRange(deviceTags, startDate, endDate);
         return entities.stream()
             .map(mapper::toDomain)
             .toList();

@@ -16,4 +16,6 @@ public interface RecordService {
     RecordStatisticsResponseDto getRecordStatistics();
 
     List<DecryptedRecord> getByDeviceTags(List<String> deviceTags);
+
+    List<DecryptedRecord> getByDeviceTagsAndDateRange(List<String> deviceTags, LocalDate startDate, LocalDate endDate);
 }

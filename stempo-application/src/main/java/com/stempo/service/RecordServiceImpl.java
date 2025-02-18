@@ -118,6 +118,19 @@ public class RecordServiceImpl implements RecordService {
             .toList();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<DecryptedRecord> getByDeviceTagsAndDateRange(List<String> deviceTags, LocalDate startDate,
+        LocalDate endDate) {
+        List<String> encryptedDeviceTags = deviceTags.stream()
+            .map(userService::encryptDeviceTag)
+            .toList();
+
+        return recordRepository.findRecordsByDeviceTagsAndDateRange(encryptedDeviceTags, startDate, endDate).stream()
+            .map(recordDecryptionService::decryptedRecord)
+            .toList();
+    }
+
     private int calculateConsecutiveTrainingDays(String deviceTag) {
         List<LocalDateTime> createdDates = recordRepository.findCreatedAtByDeviceTagOrderByCreatedAtDesc(deviceTag);
         int consecutiveDays = 0;
