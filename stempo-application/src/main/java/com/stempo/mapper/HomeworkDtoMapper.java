@@ -1,5 +1,6 @@
 package com.stempo.mapper;
 
+import com.stempo.dto.DecryptedHomework;
 import com.stempo.dto.request.HomeworkUpdateRequestDto;
 import com.stempo.dto.response.HomeworkResponseDto;
 import com.stempo.model.Homework;
@@ -10,16 +11,24 @@ public class HomeworkDtoMapper {
 
     public Homework toDomain(HomeworkUpdateRequestDto requestDto) {
         return Homework.builder()
-                .description(requestDto.getDescription())
-                .completed(requestDto.getCompleted())
-                .build();
+            .description(requestDto.getDescription())
+            .completed(requestDto.getCompleted())
+            .build();
     }
 
     public HomeworkResponseDto toDto(Homework homework) {
         return HomeworkResponseDto.builder()
-                .id(homework.getId())
-                .description(homework.getDescription())
-                .completed(homework.getCompleted())
-                .build();
+            .id(homework.getId())
+            .description(homework.getDescription())
+            .completed(homework.getCompleted())
+            .build();
+    }
+
+    public HomeworkResponseDto toDto(DecryptedHomework decryptedHomework) {
+        return HomeworkResponseDto.builder()
+            .id(decryptedHomework.getId())
+            .description(decryptedHomework.getDescription())
+            .completed(decryptedHomework.isCompleted())
+            .build();
     }
 }
