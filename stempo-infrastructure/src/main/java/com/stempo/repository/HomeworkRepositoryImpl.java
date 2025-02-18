@@ -49,7 +49,6 @@ public class HomeworkRepositoryImpl implements HomeworkRepository {
         return page.map(mapper::toDomain);
     }
 
-
     @Override
     public Homework findByIdOrThrow(Long homeworkId) {
         return repository.findById(homeworkId)

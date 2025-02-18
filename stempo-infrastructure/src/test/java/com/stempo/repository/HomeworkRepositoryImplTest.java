@@ -3,7 +3,6 @@ package com.stempo.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -104,17 +103,34 @@ class HomeworkRepositoryImplTest {
         // given
         Pageable pageable = mock(Pageable.class);
         Page<HomeworkEntity> homeworkEntityPage = new PageImpl<>(List.of(homeworkEntity));
-        when(homeworkJpaRepository.findByDeviceTagAndCompleted(anyString(), anyBoolean(), any(Pageable.class))).thenReturn(
-            homeworkEntityPage);
-        when(homeworkMapper.toDomain(any(HomeworkEntity.class))).thenReturn(homework);
+        when(homeworkJpaRepository.findByDeviceTagAndCompleted("deviceTag", true, pageable))
+            .thenReturn(homeworkEntityPage);
+        when(homeworkMapper.toDomain(homeworkEntity)).thenReturn(homework);
 
         // when
         Page<Homework> homeworkPage = homeworkRepository.findByDeviceTagAndCompleted("deviceTag", true, pageable);
 
         // then
         assertThat(homeworkPage.getContent()).hasSize(1);
-        assertThat(homeworkPage.getContent().getFirst()).isEqualTo(homework);
+        assertThat(homeworkPage.getContent().get(0)).isEqualTo(homework);
         verify(homeworkJpaRepository, times(1)).findByDeviceTagAndCompleted("deviceTag", true, pageable);
+    }
+
+    @Test
+    void 완료여부가_null인_경우_디바이스_태그로_페이지_조회한다() {
+        // given
+        Pageable pageable = mock(Pageable.class);
+        Page<HomeworkEntity> homeworkEntityPage = new PageImpl<>(List.of(homeworkEntity));
+        when(homeworkJpaRepository.findByDeviceTag("deviceTag", pageable)).thenReturn(homeworkEntityPage);
+        when(homeworkMapper.toDomain(homeworkEntity)).thenReturn(homework);
+
+        // when
+        Page<Homework> homeworkPage = homeworkRepository.findByDeviceTagAndCompleted("deviceTag", null, pageable);
+
+        // then
+        assertThat(homeworkPage.getContent()).hasSize(1);
+        assertThat(homeworkPage.getContent().getFirst()).isEqualTo(homework);
+        verify(homeworkJpaRepository, times(1)).findByDeviceTag("deviceTag", pageable);
     }
 
     @Test
