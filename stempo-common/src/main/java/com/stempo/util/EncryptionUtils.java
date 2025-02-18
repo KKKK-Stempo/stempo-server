@@ -85,7 +85,7 @@ public class EncryptionUtils {
         } catch (BadPaddingException e) {
             throw new BaseException(ErrorCode.DECRYPTION_ERROR, "잘못된 패딩이 감지되었습니다.");
         } catch (Exception e) {
-            throw new BaseException(ErrorCode.DECRYPTION_ERROR, "암호화 과정 중 오류가 발생했습니다.");
+            throw new BaseException(ErrorCode.DECRYPTION_ERROR, "복호화 과정 중 오류가 발생했습니다.");
         }
     }
 
