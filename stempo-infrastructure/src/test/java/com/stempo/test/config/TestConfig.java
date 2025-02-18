@@ -1,5 +1,8 @@
 package com.stempo.test.config;
 
+import static org.mockito.Mockito.mock;
+
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,11 +30,11 @@ public class TestConfig {
     @Bean
     public DataSource dataSource() {
         return DataSourceBuilder.create()
-                .driverClassName(env.getProperty("spring.datasource.driver-class-name"))
-                .url(env.getProperty("spring.datasource.url"))
-                .username(env.getProperty("spring.datasource.username"))
-                .password(env.getProperty("spring.datasource.password"))
-                .build();
+            .driverClassName(env.getProperty("spring.datasource.driver-class-name"))
+            .url(env.getProperty("spring.datasource.url"))
+            .username(env.getProperty("spring.datasource.username"))
+            .password(env.getProperty("spring.datasource.password"))
+            .build();
     }
 
     @Bean
@@ -54,5 +57,10 @@ public class TestConfig {
     @Bean
     public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
+    }
+
+    @Bean
+    public EntityManager entityManager() {
+        return mock(EntityManager.class);
     }
 }
