@@ -7,11 +7,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.stempo.config.AesConfig;
 import com.stempo.exception.BaseException;
 import com.stempo.exception.ErrorCode;
 import com.stempo.model.User;
 import com.stempo.repository.UserRepository;
 import com.stempo.util.AuthUtils;
+import com.stempo.util.EncryptionUtils;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,15 +27,40 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class UserServiceImplTest {
 
     private final int maxFailedAttempts = 5;
+
+    @Mock
+    private AesConfig aesConfig;
+
+    @Mock
+    private EncryptionUtils encryptionUtils;
+
     @Mock
     private UserRepository repository;
+
     @InjectMocks
     private UserServiceImpl userService;
+
     private User user;
 
     @BeforeEach
     void setUp() {
         user = User.create("test-device-tag", "test-password");
+    }
+
+    @Test
+    void 디바이스태그_암호화_성공한다() {
+        // given
+        String inputDeviceTag = "490154203237518";
+        String secretKey = "dummyDeviceTagSecret";
+        String expectedEncryptedValue = "encryptedDeviceTagValue";
+        when(aesConfig.getDeviceTagSecretKey()).thenReturn(secretKey);
+        when(encryptionUtils.encryptWithHashedIv(inputDeviceTag, secretKey)).thenReturn(expectedEncryptedValue);
+
+        // when
+        String actualEncryptedValue = userService.encryptDeviceTag(inputDeviceTag);
+
+        // then
+        assertThat(actualEncryptedValue).isEqualTo(expectedEncryptedValue);
     }
 
     @Test
