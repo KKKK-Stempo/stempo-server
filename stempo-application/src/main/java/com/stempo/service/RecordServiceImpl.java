@@ -101,7 +101,7 @@ public class RecordServiceImpl implements RecordService {
             deviceTag, weekStartDateTime, todayEndDateTime);
 
         // 연속된 훈련 일수 계산
-        int consecutiveWalkTrainingDays = calculateConsecutiveTrainingDays(deviceTag);
+        int consecutiveWalkTrainingDays = calculateMaxConsecutiveTrainingDays(deviceTag);
 
         return mapper.toDto(todayWalkTrainingCount, weeklyWalkTrainingCount, consecutiveWalkTrainingDays);
     }
@@ -131,23 +131,29 @@ public class RecordServiceImpl implements RecordService {
             .toList();
     }
 
-    private int calculateConsecutiveTrainingDays(String deviceTag) {
-        List<LocalDateTime> createdDates = recordRepository.findCreatedAtByDeviceTagOrderByCreatedAtDesc(deviceTag);
-        int consecutiveDays = 0;
-        LocalDate previousDate = null;
+    private int calculateMaxConsecutiveTrainingDays(String deviceTag) {
+        List<LocalDate> uniqueDates = recordRepository.findCreatedAtByDeviceTagOrderByCreatedAtDesc(deviceTag)
+            .stream()
+            .map(LocalDateTime::toLocalDate)
+            .distinct()
+            .toList();
 
-        for (LocalDateTime createdAt : createdDates) {
-            LocalDate recordDate = createdAt.toLocalDate();
+        if (uniqueDates.isEmpty()) {
+            return 0;
+        }
 
-            // 첫 기록이거나, 이전 기록이 하루 전날이면 연속으로 카운트
-            if (previousDate == null || previousDate.minusDays(1).isEqual(recordDate)) {
-                consecutiveDays++;
-                previousDate = recordDate;
+        int maxStreak = 1;
+        int currentStreak = 1;
+
+        for (int i = 1; i < uniqueDates.size(); i++) {
+            // 이전 날짜의 하루 전이 현재 날짜이면 연속
+            if (uniqueDates.get(i - 1).minusDays(1).equals(uniqueDates.get(i))) {
+                currentStreak++;
             } else {
-                // 연속된 날짜가 아니면 중단
-                break;
+                maxStreak = Math.max(maxStreak, currentStreak);
+                currentStreak = 1;
             }
         }
-        return consecutiveDays;
+        return Math.max(maxStreak, currentStreak);
     }
 }
