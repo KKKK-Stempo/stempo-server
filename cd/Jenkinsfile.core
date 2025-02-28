@@ -163,27 +163,8 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    def deploymentBG = load 'scripts/deployment/blueGreen.groovy'
-                    deploymentBG.deployNewInstance(
-                        deployContainer: vars.DEPLOY_CONTAINER,
-                        newPort: vars.NEW_PORT,
-                        applicationNetwork: vars.APPLICATION_NETWORK,
-                        hostDefaultPath: vars.HOST_DEFAULT_PATH,
-                        containerDefaultPath: vars.CONTAINER_DEFAULT_PATH,
-                        hostLogsPath: vars.HOST_LOGS_PATH,
-                        containerLogsPath: vars.CONTAINER_LOGS_PATH,
-                        profile: vars.PROFILE,
-                        imageName: vars.IMAGE_NAME
-                    )
-                }
-            }
-        }
-        stage('Deploy New Instance') {
-            steps {
-                script {
-                    FAILED_STAGE = env.STAGE_NAME
-                    def deploymentBG = load 'scripts/deployment/blueGreen.groovy'
-                    deploymentBG.deployNewInstance(
+                    def docker = load 'scripts/common/docker.groovy'
+                    docker.deployNewInstance(
                         containerName: vars.DEPLOY_CONTAINER,
                         image: vars.IMAGE_NAME,
                         imageTag: vars.IMAGE_TAG ?: vars.CONTAINER_NAME,
