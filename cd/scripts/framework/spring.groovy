@@ -13,7 +13,7 @@ def configureModuleProfile(Map params = [:]) {
     withCredentials([file(credentialsId: params.credentialsId, variable: 'YML_FILE')]) {
         def targetPath = "${env.WORKSPACE}${params.resourcePath}/${params.profileFile}"
         sh """
-            mkdir -p ${params.resourcePath}
+            mkdir -p ${env.WORKSPACE}${params.resourcePath}
             cp \$YML_FILE ${targetPath}
         """
     }
