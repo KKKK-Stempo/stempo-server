@@ -180,18 +180,22 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    def deploymentBG = load 'scripts/deployment/blueGreen.groovy'
-                    deploymentBG.performHealthCheck(
+                    def publicIp = sh(script: "curl -s ifconfig.me", returnStdout: true).trim()
+                    def healthCheckUrl = "http://${publicIp}:${vars.NEW_PORT}${vars.ACTUATOR_PATH}"
+                    echo "Constructed Health Check URL: ${healthCheckUrl}"
+
+                    def healthCheckUtil = load 'scripts/utils/healthCheck.groovy'
+                    healthCheckUtil.performHealthCheck(
+                        healthCheckUrl: healthCheckUrl,
                         whitelistUsername: vars.WHITELIST_ADMIN_USERNAME,
                         whitelistPassword: vars.WHITELIST_ADMIN_PASSWORD,
-                        actuatorPath: vars.ACTUATOR_PATH,
-                        newPort: vars.NEW_PORT,
-                        deployContainer: vars.DEPLOY_CONTAINER,
-                        timeout: 150000
+                        timeout: 150000,
+                        deployContainer: vars.DEPLOY_CONTAINER
                     )
                 }
             }
         }
+
         stage('Switch Traffic and Cleanup') {
             steps {
                 script {

@@ -56,38 +56,4 @@ def deployNewInstance(Map params = [:]) {
     """
 }
 
-/**
- * Health Check 함수 (Rolling 배포용)
- *
- * @param containerName : 컨테이너 이름 (String)
- * @param actuatorPath : 헬스체크 URL 경로 (String)
- * @param appPort : 어플리케이션 포트 (String)
- * @param timeout : 타임아웃 (ms, 기본 60000)
- */
-def performHealthCheck(Map params = [:]) {
-    if (!params.containerName || !params.actuatorPath || !params.appPort) {
-        error "performHealthCheck (rolling): 필요한 파라미터가 누락되었습니다."
-    }
-    def start_time = System.currentTimeMillis()
-    def TIMEOUT_MS = params.timeout ?: 60000
-    def timeout = start_time + TIMEOUT_MS
-
-    while (System.currentTimeMillis() < timeout) {
-        def elapsed = (System.currentTimeMillis() - start_time) / 1000
-        echo "Health check... ${elapsed} sec elapsed."
-        def status = sh(
-            script: "curl -s http://${params.containerName}:5000${params.actuatorPath} | grep 'UP'",
-            returnStatus: true
-        )
-        if (status == 0) {
-            echo "Application is UP after ${elapsed} seconds."
-            return
-        }
-        sleep 5
-    }
-    sh "docker stop ${params.containerName}"
-    sh "docker rm ${params.containerName}"
-    error "Health check failed."
-}
-
 return this

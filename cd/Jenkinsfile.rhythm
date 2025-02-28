@@ -110,12 +110,14 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    def deploymentRolling = load 'scripts/deployment/rolling.groovy'
-                    deploymentRolling.performHealthCheck(
-                        containerName: vars.CONTAINER_NAME,
-                        actuatorPath: vars.ACTUATOR_PATH,
-                        appPort: vars.APP_PORT,
-                        timeout: 60000
+                    def healthCheckUrl = "http://${vars.CONTAINER_NAME}:5000${vars.ACTUATOR_PATH}"
+                    echo "Constructed Health Check URL: ${healthCheckUrl}"
+
+                    def healthCheckUtil = load 'scripts/utils/healthCheck.groovy'
+                    healthCheckUtil.performHealthCheck(
+                        healthCheckUrl: healthCheckUrl,
+                        timeout: 60000,
+                        deployContainer: vars.CONTAINER_NAME
                     )
                 }
             }

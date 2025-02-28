@@ -100,44 +100,6 @@ def deployNewInstance(Map params = [:]) {
 }
 
 /**
- * Health Check 수행 함수.
- *
- * @param whitelistUsername : 헬스체크 인증 아이디 (String)
- * @param whitelistPassword : 헬스체크 인증 비밀번호 (String)
- * @param actuatorPath : 헬스체크 URL 경로 (String)
- * @param newPort : 새 포트 (String)
- * @param deployContainer : 배포 컨테이너 이름 (String)
- * @param timeout : 타임아웃 (ms, 기본 150000)
- */
-def performHealthCheck(Map params = [:]) {
-    if (!params.whitelistUsername || !params.whitelistPassword || !params.actuatorPath || !params.newPort) {
-        error "performHealthCheck: 필요한 파라미터가 누락되었습니다."
-    }
-    def publicIp = sh(script: "curl -s ifconfig.me", returnStdout: true).trim()
-    echo "Public IP: ${publicIp}"
-    def start_time = System.currentTimeMillis()
-    def TIMEOUT_MS = params.timeout ?: 150000
-    def timeout = start_time + TIMEOUT_MS
-
-    while (System.currentTimeMillis() < timeout) {
-        def elapsed = (System.currentTimeMillis() - start_time) / 1000
-        echo "Health check... ${elapsed} sec elapsed."
-        def status = sh(
-            script: """curl -s -u ${params.whitelistUsername}:${params.whitelistPassword} http://${publicIp}:${params.newPort}${params.actuatorPath} | grep 'UP'""",
-            returnStatus: true
-        )
-        if (status == 0) {
-            echo "Application is UP after ${elapsed} seconds."
-            return
-        }
-        sleep 5
-    }
-    sh "docker stop ${params.deployContainer}"
-    sh "docker rm ${params.deployContainer}"
-    error "Health check failed."
-}
-
-/**
  * 트래픽 전환 및 정리 함수.
  *
  * @param nginxContainer : Nginx 컨테이너 이름 (String)
