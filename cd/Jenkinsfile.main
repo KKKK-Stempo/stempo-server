@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    triggers {
+        githubPush()
+    }
+
+    stages {
+        stage('Analyze Changes') {
+            steps {
+                script {
+                    def analyzeChanges = load "${env.WORKSPACE}/cd/scripts/common/analyzeChanges.groovy"
+                    def changedServices = analyzeChanges()
+                    echo "Changed services: ${changedServices}"
+                    env.CHANGED_SERVICES = changedServices.join(',')
+                }
+            }
+        }
+        stage('Trigger Sub-Pipelines') {
+            steps {
+                script {
+                    def changed = env.CHANGED_SERVICES.split(',')
+                    def config = load "${env.WORKSPACE}/cd/scripts/common/config.groovy"
+                    def jobsMapping = config.jobsMapping
+
+                    changed.each { service ->
+                        if (jobsMapping.containsKey(service)) {
+                            echo "Triggering job for service ${service}: ${jobsMapping[service]}"
+                            build job: jobsMapping[service], propagate: true
+                        } else {
+                            echo "No job mapping defined for service: ${service}"
+                        }
+                    }
+
+                    if (!changed.any { jobsMapping.containsKey(it) }) {
+                        echo "No relevant service changes. Skipping sub-pipelines."
+                    }
+                }
+            }
+        }
+    }
+}
