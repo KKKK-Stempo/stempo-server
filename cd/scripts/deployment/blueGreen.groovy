@@ -84,40 +84,39 @@ def deployNewInstance(Map params = [:]) {
  * 트래픽 전환 및 정리 함수.
  *
  * @param nginxContainer : Nginx 컨테이너 이름 (String)
- * @param newTarget : 새로운 타겟 URL (String)
- * @param nginxConfigPath : Nginx 설정 파일 경로 (String)
- * @param oldPort : 기존 포트 (String)
- * @param newPort : 변경 후 포트 (String)
- * @param currentContainer : 기존 컨테이너 이름 (String)
+ * @param newTarget      : 새로운 타겟 URL (String)
+ * @param nginxConfigPath: Nginx 설정 파일 경로 (String)
+ * @param oldPort        : 기존 포트 (String)
+ * @param newPort        : 변경 후 포트 (String)
+ * @param currentContainer: 기존 컨테이너 이름 (String)
  */
 def switchTrafficAndCleanup(Map params = [:]) {
-    if (!params.nginxContainer || !params.newTarget || !params.nginxConfigPath || !params.oldPort || !params.newPort || !params.currentContainer) {
+    if (!params.nginxContainer || !params.newTarget || !params.nginxConfigPath ||
+        !params.oldPort || !params.newPort || !params.currentContainer) {
         error "switchTrafficAndCleanup: 필요한 파라미터가 누락되었습니다."
     }
     echo "Switching traffic to new target on port ${params.newPort}."
-    updateNginxConfig(params.nginxContainer, params.newTarget, params.nginxConfigPath, params.oldPort, params.newPort)
-    reloadNginx(params.nginxContainer)
+
+    // Nginx 관련 함수 호출 (공통 파일)
+    def nginxUtil = load 'scripts/common/nginx.groovy'
+    nginxUtil.updateConfig(
+        container: params.nginxContainer,
+        targetUrl: params.newTarget,
+        configFile: params.nginxConfigPath,
+        oldPort: params.oldPort,
+        newPort: params.newPort
+    )
+    nginxUtil.reloadConfig(container: params.nginxContainer)
+
+    // 기존 컨테이너 정리
     stopAndRemoveContainer(params.currentContainer)
 }
 
-def updateNginxConfig(String nginxContainer, String newTargetUrl, String configPath, String oldPort, String newPort) {
-    sh """
-        docker exec ${nginxContainer} bash -c '
-            export TARGET_URL=${newTargetUrl}
-            envsubst "\\\$TARGET_URL" < ${configPath}.template > ${configPath}
-        '
-        docker exec ${nginxContainer} sed -i 's/${oldPort}/${newPort}/' ${configPath}
-    """
-}
-
-def reloadNginx(String nginxContainer) {
-    sh """
-        docker exec ${nginxContainer} nginx -t
-        docker exec ${nginxContainer} nginx -s reload
-        echo "Nginx reloaded."
-    """
-}
-
+/**
+ * 기존 컨테이너 중지 및 제거 함수.
+ *
+ * @param containerName: 컨테이너 이름 (String)
+ */
 def stopAndRemoveContainer(String containerName) {
     def containerRunning = sh(script: "docker ps --filter 'name=${containerName}' --format '{{.Names}}' | grep -q '${containerName}'", returnStatus: true) == 0
     if (containerRunning) {
