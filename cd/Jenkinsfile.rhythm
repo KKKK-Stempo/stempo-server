@@ -100,6 +100,24 @@ pipeline {
                     FAILED_STAGE = env.STAGE_NAME
                     def deploymentRolling = load 'scripts/deployment/rolling.groovy'
                     deploymentRolling.deployNewInstance(
+                        name: vars.CONTAINER_NAME,
+                        image: vars.IMAGE_NAME,
+                        imageTag: vars.IMAGE_TAG ?: vars.CONTAINER_NAME,
+                        hostPort: vars.APP_PORT,
+                        containerPort: "5000",
+                        network: vars.APPLICATION_NETWORK,
+                        restartPolicy: "always",
+                        extraNetworks: [vars.INFRA_NETWORK]
+                    )
+                }
+            }
+        }
+        stage('Deploy New Instance') {
+            steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                    def deploymentRolling = load 'scripts/deployment/rolling.groovy'
+                    deploymentRolling.deployNewInstance(
                         containerName: vars.CONTAINER_NAME,
                         appPort: vars.APP_PORT,
                         applicationNetwork: vars.APPLICATION_NETWORK,
