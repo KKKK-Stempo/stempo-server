@@ -100,7 +100,7 @@ pipeline {
                     FAILED_STAGE = env.STAGE_NAME
                     def deploymentRolling = load 'scripts/deployment/rolling.groovy'
                     deploymentRolling.deployNewInstance(
-                        name: vars.CONTAINER_NAME,
+                        containerName: vars.CONTAINER_NAME,
                         image: vars.IMAGE_NAME,
                         imageTag: vars.IMAGE_TAG ?: vars.CONTAINER_NAME,
                         hostPort: vars.APP_PORT,

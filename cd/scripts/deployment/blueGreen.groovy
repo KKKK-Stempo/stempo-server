@@ -64,8 +64,9 @@ def deployNewInstance(Map params = [:]) {
     }
 
     // 기본값 설정
-    def hostPort = params.hostPort ?: null  // 미지정 시 -p 옵션 생략
+    def hostPort = params.hostPort ?: null
     def containerPort = params.containerPort ?: "8080"
+    def tag = params.imageTag ?: params.containerName
 
     // 기존 컨테이너 중지 및 제거
     sh """
@@ -77,7 +78,6 @@ def deployNewInstance(Map params = [:]) {
     """
 
     // 이미지 태그: imageTag 파라미터가 제공되면 사용, 없으면 containerName 사용
-    def tag = params.imageTag ?: params.containerName
     cmd += " ${params.image}:${tag}"
 
     // docker run 명령어 동적 구성
@@ -115,7 +115,6 @@ def deployNewInstance(Map params = [:]) {
     echo "Executing: ${cmd}"
     sh cmd
 
-    // extraNetworks 옵션 처리: 단일 문자열 또는 리스트
     if (params.extraNetworks) {
         if (params.extraNetworks instanceof List) {
             params.extraNetworks.each { net ->
