@@ -16,5 +16,11 @@ return [
         rhythm: [
             'stempo-rhythm'
         ]
+    ],
+
+    // 서비스별 Job 이름 매핑: 서비스별로 실행할 Jenkins Job 이름을 지정
+    jobsMapping: [
+        core  : 'stempo-prod',
+        rhythm: 'stempo-prod-rhythm'
     ]
 ]

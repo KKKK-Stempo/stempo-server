@@ -21,16 +21,19 @@ pipeline {
             steps {
                 script {
                     def changed = env.CHANGED_SERVICES.split(',')
+                    def config = load "${env.WORKSPACE}/cd/scripts/common/config.groovy"
+                    def jobsMapping = config.jobsMapping
 
-                    if (changed.contains('core')) {
-                        echo "Triggering stempo-prod..."
-                        build job: 'stempo-prod', propagate: true
+                    changed.each { service ->
+                        if (jobsMapping.containsKey(service)) {
+                            echo "Triggering job for service ${service}: ${jobsMapping[service]}"
+                            build job: jobsMapping[service], propagate: true
+                        } else {
+                            echo "No job mapping defined for service: ${service}"
+                        }
                     }
-                    if (changed.contains('rhythm')) {
-                        echo "Triggering stempo-prod-rhythm..."
-                        build job: 'stempo-prod-rhythm', propagate: true
-                    }
-                    if (!changed.contains('core') && !changed.contains('rhythm')) {
+
+                    if (!changed.any { jobsMapping.containsKey(it) }) {
                         echo "No relevant service changes. Skipping sub-pipelines."
                     }
                 }
