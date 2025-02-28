@@ -72,8 +72,8 @@ pipeline {
                     steps {
                         script {
                             FAILED_STAGE = env.STAGE_NAME
-                            def dockerUtils = load 'scripts/common/dockerUtils.groovy'
-                            dockerUtils.dockerLogin(credentialsId: 'dockerhub_credentials')
+                            def docker = load 'scripts/common/docker.groovy'
+                            docker.dockerLogin(credentialsId: 'dockerhub_credentials')
                         }
                     }
                 }
