@@ -133,7 +133,6 @@ def deployNewInstance(Map params = [:]) {
         }
     }
 
-    // 이미지 태그: imageTag 파라미터가 제공되면 사용, 없으면 containerName 사용
     cmd += " ${params.image}:${tag}"
 
     echo "Executing: ${cmd}"

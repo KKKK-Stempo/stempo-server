@@ -11,7 +11,7 @@ def configureModuleProfile(Map params = [:]) {
         error "configureModuleProfile: 필요한 파라미터가 누락되었습니다."
     }
     withCredentials([file(credentialsId: params.credentialsId, variable: 'YML_FILE')]) {
-        def targetPath = "${params.resourcePath}/${params.profileFile}"
+        def targetPath = "${env.WORKSPACE}${params.resourcePath}/${params.profileFile}"
         sh """
             mkdir -p ${params.resourcePath}
             cp \$YML_FILE ${targetPath}
