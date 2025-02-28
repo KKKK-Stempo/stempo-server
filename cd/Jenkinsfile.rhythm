@@ -11,7 +11,7 @@ pipeline {
                 script { FAILED_STAGE = env.STAGE_NAME }
                 withCredentials([file(credentialsId: 'stempo_prod_rhythm_config_yml', variable: 'CONFIG_FILE')]) {
                     script {
-                        def envLoader = load 'scripts/common/envLoader.groovy'
+                        def envLoader = load 'cd/scripts/common/envLoader.groovy'
                         vars.WORKSPACE = env.WORKSPACE
                         def mappingTable = [
                             [yamlPath: "jenkins-domain", targetKey: "JENKINS_DOMAIN", required: true],
@@ -32,7 +32,6 @@ pipeline {
                             [yamlPath: "docker.build-context", targetKey: "BUILD_CONTEXT", required: true],
 
                             [yamlPath: "healthcheck.actuator-path", targetKey: "ACTUATOR_PATH", required: true],
-                            // 추가 매핑이 필요하면 여기에...
                         ]
                         envLoader.loadEnvironmentVariables(configFile: env.CONFIG_FILE, targetMap: vars, mappingTable: mappingTable)
                     }
@@ -45,7 +44,7 @@ pipeline {
                     steps {
                         script {
                             FAILED_STAGE = env.STAGE_NAME
-                            def git = load 'scripts/common/git.groovy'
+                            def git = load 'cd/scripts/common/git.groovy'
                             vars.GIT_CHANGELOG = git.getChangeLog(previousCommit: env.GIT_PREVIOUS_SUCCESSFUL_COMMIT, currentCommit: env.GIT_COMMIT)
                         }
                     }
@@ -54,7 +53,7 @@ pipeline {
                     steps {
                         script {
                             FAILED_STAGE = env.STAGE_NAME
-                            def docker = load 'scripts/common/docker.groovy'
+                            def docker = load 'cd/scripts/common/docker.groovy'
                             docker.dockerLogin(credentialsId: 'dockerhub_credentials')
                         }
                     }
@@ -65,7 +64,7 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    def dockerUtil = load 'scripts/common/docker.groovy'
+                    def dockerUtil = load 'cd/scripts/common/docker.groovy'
                     dockerUtil.buildAndPushDockerImage(
                         dockerfile: vars.DOCKERFILE_PATH,
                         image: vars.IMAGE_NAME,
@@ -80,7 +79,7 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    def docker = load 'scripts/common/docker.groovy'
+                    def docker = load 'cd/scripts/common/docker.groovy'
                     docker.deployNewInstance(
                         containerName: vars.CONTAINER_NAME,
                         image: vars.IMAGE_NAME,
@@ -101,7 +100,7 @@ pipeline {
                     def healthCheckUrl = "http://${vars.CONTAINER_NAME}:5000${vars.ACTUATOR_PATH}"
                     echo "Constructed Health Check URL: ${healthCheckUrl}"
 
-                    def healthCheckUtil = load 'scripts/common/healthCheck.groovy'
+                    def healthCheckUtil = load 'cd/scripts/common/healthCheck.groovy'
                     healthCheckUtil.performHealthCheck(
                         healthCheckUrl: healthCheckUrl,
                         timeout: 60000,
@@ -114,7 +113,7 @@ pipeline {
     post {
         failure {
             script {
-                def slackNotifier = load 'scripts/common/slackNotifier.groovy'
+                def slackNotifier = load 'cd/scripts/common/slackNotifier.groovy'
                 slackNotifier.sendSlackBuildNotification(
                     message: ":scream_cat: Stage *${FAILED_STAGE}* failed.",
                     color: vars.SLACK_COLOR_FAILURE,
@@ -127,7 +126,7 @@ pipeline {
         }
         success {
             script {
-                def slackNotifier = load 'scripts/common/slackNotifier.groovy'
+                def slackNotifier = load 'cd/scripts/common/slackNotifier.groovy'
                 slackNotifier.sendSlackBuildNotification(
                     message: ":rocket: Deployment completed successfully",
                     color: vars.SLACK_COLOR_SUCCESS,

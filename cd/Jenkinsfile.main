@@ -22,12 +22,10 @@ pipeline {
                 script {
                     def changed = env.CHANGED_SERVICES.split(',')
 
-                    // CORE 변경 시 stempo-prod 트리거
                     if (changed.contains('core')) {
                         echo "Triggering stempo-prod..."
                         build job: 'stempo-prod', propagate: true
                     }
-                    // RHYTHM 변경 시 stempo-prod-rhythm 트리거
                     if (changed.contains('rhythm')) {
                         echo "Triggering stempo-prod-rhythm..."
                         build job: 'stempo-prod-rhythm', propagate: true

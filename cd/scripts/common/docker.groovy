@@ -42,7 +42,7 @@ def buildAndPushDockerImage(Map params = [:]) {
 /**
  * 주어진 컨테이너를 중지 및 제거하는 함수.
  *
- * @param containerName: 컨테이너 이름 (String)
+ * @param containerName : 컨테이너 이름 (String)
  */
 def stopAndRemoveContainer(String containerName) {
     if (!containerName) {
@@ -101,9 +101,6 @@ def deployNewInstance(Map params = [:]) {
         fi
     """
 
-    // 이미지 태그: imageTag 파라미터가 제공되면 사용, 없으면 containerName 사용
-    cmd += " ${params.image}:${tag}"
-
     // docker run 명령어 동적 구성
     def cmd = "docker run -d --name ${params.containerName}"
 
@@ -135,6 +132,9 @@ def deployNewInstance(Map params = [:]) {
             cmd += " " + params.extraArgs
         }
     }
+
+    // 이미지 태그: imageTag 파라미터가 제공되면 사용, 없으면 containerName 사용
+    cmd += " ${params.image}:${tag}"
 
     echo "Executing: ${cmd}"
     sh cmd

@@ -1,7 +1,7 @@
 // Jenkinsfile.core
 def FAILED_STAGE = ""
 def BACKUP_FILE = ""
-def vars = [:]  // 공통 변수들을 저장할 Map
+def vars = [:]
 
 pipeline {
     agent any
@@ -14,8 +14,7 @@ pipeline {
                 }
                 withCredentials([file(credentialsId: 'stempo_prod_core_config_yml', variable: 'CONFIG_FILE')]) {
                     script {
-                        def envLoader = load 'scripts/common/envLoader.groovy'
-                        // WORKSPACE는 미리 셋팅
+                        def envLoader = load 'cd/scripts/common/envLoader.groovy'
                         vars.WORKSPACE = env.WORKSPACE
                         def mappingTable = [
                             [yamlPath: "jenkins-domain", targetKey: "JENKINS_DOMAIN", required: true],
@@ -70,7 +69,7 @@ pipeline {
         stage('Configure Centralized Spring Profiles') {
             steps {
                 script {
-                    def framework = load 'scripts/framework/spring.groovy'
+                    def framework = load 'cd/scripts/framework/spring.groovy'
                     framework.configureModuleProfile(credentialsId: 'stempo_prod_core_yml', resourcePath: vars.RESOURCES_PATH, profileFile: vars.PROFILE_FILE_NAME)
                 }
             }
@@ -81,7 +80,7 @@ pipeline {
                     steps {
                         script {
                             FAILED_STAGE = env.STAGE_NAME
-                            def git = load 'scripts/common/git.groovy'
+                            def git = load 'cd/scripts/common/git.groovy'
                             vars.GIT_CHANGELOG = git.getChangeLog(previousCommit: env.GIT_PREVIOUS_SUCCESSFUL_COMMIT, currentCommit: env.GIT_COMMIT)
                         }
                     }
@@ -90,7 +89,7 @@ pipeline {
                     steps {
                         script {
                             FAILED_STAGE = env.STAGE_NAME
-                            def dbBackup = load 'scripts/common/db.groovy'
+                            def dbBackup = load 'cd/scripts/common/db.groovy'
                             BACKUP_FILE = dbBackup.backupMariaDB(
                                 dbUser: vars.MARIA_DB_USER,
                                 dbPassword: vars.MARIA_DB_PASSWORD,
@@ -104,7 +103,7 @@ pipeline {
                     steps {
                         script {
                             FAILED_STAGE = env.STAGE_NAME
-                            def docker = load 'scripts/common/docker.groovy'
+                            def docker = load 'cd/scripts/common/docker.groovy'
                             docker.dockerLogin(credentialsId: 'dockerhub_credentials')
                         }
                     }
@@ -113,7 +112,7 @@ pipeline {
                     steps {
                         script {
                             FAILED_STAGE = env.STAGE_NAME
-                            def deploymentBG = load 'scripts/deployment/blueGreen.groovy'
+                            def deploymentBG = load 'cd/scripts/deployment/blueGreen.groovy'
                             deploymentBG.determineContainers(
                                 blueContainer: vars.BLUE_CONTAINER,
                                 greenContainer: vars.GREEN_CONTAINER,
@@ -132,7 +131,7 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    def dockerUtil = load 'scripts/common/docker.groovy'
+                    def dockerUtil = load 'cd/scripts/common/docker.groovy'
                     dockerUtil.buildAndPushDockerImage(
                         dockerfile: vars.DOCKERFILE_PATH,
                         image: vars.IMAGE_NAME,
@@ -147,7 +146,7 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    def docker = load 'scripts/common/docker.groovy'
+                    def docker = load 'cd/scripts/common/docker.groovy'
                     docker.deployNewInstance(
                         containerName: vars.DEPLOY_CONTAINER,
                         image: vars.IMAGE_NAME,
@@ -177,7 +176,7 @@ pipeline {
                     def healthCheckUrl = "http://${publicIp}:${vars.NEW_PORT}${vars.ACTUATOR_PATH}"
                     echo "Constructed Health Check URL: ${healthCheckUrl}"
 
-                    def healthCheckUtil = load 'scripts/common/healthCheck.groovy'
+                    def healthCheckUtil = load 'cd/scripts/common/healthCheck.groovy'
                     healthCheckUtil.performHealthCheck(
                         healthCheckUrl: healthCheckUrl,
                         whitelistUsername: vars.WHITELIST_ADMIN_USERNAME,
@@ -192,7 +191,7 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    def nginx = load 'scripts/common/nginx.groovy'
+                    def nginx = load 'cd/scripts/common/nginx.groovy'
                     nginx.updateConfig(
                         container: vars.NGINX_CONTAINER_NAME,
                         targetUrl: vars.NEW_TARGET,
@@ -203,7 +202,7 @@ pipeline {
                     nginx.reloadConfig(container: vars.NGINX_CONTAINER_NAME)
                 }
                 script {
-                    def docker = load 'scripts/common/docker.groovy'
+                    def docker = load 'cd/scripts/common/docker.groovy'
                     docker.stopAndRemoveContainer(vars.CURRENT_CONTAINER)
                 }
             }
@@ -212,7 +211,7 @@ pipeline {
     post {
         failure {
             script {
-                def slackNotifier = load 'scripts/common/slackNotifier.groovy'
+                def slackNotifier = load 'cd/scripts/common/slackNotifier.groovy'
                 slackNotifier.sendSlackBuildNotification(
                     message: ":scream_cat: Stage *${FAILED_STAGE}* failed.",
                     color: vars.SLACK_COLOR_FAILURE,
@@ -225,7 +224,7 @@ pipeline {
         }
         success {
             script {
-                def slackNotifier = load 'scripts/common/slackNotifier.groovy'
+                def slackNotifier = load 'cd/scripts/common/slackNotifier.groovy'
                 slackNotifier.sendSlackBuildNotification(
                     message: ":rocket: Deployment completed successfully",
                     color: vars.SLACK_COLOR_SUCCESS,
