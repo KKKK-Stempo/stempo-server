@@ -178,6 +178,32 @@ pipeline {
                 }
             }
         }
+        stage('Deploy New Instance') {
+            steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                    def deploymentBG = load 'scripts/deployment/blueGreen.groovy'
+                    deploymentBG.deployNewInstance(
+                        deployContainer: vars.DEPLOY_CONTAINER,
+                        image: vars.IMAGE_NAME,
+                        imageTag: vars.IMAGE_TAG ?: vars.CONTAINER_NAME,
+                        hostPort: vars.NEW_PORT,
+                        containerPort: "8080",
+                        network: vars.APPLICATION_NETWORK,
+                        restartPolicy: "unless-stopped",
+                        extraVolumes: [
+                            "${vars.HOST_DEFAULT_PATH}:${vars.CONTAINER_DEFAULT_PATH}",
+                            "${vars.HOST_LOGS_PATH}:${vars.CONTAINER_LOGS_PATH}"
+                        ],
+                        extraEnv: [
+                            "LOG_PATH=${vars.CONTAINER_LOGS_PATH}",
+                            "SPRING_PROFILES_ACTIVE=${vars.PROFILE}"
+                        ],
+                        extraNetworks: [vars.INFRA_NETWORK]
+                    )
+                }
+            }
+        }
         stage('Health Check') {
             steps {
                 script {
@@ -197,7 +223,6 @@ pipeline {
                 }
             }
         }
-
         stage('Switch Traffic and Cleanup') {
             steps {
                 script {
