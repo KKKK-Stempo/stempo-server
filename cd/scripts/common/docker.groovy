@@ -40,6 +40,27 @@ def buildAndPushDockerImage(Map params = [:]) {
 }
 
 /**
+ * 주어진 컨테이너를 중지 및 제거하는 함수.
+ *
+ * @param containerName: 컨테이너 이름 (String)
+ */
+def stopAndRemoveContainer(String containerName) {
+    if (!containerName) {
+        error "stopAndRemoveContainer: containerName 파라미터가 필요합니다."
+    }
+    def isRunning = sh(script: "docker ps --filter 'name=${containerName}' --format '{{.Names}}' | grep -q '${containerName}'", returnStatus: true) == 0
+    if (isRunning) {
+        sh """
+            docker stop ${containerName}
+            docker rm ${containerName}
+            echo "Stopped and removed ${containerName}."
+        """
+    } else {
+        echo "No running container ${containerName} found."
+    }
+}
+
+/**
  * 새 인스턴스를 배포하는 함수 (Blue-Green 배포용)
  *
  * 필수:

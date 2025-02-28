@@ -208,15 +208,19 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    def deploymentBG = load 'scripts/deployment/blueGreen.groovy'
-                    deploymentBG.switchTrafficAndCleanup(
-                        nginxContainer: vars.NGINX_CONTAINER_NAME,
-                        newTarget: vars.NEW_TARGET,
-                        nginxConfigPath: vars.NGINX_CONFIG_PATH,
+                    def nginx = load 'scripts/common/nginx.groovy'
+                    nginx.updateConfig(
+                        container: vars.NGINX_CONTAINER_NAME,
+                        targetUrl: vars.NEW_TARGET,
+                        configFile: vars.NGINX_CONFIG_PATH,
                         oldPort: vars.OLD_PORT,
-                        newPort: vars.NEW_PORT,
-                        currentContainer: vars.CURRENT_CONTAINER
+                        newPort: vars.NEW_PORT
                     )
+                    nginx.reloadConfig(container: vars.NGINX_CONTAINER_NAME)
+                }
+                script {
+                    def docker = load 'scripts/common/docker.groovy'
+                    docker.stopAndRemoveContainer(vars.CURRENT_CONTAINER)
                 }
             }
         }
