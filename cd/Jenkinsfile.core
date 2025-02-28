@@ -106,7 +106,7 @@ pipeline {
                     steps {
                         script {
                             FAILED_STAGE = env.STAGE_NAME
-                            def dbBackup = load 'scripts/common/dbBackup.groovy'
+                            def dbBackup = load 'scripts/common/db.groovy'
                             BACKUP_FILE = dbBackup.backupMariaDB(
                                 dbUser: vars.MARIA_DB_USER,
                                 dbPassword: vars.MARIA_DB_PASSWORD,
