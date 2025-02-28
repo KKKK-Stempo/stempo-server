@@ -115,7 +115,7 @@ pipeline {
                     def healthCheckUrl = "http://${vars.CONTAINER_NAME}:5000${vars.ACTUATOR_PATH}"
                     echo "Constructed Health Check URL: ${healthCheckUrl}"
 
-                    def healthCheckUtil = load 'scripts/utils/healthCheck.groovy'
+                    def healthCheckUtil = load 'scripts/common/healthCheck.groovy'
                     healthCheckUtil.performHealthCheck(
                         healthCheckUrl: healthCheckUrl,
                         timeout: 60000,

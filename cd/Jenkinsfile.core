@@ -186,7 +186,7 @@ pipeline {
                     def healthCheckUrl = "http://${publicIp}:${vars.NEW_PORT}${vars.ACTUATOR_PATH}"
                     echo "Constructed Health Check URL: ${healthCheckUrl}"
 
-                    def healthCheckUtil = load 'scripts/utils/healthCheck.groovy'
+                    def healthCheckUtil = load 'scripts/common/healthCheck.groovy'
                     healthCheckUtil.performHealthCheck(
                         healthCheckUrl: healthCheckUrl,
                         whitelistUsername: vars.WHITELIST_ADMIN_USERNAME,
