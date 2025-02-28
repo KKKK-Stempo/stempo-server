@@ -21,7 +21,7 @@ pipeline {
 
                             [yamlPath: "dockerhub.repo", targetKey: "DOCKER_HUB_REPO", required: true],
 
-                            [yamlPath: "container.image-name", targetKey: "IMAGE_NAME", required: true],
+                            [yamlPath: "containers.image-name", targetKey: "IMAGE_NAME", required: true],
                             [yamlPath: "containers.container-name", targetKey: "CONTAINER_NAME", required: true],
                             [yamlPath: "containers.app-port", targetKey: "APP_PORT", required: true],
 
