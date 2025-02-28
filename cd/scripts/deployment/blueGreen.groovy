@@ -1,4 +1,4 @@
-// scripts/deployment/blueGreen.groovy
+// cd/scripts/deployment/blueGreen.groovy
 /**
  * Blue-Green 배포 관련 함수들
  */
@@ -6,13 +6,13 @@
 /**
  * 컨테이너를 결정하는 함수.
  *
- * @param blueContainer  : Blue 컨테이너 이름 (String)
+ * @param blueContainer : Blue 컨테이너 이름 (String)
  * @param greenContainer : Green 컨테이너 이름 (String)
- * @param blueUrl        : Blue 컨테이너 URL (String)
- * @param greenUrl       : Green 컨테이너 URL (String)
- * @param portA          : Blue 포트 (String)
- * @param portB          : Green 포트 (String)
- * @param targetMap      : 결과를 저장할 Map (예: vars)
+ * @param blueUrl : Blue 컨테이너 URL (String)
+ * @param greenUrl : Green 컨테이너 URL (String)
+ * @param portA : Blue 포트 (String)
+ * @param portB : Green 포트 (String)
+ * @param targetMap : 결과를 저장할 Map (예: vars)
  */
 def determineContainers(Map params = [:]) {
     if (!params.blueContainer || !params.greenContainer || !params.blueUrl || !params.greenUrl ||

@@ -1,4 +1,4 @@
-// Jenkinsfile.core
+// cd/Jenkinsfile.core
 def FAILED_STAGE = ""
 def BACKUP_FILE = ""
 def vars = [:]

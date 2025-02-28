@@ -1,4 +1,4 @@
-// scripts/common/git.groovy
+// cd/scripts/common/common/git.groovy
 /**
  * Git 로그 변경 내역을 가져오는 함수.
  *

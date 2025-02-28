@@ -1,4 +1,4 @@
-// scripts/common/db.groovy
+// cd/scripts/common/db.groovy
 /**
  * MariaDB 백업을 수행하는 함수.
  *

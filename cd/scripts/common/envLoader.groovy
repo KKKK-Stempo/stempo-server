@@ -1,4 +1,4 @@
-// scripts/common/envLoader.groovy
+// cd/scripts/common/envLoader.groovy
 /**
  * 표준화된 매핑 테이블(mappingTable)을 이용하여 YAML 설정 파일로부터 환경변수를 로딩합니다.
  *

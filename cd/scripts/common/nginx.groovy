@@ -1,12 +1,12 @@
-// scripts/common/nginx.groovy
+// cd/scripts/common/nginx.groovy
 /**
  * Nginx 설정 파일 업데이트 함수.
  *
  * @param container : Nginx 컨테이너 이름 (String)
  * @param targetUrl : 대체할 새로운 타겟 URL (String)
- * @param configFile: Nginx 설정 파일 경로 (String)
- * @param oldPort   : 기존 포트 (String)
- * @param newPort   : 변경 후 포트 (String)
+ * @param configFile : Nginx 설정 파일 경로 (String)
+ * @param oldPort : 기존 포트 (String)
+ * @param newPort : 변경 후 포트 (String)
  */
 def updateConfig(Map params = [:]) {
     if (!params.container || !params.targetUrl || !params.configFile || !params.oldPort || !params.newPort) {
@@ -24,7 +24,7 @@ def updateConfig(Map params = [:]) {
 /**
  * Nginx 설정을 재로딩하는 함수.
  *
- * @param container: Nginx 컨테이너 이름 (String)
+ * @param container : Nginx 컨테이너 이름 (String)
  */
 def reloadConfig(Map params = [:]) {
     if (!params.container) {
