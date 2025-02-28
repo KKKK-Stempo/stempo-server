@@ -64,8 +64,8 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    def dockerUtil = load 'cd/scripts/common/docker.groovy'
-                    dockerUtil.buildAndPushDockerImage(
+                    def docker = load 'cd/scripts/common/docker.groovy'
+                    docker.buildAndPushDockerImage(
                         dockerfile: vars.DOCKERFILE_PATH,
                         image: vars.IMAGE_NAME,
                         tag: vars.CONTAINER_NAME,

@@ -33,7 +33,7 @@ def buildAndPushDockerImage(Map params = [:]) {
         error "buildAndPushDockerImage: 필요한 파라미터(dockerfile, image, tag, repo, context)가 누락되었습니다."
     }
     sh """
-        DOCKER_BUILDKIT=1 docker build -f ${params.dockerfile} -t ${params.image}:${params.tag} ${params.context}
+        DOCKER_BUILDKIT=1 docker build -f ${env.WORKSPACE}${params.dockerfile} -t ${params.image}:${params.tag} ${params.context}
         docker tag ${params.image}:${params.tag} ${params.repo}:${params.tag}
         docker push ${params.repo}:${params.tag}
     """
