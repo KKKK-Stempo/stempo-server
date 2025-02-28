@@ -176,8 +176,8 @@ pipeline {
                     def healthCheckUrl = "http://${publicIp}:${vars.NEW_PORT}${vars.ACTUATOR_PATH}"
                     echo "Constructed Health Check URL: ${healthCheckUrl}"
 
-                    def healthCheckUtil = load 'cd/scripts/common/healthCheck.groovy'
-                    healthCheckUtil.performHealthCheck(
+                    def healthCheck = load 'cd/scripts/common/healthCheck.groovy'
+                    healthCheck.performHealthCheck(
                         healthCheckUrl: healthCheckUrl,
                         whitelistUsername: vars.WHITELIST_ADMIN_USERNAME,
                         whitelistPassword: vars.WHITELIST_ADMIN_PASSWORD,
@@ -213,7 +213,7 @@ pipeline {
             script {
                 def slackNotifier = load 'cd/scripts/common/slackNotifier.groovy'
                 slackNotifier.sendSlackBuildNotification(
-                    message: ":scream_cat: **[CORE]** Stage *${FAILED_STAGE}* failed.",
+                    message: ":scream_cat: *[CORE]* Stage *${FAILED_STAGE}* failed.",
                     color: vars.SLACK_COLOR_FAILURE,
                     jobUrl: "${vars.JENKINS_DOMAIN}/job/${env.JOB_NAME}",
                     consoleOutputUrl: "${vars.JENKINS_DOMAIN}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/console",
@@ -226,7 +226,7 @@ pipeline {
             script {
                 def slackNotifier = load 'cd/scripts/common/slackNotifier.groovy'
                 slackNotifier.sendSlackBuildNotification(
-                    message: ":rocket: **[CORE]** Deployment completed successfully",
+                    message: ":rocket: *[CORE]* Deployment completed successfully",
                     color: vars.SLACK_COLOR_SUCCESS,
                     jobUrl: "${vars.JENKINS_DOMAIN}/job/${env.JOB_NAME}",
                     consoleOutputUrl: "${vars.JENKINS_DOMAIN}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/console",
