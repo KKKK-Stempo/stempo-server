@@ -213,7 +213,7 @@ pipeline {
             script {
                 def slackNotifier = load 'cd/scripts/common/slackNotifier.groovy'
                 slackNotifier.sendSlackBuildNotification(
-                    message: ":scream_cat: [CORE] Stage *${FAILED_STAGE}* failed.",
+                    message: ":scream_cat: **[CORE]** Stage *${FAILED_STAGE}* failed.",
                     color: vars.SLACK_COLOR_FAILURE,
                     jobUrl: "${vars.JENKINS_DOMAIN}/job/${env.JOB_NAME}",
                     consoleOutputUrl: "${vars.JENKINS_DOMAIN}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/console",
@@ -226,7 +226,7 @@ pipeline {
             script {
                 def slackNotifier = load 'cd/scripts/common/slackNotifier.groovy'
                 slackNotifier.sendSlackBuildNotification(
-                    message: ":rocket: [CORE] Deployment completed successfully",
+                    message: ":rocket: **[CORE]** Deployment completed successfully",
                     color: vars.SLACK_COLOR_SUCCESS,
                     jobUrl: "${vars.JENKINS_DOMAIN}/job/${env.JOB_NAME}",
                     consoleOutputUrl: "${vars.JENKINS_DOMAIN}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/console",
