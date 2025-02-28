@@ -6,23 +6,7 @@ def vars = [:]  // 공통 변수들을 저장할 Map
 pipeline {
     agent any
 
-    triggers {
-        githubPush()
-    }
-
     stages {
-        stage('Check for Python-only Changes') {
-            steps {
-                script {
-                    def changedFiles = sh(script: "git diff --name-only HEAD~1..HEAD", returnStdout: true).trim().split('\n')
-                    def hasNonPythonChange = changedFiles.any { !it.startsWith("stempo-rhythm/") }
-                    if (!hasNonPythonChange) {
-                        echo "Only Python code changed. Skipping pipeline."
-                        error("Aborting pipeline because only Python code changed.")
-                    }
-                }
-            }
-        }
         stage('Load Environment Variables') {
             steps {
                 script {

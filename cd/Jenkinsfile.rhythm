@@ -5,25 +5,7 @@ def vars = [:]
 pipeline {
     agent any
 
-    triggers {
-        githubPush()
-    }
-
     stages {
-        stage('Check Relevant Changes') {
-            steps {
-                script {
-                    def changedFiles = sh(script: "git diff --name-only HEAD~1..HEAD", returnStdout: true).trim().split('\n')
-                    def isRelevantChange = changedFiles.any { file ->
-                        file.startsWith("stempo-rhythm/") || file.startsWith("cd/")
-                    }
-                    if (!isRelevantChange) {
-                        echo "No changes in stempo-rhythm or cd directories. Skipping pipeline."
-                        error("Aborting pipeline because no changes in relevant directories.")
-                    }
-                }
-            }
-        }
         stage('Load Environment Variables') {
             steps {
                 script { FAILED_STAGE = env.STAGE_NAME }
