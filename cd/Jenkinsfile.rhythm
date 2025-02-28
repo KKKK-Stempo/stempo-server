@@ -47,6 +47,7 @@ pipeline {
                             [yamlPath: "networks.infra", targetKey: "INFRA_NETWORK", required: true],
 
                             [yamlPath: "docker.dockerfile-path", targetKey: "DOCKERFILE_PATH", required: true],
+                            [yamlPath: "docker.build-context", targetKey: "BUILD_CONTEXT", required: true],
 
                             [yamlPath: "healthcheck.actuator-path", targetKey: "ACTUATOR_PATH", required: true],
                             // 추가 매핑이 필요하면 여기에...
@@ -82,12 +83,13 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    def deploymentRolling = load 'scripts/deployment/rolling.groovy'
-                    deploymentRolling.buildAndPushDockerImage(
-                        dockerfilePath: vars.DOCKERFILE_PATH,
-                        imageName: vars.IMAGE_NAME,
-                        containerName: vars.CONTAINER_NAME,
-                        dockerHubRepo: vars.DOCKER_HUB_REPO
+                    def dockerUtil = load 'scripts/common/docker.groovy'
+                    dockerUtil.buildAndPushDockerImage(
+                        dockerfile: vars.DOCKERFILE_PATH,
+                        image: vars.IMAGE_NAME,
+                        tag: vars.CONTAINER_NAME,
+                        repo: vars.DOCKER_HUB_REPO,
+                        context: vars.BUILD_CONTEXT
                     )
                 }
             }

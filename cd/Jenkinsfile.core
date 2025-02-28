@@ -71,6 +71,7 @@ pipeline {
                             [yamlPath: "docker.nginx-container-name", targetKey: "NGINX_CONTAINER_NAME", required: true],
                             [yamlPath: "docker.mariadb-container-name", targetKey: "MARIA_DB_CONTAINER_NAME", required: true],
                             [yamlPath: "docker.nginx-config-path", targetKey: "NGINX_CONFIG_PATH", required: true],
+                            [yamlPath: "docker.build-context", targetKey: "BUILD_CONTEXT", required: true],
 
                             [yamlPath: "healthcheck.actuator-path", targetKey: "ACTUATOR_PATH", required: true],
 
@@ -147,12 +148,13 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    def deploymentBG = load 'scripts/deployment/blueGreen.groovy'
-                    deploymentBG.buildAndPushDockerImage(
-                        dockerfilePath: vars.DOCKERFILE_PATH,
-                        imageName: vars.IMAGE_NAME,
-                        deployContainer: vars.DEPLOY_CONTAINER,
-                        dockerHubRepo: vars.DOCKER_HUB_REPO
+                    def dockerUtil = load 'scripts/common/docker.groovy'
+                    dockerUtil.buildAndPushDockerImage(
+                        dockerfile: vars.DOCKERFILE_PATH,
+                        image: vars.IMAGE_NAME,
+                        tag: vars.DEPLOY_CONTAINER,
+                        repo: vars.DOCKER_HUB_REPO,
+                        context: vars.BUILD_CONTEXT
                     )
                 }
             }

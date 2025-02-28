@@ -36,6 +36,7 @@
  *   [yamlPath: "docker.nginx-container-name", targetKey: "NGINX_CONTAINER_NAME", required: true],
  *   [yamlPath: "docker.mariadb-container-name", targetKey: "MARIA_DB_CONTAINER_NAME", required: true],
  *   [yamlPath: "docker.nginx-config-path", targetKey: "NGINX_CONFIG_PATH", required: true],
+ *   [yamlPath: "docker.build-context", targetKey: "BUILD_CONTEXT", required: true],
  *   [yamlPath: "healthcheck.actuator-path", targetKey: "ACTUATOR_PATH", required: true],
  *   [yamlPath: "profile.resources-path", targetKey: "RESOURCES_PATH", required: true],
  *   [yamlPath: "profile.file-name", targetKey: "PROFILE_FILE_NAME", required: true]
