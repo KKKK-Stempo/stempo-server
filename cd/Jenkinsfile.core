@@ -184,18 +184,18 @@ pipeline {
                     FAILED_STAGE = env.STAGE_NAME
                     def deploymentBG = load 'scripts/deployment/blueGreen.groovy'
                     deploymentBG.deployNewInstance(
-                        deployContainer: vars.DEPLOY_CONTAINER,
+                        containerName: vars.DEPLOY_CONTAINER,
                         image: vars.IMAGE_NAME,
                         imageTag: vars.IMAGE_TAG ?: vars.CONTAINER_NAME,
                         hostPort: vars.NEW_PORT,
                         containerPort: "8080",
                         network: vars.APPLICATION_NETWORK,
                         restartPolicy: "unless-stopped",
-                        extraVolumes: [
+                        volumes: [
                             "${vars.HOST_DEFAULT_PATH}:${vars.CONTAINER_DEFAULT_PATH}",
                             "${vars.HOST_LOGS_PATH}:${vars.CONTAINER_LOGS_PATH}"
                         ],
-                        extraEnv: [
+                        envVars: [
                             "LOG_PATH=${vars.CONTAINER_LOGS_PATH}",
                             "SPRING_PROFILES_ACTIVE=${vars.PROFILE}"
                         ],
