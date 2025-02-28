@@ -63,8 +63,8 @@ pipeline {
                     steps {
                         script {
                             FAILED_STAGE = env.STAGE_NAME
-                            def gitUtils = load 'scripts/common/gitUtils.groovy'
-                            vars.GIT_CHANGELOG = gitUtils.getChangeLog(previousCommit: env.GIT_PREVIOUS_SUCCESSFUL_COMMIT, currentCommit: env.GIT_COMMIT)
+                            def git = load 'scripts/common/git.groovy'
+                            vars.GIT_CHANGELOG = git.getChangeLog(previousCommit: env.GIT_PREVIOUS_SUCCESSFUL_COMMIT, currentCommit: env.GIT_COMMIT)
                         }
                     }
                 }
