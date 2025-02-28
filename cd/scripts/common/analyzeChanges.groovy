@@ -1,5 +1,3 @@
-// cd/scripts/common/analyzeChanges.groovy
-
 final def config = load "${env.WORKSPACE}/cd/scripts/common/config.groovy"
 
 /**

@@ -1,4 +1,3 @@
-// cd/scripts/framework/spring.groovy
 /**
  * Spring 관련 모듈 프로파일 설정 함수.
  *

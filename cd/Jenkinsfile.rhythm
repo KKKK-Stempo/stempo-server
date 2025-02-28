@@ -1,4 +1,3 @@
-// cd/Jenkinsfile.rhythm
 def FAILED_STAGE = ""
 def vars = [:]
 

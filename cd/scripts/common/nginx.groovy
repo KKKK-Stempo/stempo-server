@@ -1,4 +1,3 @@
-// cd/scripts/common/nginx.groovy
 /**
  * Nginx 설정 파일 업데이트 함수.
  *

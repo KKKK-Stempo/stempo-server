@@ -1,4 +1,3 @@
-// cd/scripts/common/docker.groovy
 /**
  * Docker Hub에 로그인하는 함수.
  *

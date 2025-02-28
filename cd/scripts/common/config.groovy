@@ -1,4 +1,3 @@
-// cd/scripts/common/config.groovy
 return [
     // 공통 변경을 감지할 경로(이 경로에 변경이 있으면 전체 빌드를 트리거)
     runAllLocations: ['cd/'],

@@ -1,8 +1,3 @@
-// cd/scripts/deployment/blueGreen.groovy
-/**
- * Blue-Green 배포 관련 함수들
- */
-
 /**
  * 컨테이너를 결정하는 함수.
  *

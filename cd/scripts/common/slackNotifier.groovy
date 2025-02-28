@@ -1,4 +1,3 @@
-// cd/scripts/common/slackNotifier.groovy
 import groovy.json.JsonOutput
 
 /**

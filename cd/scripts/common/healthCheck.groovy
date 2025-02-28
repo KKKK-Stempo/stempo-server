@@ -1,4 +1,3 @@
-// cd/scripts/common/healthCheck.groovy
 /**
  * 헬스체크를 수행하는 함수.
  *

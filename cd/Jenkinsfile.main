@@ -1,4 +1,3 @@
-// cd/Jenkinsfile.main
 pipeline {
     agent any
 
