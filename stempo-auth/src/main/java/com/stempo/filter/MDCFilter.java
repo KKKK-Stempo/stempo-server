@@ -41,11 +41,6 @@ public class MDCFilter extends OncePerRequestFilter {
         }
         MDC.put("transactionId", transactionId);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = (authentication == null || authentication.getName() == null)
-            ? "anonymous" : authentication.getName();
-        MDC.put("userId", userId);
-
         String clientIp = HttpReqResUtils.getClientIpAddressIfServletRequestExist();
         MDC.put("clientIp", clientIp);
 
@@ -72,6 +67,11 @@ public class MDCFilter extends OncePerRequestFilter {
             MDC.put("exception", ex.getMessage());
             throw ex;
         } finally {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userId = (authentication == null || authentication.getName() == null)
+                ? "anonymous" : authentication.getName();
+            MDC.put("userId", userId);
+
             long duration = System.currentTimeMillis() - startTime;
             MDC.put("durationMs", String.valueOf(duration));
 
