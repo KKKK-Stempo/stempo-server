@@ -1,0 +1,90 @@
+<!DOCTYPE configuration [
+  <!ENTITY jsonEncoder '
+    <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+      <providers>
+        <timestamp>
+          <fieldName>timestamp</fieldName>
+          <timeZone>UTC</timeZone>
+        </timestamp>
+        <loggerName>
+          <fieldName>loggerName</fieldName>
+        </loggerName>
+        <threadName>
+          <fieldName>threadName</fieldName>
+        </threadName>
+        <logLevel>
+          <fieldName>logLevel</fieldName>
+        </logLevel>
+        <message>
+          <fieldName>message</fieldName>
+        </message>
+        <mdc>
+          <fieldName>mdc</fieldName>
+        </mdc>
+        <stackTrace>
+          <fieldName>stackTrace</fieldName>
+          <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+            <maxDepthPerThrowable>30</maxDepthPerThrowable>
+            <rootCauseFirst>true</rootCauseFirst>
+          </throwableConverter>
+        </stackTrace>
+      </providers>
+    </encoder>
+  '>
+  ]>
+<configuration>
+  <!-- 공통 변수 설정 -->
+  <property name="LOG_PATH" value="logs"/>
+  <property name="MAX_FILE_SIZE" value="10MB"/>
+  <property name="MAX_HISTORY" value="30"/>
+
+  <!-- DEV 환경: 콘솔 출력 -->
+  <springProfile name="dev">
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="CONSOLE">
+      &jsonEncoder;
+    </appender>
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+    </root>
+  </springProfile>
+
+  <!-- PROD 환경: 파일 출력 (롤링 설정 포함) -->
+  <springProfile name="prod">
+    <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="ROLLING_FILE">
+      <file>${LOG_PATH}/app.log</file>
+      &jsonEncoder;
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <!-- 일별 파일 분할 및 파일 크기 제한 -->
+        <fileNamePattern>${LOG_PATH}/archived/app.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        <maxHistory>${MAX_HISTORY}</maxHistory>
+        <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+          <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+        </timeBasedFileNamingAndTriggeringPolicy>
+        <totalSizeCap>100MB</totalSizeCap>
+      </rollingPolicy>
+    </appender>
+    <root level="INFO">
+      <appender-ref ref="ROLLING_FILE"/>
+    </root>
+  </springProfile>
+  ㄷ
+  <!-- TEST 환경: 콘솔 출력, 로그 레벨은 DEBUG -->
+  <springProfile name="test">
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="TEST_CONSOLE">
+      &jsonEncoder;
+    </appender>
+    <root level="DEBUG">
+      <appender-ref ref="TEST_CONSOLE"/>
+    </root>
+  </springProfile>
+
+  <!-- 기본 환경 (프로파일이 지정되지 않은 경우) -->
+  <springProfile name="default">
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="CONSOLE_DEFAULT">
+      &jsonEncoder;
+    </appender>
+    <root level="INFO">
+      <appender-ref ref="CONSOLE_DEFAULT"/>
+    </root>
+  </springProfile>
+</configuration>
