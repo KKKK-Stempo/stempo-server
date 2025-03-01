@@ -3,6 +3,7 @@ package com.stempo.config;
 import com.stempo.application.JwtTokenService;
 import com.stempo.filter.CustomBasicAuthenticationFilter;
 import com.stempo.filter.JwtAuthenticationFilter;
+import com.stempo.filter.MDCFilter;
 import com.stempo.util.ApiLogger;
 import com.stempo.util.HttpReqResUtils;
 import com.stempo.util.IpWhitelistValidator;
@@ -37,6 +38,7 @@ public class SecurityConfig {
         .AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsCustomizer;
     private final JwtTokenService tokenService;
     private final IpWhitelistValidator ipWhitelistValidator;
+    private final MDCFilter mdcFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,6 +49,10 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(
                 authorizeHttpRequestsCustomizer
+            )
+            .addFilterBefore(
+                mdcFilter,
+                UsernamePasswordAuthenticationFilter.class
             )
             .addFilterBefore(
                 new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator),
