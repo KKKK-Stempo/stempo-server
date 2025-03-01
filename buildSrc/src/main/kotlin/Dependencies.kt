@@ -26,6 +26,10 @@ object Dependencies {
     const val querydslApt = "com.querydsl:querydsl-apt:${Versions.querydsl}"
     const val jakartaAnnotationApi = "jakarta.annotation:jakarta.annotation-api"
     const val jakartaPersistenceApi = "jakarta.persistence:jakarta.persistence-api"
+    const val logbackCore = "ch.qos.logback:logback-core:${Versions.logback}"
+    const val logbackClassic = "ch.qos.logback:logback-classic:${Versions.logback}"
+    const val logstashLogbackEncoder =
+        "net.logstash.logback:logstash-logback-encoder:${Versions.logstashLogbackEncoder}"
 
     // Test dependencies
     const val springBootStarterTest = "org.springframework.boot:spring-boot-starter-test"

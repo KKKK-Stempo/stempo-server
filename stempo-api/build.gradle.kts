@@ -40,6 +40,11 @@ dependencies {
     implementation(Dependencies.springBootActuator)
     implementation(Dependencies.springDataCommons)
 
+    // Logging
+    implementation(Dependencies.logbackCore)
+    implementation(Dependencies.logbackClassic)
+    implementation(Dependencies.logstashLogbackEncoder)
+
     // Util
     implementation(Dependencies.jakartaValidationApi)
     implementation(Dependencies.swagger)
