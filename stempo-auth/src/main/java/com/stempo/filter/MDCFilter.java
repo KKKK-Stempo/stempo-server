@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -53,7 +54,7 @@ public class MDCFilter extends OncePerRequestFilter {
             // 응답 완료 후 추가 MDC 정보 설정
             setFinalMDC(wrappedRequest, wrappedResponse, startTime);
 
-            // 예외 발생 여부에 따라 로그 출력
+            // HTTP 상태 코드에 따른 로깅
             logRequest();
 
             // 응답 본문을 클라이언트로 전송
@@ -130,10 +131,28 @@ public class MDCFilter extends OncePerRequestFilter {
     }
 
     private void logRequest() {
-        if (MDC.get("exception") != null) {
-            log.error("Request completed with error.");
-        } else {
+        // HTTP 상태 코드 매핑
+        String httpStatusStr = MDC.get("httpStatus");
+        int statusCode;
+        try {
+            statusCode = Integer.parseInt(httpStatusStr);
+        } catch (NumberFormatException e) {
+            log.error("Unable to parse HTTP status from MDC: {}", httpStatusStr);
+            return;
+        }
+
+        HttpStatusCode httpStatusCode = HttpStatusCode.valueOf(statusCode);
+
+        // HTTP 상태 코드에 따른 로깅
+        if (httpStatusCode.is5xxServerError()) {
+            log.error("Request completed with server error.");
+        } else if (httpStatusCode.is4xxClientError()) {
+            log.warn("Request completed with client error.");
+        } else if (httpStatusCode.is1xxInformational() || httpStatusCode.is2xxSuccessful()
+            || httpStatusCode.is3xxRedirection()) {
             log.info("Request completed successfully.");
+        } else {
+            log.debug("Request completed.");
         }
     }
 }
