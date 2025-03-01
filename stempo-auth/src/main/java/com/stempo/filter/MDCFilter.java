@@ -42,7 +42,12 @@ public class MDCFilter extends OncePerRequestFilter {
             chain.doFilter(wrappedRequest, wrappedResponse);
         } catch (Exception ex) {
             // 예외 발생 시 추가 MDC 정보 설정
-            MDC.put("exception", ex.getMessage());
+            MDC.put("exceptionClass", ex.getClass().getName());
+            MDC.put("exceptionMessage", ex.getMessage());
+            StackTraceElement[] stackTrace = ex.getStackTrace();
+            if (stackTrace.length > 0) {
+                MDC.put("exceptionAt", stackTrace[0].toString());
+            }
             throw ex;
         } finally {
             // 응답 완료 후 추가 MDC 정보 설정

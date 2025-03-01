@@ -87,7 +87,8 @@ public class SecurityConfig {
             statusCode = HttpServletResponse.SC_BAD_REQUEST;
         }
 
-        MDC.put("exception", message);
+        MDC.put("exceptionClass", exception.getClass().getName());
+        MDC.put("exceptionMessage", message);
 
         ResponseUtils.sendErrorResponse(response, statusCode);
     }
