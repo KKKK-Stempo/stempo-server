@@ -4,14 +4,14 @@ import com.stempo.application.JwtTokenService;
 import com.stempo.filter.CustomBasicAuthenticationFilter;
 import com.stempo.filter.JwtAuthenticationFilter;
 import com.stempo.filter.MDCFilter;
-import com.stempo.util.ApiLogger;
-import com.stempo.util.HttpReqResUtils;
 import com.stempo.util.IpWhitelistValidator;
 import com.stempo.util.ResponseUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
@@ -31,6 +31,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private final AuthenticationManager authenticationManager;
@@ -72,7 +73,6 @@ public class SecurityConfig {
 
     private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception)
         throws IOException {
-        String clientIpAddress = HttpReqResUtils.getClientIpAddressIfServletRequestExist();
         String message;
         int statusCode;
 
@@ -87,7 +87,8 @@ public class SecurityConfig {
             statusCode = HttpServletResponse.SC_BAD_REQUEST;
         }
 
-        ApiLogger.logRequest(request, response, clientIpAddress, message);
+        MDC.put("exception", message);
+
         ResponseUtils.sendErrorResponse(response, statusCode);
     }
 }
