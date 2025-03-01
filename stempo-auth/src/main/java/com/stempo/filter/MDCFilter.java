@@ -20,6 +20,11 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Slf4j
 public class MDCFilter extends OncePerRequestFilter {
 
+    private static final String HEADER_REQUEST_ID = "X-Request-Id";
+    private static final String HEADER_TRANSACTION_ID = "X-Transaction-Id";
+    private static final String SERVICE_NAME = "stempo-core";
+    private static final String ENV_PROPERTY = "spring.profiles.active";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws ServletException, IOException {
@@ -56,14 +61,14 @@ public class MDCFilter extends OncePerRequestFilter {
 
     private void setInitialMDC(ContentCachingRequestWrapper request) {
         // 요청 ID 설정
-        String requestId = request.getHeader("X-Request-Id");
+        String requestId = request.getHeader(HEADER_REQUEST_ID);
         if (requestId == null || requestId.isEmpty()) {
             requestId = UUID.randomUUID().toString();
         }
         MDC.put("requestId", requestId);
 
         // 트랜잭션 ID 설정
-        String transactionId = request.getHeader("X-Transaction-Id");
+        String transactionId = request.getHeader(HEADER_TRANSACTION_ID);
         if (transactionId == null || transactionId.isEmpty()) {
             transactionId = UUID.randomUUID().toString();
         }
@@ -91,10 +96,10 @@ public class MDCFilter extends OncePerRequestFilter {
         }
 
         // 서비스 이름 설정
-        MDC.put("serviceName", "stempo-core");
+        MDC.put("serviceName", SERVICE_NAME);
 
         // 환경 설정
-        MDC.put("env", System.getProperty("spring.profiles.active", "default"));
+        MDC.put("env", System.getProperty(ENV_PROPERTY, "default"));
     }
 
     private void setFinalMDC(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response,
