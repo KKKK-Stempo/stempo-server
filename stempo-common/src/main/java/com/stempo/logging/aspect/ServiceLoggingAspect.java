@@ -5,22 +5,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
 @Slf4j
-public class ServiceLoggingAspect {
+public class ServiceLoggingAspect extends AbstractExecutionTimeAspect {
+
+    @Override
+    protected String getMdcKey() {
+        return MdcConstants.SERVICE_EXECUTION_TIME_MS;
+    }
 
     @Around("execution(* com.stempo.service..*(..))")
     public Object logServiceExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
-        long start = System.currentTimeMillis();
-        try {
-            return joinPoint.proceed();
-        } finally {
-            long duration = System.currentTimeMillis() - start;
-            MDC.put(MdcConstants.SERVICE_EXECUTION_TIME_MS, String.valueOf(duration));
-        }
+        return logExecutionTime(joinPoint);
     }
 }

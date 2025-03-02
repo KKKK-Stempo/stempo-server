@@ -18,7 +18,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Aspect
 @Component
 @Slf4j
-public class LoggingAspect {
+public class ControllerLoggingAspect {
 
     /**
      * 컨트롤러에 속한 모든 요청에 대해 로깅을 수행한다.
