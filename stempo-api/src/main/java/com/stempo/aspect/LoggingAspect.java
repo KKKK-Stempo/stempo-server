@@ -70,13 +70,13 @@ public class LoggingAspect {
             if (!errorOccurred) {
                 HttpStatusCode httpStatusCode = HttpStatusCode.valueOf(statusCode);
                 if (httpStatusCode.is5xxServerError()) {
-                    log.error("{} request completed with server error. HTTP status: {}, Duration: {} ms", type, statusCode, duration);
+                    log.error("{} request completed with server error.", type);
                 } else if (httpStatusCode.is4xxClientError()) {
-                    log.warn("{} request completed with client error. HTTP status: {}, Duration: {} ms", type, statusCode, duration);
+                    log.warn("{} request completed with client error.", type);
                 } else if (httpStatusCode.is1xxInformational() || httpStatusCode.is2xxSuccessful() || httpStatusCode.is3xxRedirection()) {
-                    log.info("{} request completed successfully. HTTP status: {}, Duration: {} ms", type, statusCode, duration);
+                    log.info("{} request completed successfully.", type);
                 } else {
-                    log.debug("{} request completed. HTTP status: {}, Duration: {} ms", type, statusCode, duration);
+                    log.debug("{} request completed.", type);
                 }
             }
         }
