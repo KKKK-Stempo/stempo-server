@@ -29,7 +29,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         MDC.put("httpStatus", String.valueOf(httpStatus));
 
         // 로그 기록
-        log.warn(message, authException);
+        log.warn(authException.getMessage());
 
         // 에러 응답 전송
         ResponseUtils.sendErrorResponse(response, httpStatus);

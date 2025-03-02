@@ -29,7 +29,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         MDC.put("httpStatus", String.valueOf(httpStatus));
 
         // 로그 기록
-        log.warn(message, accessDeniedException);
+        log.warn(accessDeniedException.getMessage());
 
         // 에러 응답 전송
         ResponseUtils.sendErrorResponse(response, httpStatus);
