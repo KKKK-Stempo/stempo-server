@@ -3,6 +3,7 @@ dependencies {
     implementation(Dependencies.springBootStarterWeb)
     implementation(Dependencies.springBootStarterSecurity)
     implementation(Dependencies.springBootStarterDataJpa)
+    implementation(Dependencies.springBootActuator)
     implementation(Dependencies.springAop)
 
     // Logging
