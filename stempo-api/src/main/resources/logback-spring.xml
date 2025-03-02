@@ -38,19 +38,39 @@
   <property name="MAX_FILE_SIZE" value="10MB"/>
   <property name="MAX_HISTORY" value="30"/>
 
-  <!-- DEV 환경: 콘솔 출력 -->
+  <!-- DEV 환경: 콘솔 출력, INFO 레벨, 비동기 로깅 적용 -->
   <springProfile name="dev">
-    <appender class="ch.qos.logback.core.ConsoleAppender" name="CONSOLE">
+    <appender name="DEV_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
       &jsonEncoder;
     </appender>
+    <appender name="ASYNC_DEV" class="ch.qos.logback.classic.AsyncAppender">
+      <appender-ref ref="DEV_CONSOLE"/>
+      <queueSize>512</queueSize>
+      <discardingThreshold>0</discardingThreshold>
+    </appender>
     <root level="INFO">
-      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="ASYNC_DEV"/>
     </root>
   </springProfile>
 
-  <!-- PROD 환경: 파일 출력 (롤링 설정 포함) -->
+  <!-- TEST 환경: 콘솔 출력, DEBUG 레벨, 비동기 로깅 적용 -->
+  <springProfile name="test">
+    <appender name="TEST_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+      &jsonEncoder;
+    </appender>
+    <appender name="ASYNC_TEST" class="ch.qos.logback.classic.AsyncAppender">
+      <appender-ref ref="TEST_CONSOLE"/>
+      <queueSize>512</queueSize>
+      <discardingThreshold>0</discardingThreshold>
+    </appender>
+    <root level="DEBUG">
+      <appender-ref ref="ASYNC_TEST"/>
+    </root>
+  </springProfile>
+
+  <!-- PROD 환경: 파일 출력 (롤링 설정 포함), INFO 레벨, 비동기 로깅 적용 -->
   <springProfile name="prod">
-    <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="ROLLING_FILE">
+    <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
       <file>${LOG_PATH}/app.log</file>
       &jsonEncoder;
       <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -63,28 +83,23 @@
         <totalSizeCap>100MB</totalSizeCap>
       </rollingPolicy>
     </appender>
-    <root level="INFO">
+    <appender name="ASYNC_PROD" class="ch.qos.logback.classic.AsyncAppender">
       <appender-ref ref="ROLLING_FILE"/>
-    </root>
-  </springProfile>
-  ㄷ
-  <!-- TEST 환경: 콘솔 출력, 로그 레벨은 DEBUG -->
-  <springProfile name="test">
-    <appender class="ch.qos.logback.core.ConsoleAppender" name="TEST_CONSOLE">
-      &jsonEncoder;
+      <queueSize>1024</queueSize>
+      <discardingThreshold>0</discardingThreshold>
     </appender>
-    <root level="DEBUG">
-      <appender-ref ref="TEST_CONSOLE"/>
+    <root level="INFO">
+      <appender-ref ref="ASYNC_PROD"/>
     </root>
   </springProfile>
 
   <!-- 기본 환경 (프로파일이 지정되지 않은 경우) -->
   <springProfile name="default">
-    <appender class="ch.qos.logback.core.ConsoleAppender" name="CONSOLE_DEFAULT">
+    <appender name="DEFAULT_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
       &jsonEncoder;
     </appender>
     <root level="INFO">
-      <appender-ref ref="CONSOLE_DEFAULT"/>
+      <appender-ref ref="DEFAULT_CONSOLE"/>
     </root>
   </springProfile>
 </configuration>
