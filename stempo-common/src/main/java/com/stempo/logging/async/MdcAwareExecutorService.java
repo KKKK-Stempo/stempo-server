@@ -1,4 +1,4 @@
-package com.stempo.logging.util;
+package com.stempo.logging.async;
 
 import java.util.Collection;
 import java.util.List;

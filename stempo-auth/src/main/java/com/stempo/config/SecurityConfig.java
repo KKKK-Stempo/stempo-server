@@ -3,7 +3,7 @@ package com.stempo.config;
 import com.stempo.application.JwtTokenService;
 import com.stempo.filter.CustomBasicAuthenticationFilter;
 import com.stempo.filter.JwtAuthenticationFilter;
-import com.stempo.logging.filter.MDCFilter;
+import com.stempo.logging.filter.MdcFilter;
 import com.stempo.util.IpWhitelistValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ public class SecurityConfig {
         .AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsCustomizer;
     private final JwtTokenService tokenService;
     private final IpWhitelistValidator ipWhitelistValidator;
-    private final MDCFilter mdcFilter;
+    private final MdcFilter mdcFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

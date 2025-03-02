@@ -17,7 +17,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 @Component
 @Slf4j
-public class MDCFilter extends OncePerRequestFilter {
+public class MdcFilter extends OncePerRequestFilter {
 
     private static final String HEADER_REQUEST_ID = "X-Request-Id";
     private static final String HEADER_TRANSACTION_ID = "X-Transaction-Id";
