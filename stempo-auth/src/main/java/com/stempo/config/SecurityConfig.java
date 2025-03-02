@@ -5,16 +5,10 @@ import com.stempo.filter.CustomBasicAuthenticationFilter;
 import com.stempo.filter.JwtAuthenticationFilter;
 import com.stempo.filter.MDCFilter;
 import com.stempo.util.IpWhitelistValidator;
-import com.stempo.util.ResponseUtils;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -23,7 +17,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -65,31 +58,9 @@ public class SecurityConfig {
             )
             .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                 httpSecurityExceptionHandlingConfigurer
-                    .authenticationEntryPoint(this::handleException)
-                    .accessDeniedHandler(this::handleException)
+                    .accessDeniedHandler(new CustomAccessDeniedHandler())
+                    .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
             );
         return http.build();
-    }
-
-    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception)
-        throws IOException {
-        String message;
-        int statusCode;
-
-        if (exception instanceof AuthenticationException) {
-            message = "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.";
-            statusCode = HttpServletResponse.SC_UNAUTHORIZED;
-        } else if (exception instanceof AccessDeniedException) {
-            message = "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.";
-            statusCode = HttpServletResponse.SC_FORBIDDEN;
-        } else {
-            message = "비정상적인 접근이 감지되었습니다.";
-            statusCode = HttpServletResponse.SC_BAD_REQUEST;
-        }
-
-        MDC.put("exceptionClass", exception.getClass().getName());
-        MDC.put("exceptionMessage", message);
-
-        ResponseUtils.sendErrorResponse(response, statusCode);
     }
 }
