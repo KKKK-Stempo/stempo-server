@@ -14,9 +14,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
     public ErrorResponse<Exception> handleBaseException(HttpServletResponse response, BaseException ex) {
-        response.setStatus(ex.getErrorCode().getStatus().value());
+        int httpStatus = ex.getErrorCode().getStatus().value();
+        response.setStatus(httpStatus);
+
+        MDC.put("exceptionClass", ex.getClass().getName());
         MDC.put("ErrorCode", ex.getErrorCode().name());
         MDC.put("exceptionMessage", ex.getMessage());
+        if (ex.getStackTrace().length > 0) {
+            MDC.put("exceptionAt", ex.getStackTrace()[0].toString());
+        }
+        MDC.put("httpStatus", String.valueOf(httpStatus));
+
         return ErrorResponse.failure(ex);
     }
 
@@ -24,13 +32,17 @@ public class GlobalExceptionHandler {
     public ErrorResponse<Exception> handleServerError(HttpServletRequest request, HttpServletResponse response,
         Exception ex) {
         ErrorCode errorCode = ExceptionMapper.getErrorCode(ex);
-        response.setStatus(errorCode.getStatus().value());
+        int httpStatus = errorCode.getStatus().value();
+        response.setStatus(httpStatus);
+
         MDC.put("exceptionClass", ex.getClass().getName());
         MDC.put("ErrorCode", errorCode.name());
         MDC.put("exceptionMessage", errorCode.getDefaultMessage());
         if (ex.getStackTrace().length > 0) {
             MDC.put("exceptionAt", ex.getStackTrace()[0].toString());
         }
+        MDC.put("httpStatus", String.valueOf(httpStatus));
+
         return ErrorResponse.failure(new BaseException(errorCode, ex.getMessage()));
     }
 }
