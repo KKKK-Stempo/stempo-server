@@ -40,13 +40,13 @@
 
   <!-- DEV 환경: 콘솔 출력, INFO 레벨, 비동기 로깅 적용 -->
   <springProfile name="dev">
-    <appender name="DEV_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="DEV_CONSOLE">
       &jsonEncoder;
     </appender>
-    <appender name="ASYNC_DEV" class="ch.qos.logback.classic.AsyncAppender">
+    <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_DEV">
       <appender-ref ref="DEV_CONSOLE"/>
-      <queueSize>512</queueSize>
       <discardingThreshold>0</discardingThreshold>
+      <queueSize>512</queueSize>
     </appender>
     <root level="INFO">
       <appender-ref ref="ASYNC_DEV"/>
@@ -55,13 +55,13 @@
 
   <!-- TEST 환경: 콘솔 출력, DEBUG 레벨, 비동기 로깅 적용 -->
   <springProfile name="test">
-    <appender name="TEST_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="TEST_CONSOLE">
       &jsonEncoder;
     </appender>
-    <appender name="ASYNC_TEST" class="ch.qos.logback.classic.AsyncAppender">
+    <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_TEST">
       <appender-ref ref="TEST_CONSOLE"/>
-      <queueSize>512</queueSize>
       <discardingThreshold>0</discardingThreshold>
+      <queueSize>512</queueSize>
     </appender>
     <root level="DEBUG">
       <appender-ref ref="ASYNC_TEST"/>
@@ -70,7 +70,7 @@
 
   <!-- PROD 환경: 파일 출력 (롤링 설정 포함), INFO 레벨, 비동기 로깅 적용 -->
   <springProfile name="prod">
-    <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="ROLLING_FILE">
       <file>${LOG_PATH}/app.log</file>
       &jsonEncoder;
       <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -83,10 +83,10 @@
         <totalSizeCap>100MB</totalSizeCap>
       </rollingPolicy>
     </appender>
-    <appender name="ASYNC_PROD" class="ch.qos.logback.classic.AsyncAppender">
+    <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_PROD">
       <appender-ref ref="ROLLING_FILE"/>
-      <queueSize>1024</queueSize>
       <discardingThreshold>0</discardingThreshold>
+      <queueSize>1024</queueSize>
     </appender>
     <root level="INFO">
       <appender-ref ref="ASYNC_PROD"/>
@@ -95,7 +95,7 @@
 
   <!-- 기본 환경 (프로파일이 지정되지 않은 경우) -->
   <springProfile name="default">
-    <appender name="DEFAULT_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="DEFAULT_CONSOLE">
       &jsonEncoder;
     </appender>
     <root level="INFO">

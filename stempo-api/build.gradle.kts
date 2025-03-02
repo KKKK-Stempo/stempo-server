@@ -39,12 +39,6 @@ dependencies {
     implementation(Dependencies.springBootStarterSecurity)
     implementation(Dependencies.springBootActuator)
     implementation(Dependencies.springDataCommons)
-    implementation(Dependencies.springAop)
-
-    // Logging
-    implementation(Dependencies.logbackCore)
-    implementation(Dependencies.logbackClassic)
-    implementation(Dependencies.logstashLogbackEncoder)
 
     // Util
     implementation(Dependencies.jakartaValidationApi)

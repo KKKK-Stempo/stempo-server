@@ -1,4 +1,4 @@
-package com.stempo.constants;
+package com.stempo.logging.constants;
 
 public final class MdcConstants {
 
@@ -19,6 +19,7 @@ public final class MdcConstants {
     public static final String ERROR_CODE = "errorCode";
     public static final String SERVICE_EXECUTION_TIME_MS = "serviceExecutionTimeMs";
     public static final String REPOSITORY_EXECUTION_TIME_MS = "repositoryExecutionTimeMs";
+
     private MdcConstants() {
     }
 }

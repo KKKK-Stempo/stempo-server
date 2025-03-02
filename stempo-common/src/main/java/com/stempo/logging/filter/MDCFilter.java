@@ -1,6 +1,6 @@
-package com.stempo.filter;
+package com.stempo.logging.filter;
 
-import com.stempo.constants.MdcConstants;
+import com.stempo.logging.constants.MdcConstants;
 import com.stempo.util.HttpReqResUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -1,5 +1,6 @@
 package com.stempo.config;
 
+import com.stempo.logging.decorator.MdcTaskDecorator;
 import java.util.concurrent.Executor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

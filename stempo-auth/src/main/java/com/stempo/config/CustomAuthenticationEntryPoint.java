@@ -1,6 +1,6 @@
 package com.stempo.config;
 
-import com.stempo.constants.MdcConstants;
+import com.stempo.logging.constants.MdcConstants;
 import com.stempo.util.ResponseUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,6 +1,6 @@
-package com.stempo.aspect;
+package com.stempo.logging.aspect;
 
-import com.stempo.constants.MdcConstants;
+import com.stempo.logging.constants.MdcConstants;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;

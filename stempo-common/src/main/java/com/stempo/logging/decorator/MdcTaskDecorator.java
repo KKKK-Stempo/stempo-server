@@ -1,4 +1,4 @@
-package com.stempo.config;
+package com.stempo.logging.decorator;
 
 import java.util.Map;
 import org.slf4j.MDC;

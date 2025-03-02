@@ -3,7 +3,7 @@ package com.stempo.config;
 import com.stempo.application.JwtTokenService;
 import com.stempo.filter.CustomBasicAuthenticationFilter;
 import com.stempo.filter.JwtAuthenticationFilter;
-import com.stempo.filter.MDCFilter;
+import com.stempo.logging.filter.MDCFilter;
 import com.stempo.util.IpWhitelistValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

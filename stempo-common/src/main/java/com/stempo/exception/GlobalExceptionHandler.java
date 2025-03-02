@@ -1,7 +1,7 @@
 package com.stempo.exception;
 
-import com.stempo.constants.MdcConstants;
 import com.stempo.dto.ErrorResponse;
+import com.stempo.logging.constants.MdcConstants;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
