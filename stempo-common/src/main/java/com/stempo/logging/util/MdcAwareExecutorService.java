@@ -1,4 +1,4 @@
-package com.stempo.util;
+package com.stempo.logging.util;
 
 import java.util.Collection;
 import java.util.List;
