@@ -1,5 +1,6 @@
 package com.stempo.aspect;
 
+import com.stempo.constants.MdcConstants;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -29,8 +30,7 @@ public class LoggingAspect {
     }
 
     /**
-     * 지정된 대상의 요청 처리 시간 및 HTTP 상태를 MDC에 추가한 후,
-     * 정상 요청인 경우에만 로그를 남기고, 예외 발생 시에는 예외를 전파하여 글로벌 예외 핸들러에서 로그가 남도록 한다.
+     * 지정된 대상의 요청 처리 시간 및 HTTP 상태를 MDC에 추가한 후, 정상 요청인 경우에만 로그를 남기고, 예외 발생 시에는 예외를 전파하여 글로벌 예외 핸들러에서 로그가 남도록 한다.
      *
      * @param joinPoint AOP 대상
      * @param type      로그 구분을 위한 문자열 (예: "Controller", "SecurityConfig.handleException")
@@ -44,8 +44,9 @@ public class LoggingAspect {
 
         // (1) API 요청 시 userId를 MDC에 설정
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
-        MDC.put("userId", userId);
+        String userId =
+            (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+        MDC.put(MdcConstants.USER_ID, userId);
 
         try {
             result = joinPoint.proceed();
@@ -56,14 +57,14 @@ public class LoggingAspect {
         } finally {
             // (2) 요청 처리 종료 시 처리 시간 및 httpStatus 설정
             long duration = System.currentTimeMillis() - startTime;
-            MDC.put("durationMs", String.valueOf(duration));
+            MDC.put(MdcConstants.DURATION_MS, String.valueOf(duration));
             int statusCode = 0;
             RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
             if (requestAttributes instanceof ServletRequestAttributes sra) {
                 HttpServletResponse response = sra.getResponse();
                 if (response != null) {
                     statusCode = response.getStatus();
-                    MDC.put("httpStatus", String.valueOf(statusCode));
+                    MDC.put(MdcConstants.HTTP_STATUS, String.valueOf(statusCode));
                 }
             }
             // (3) 예외가 발생한 경우에는 글로벌 예외 핸들러에서 로그를 남기므로 여기서는 로그를 남기지 않음
@@ -73,7 +74,8 @@ public class LoggingAspect {
                     log.error("{} request completed with server error.", type);
                 } else if (httpStatusCode.is4xxClientError()) {
                     log.warn("{} request completed with client error.", type);
-                } else if (httpStatusCode.is1xxInformational() || httpStatusCode.is2xxSuccessful() || httpStatusCode.is3xxRedirection()) {
+                } else if (httpStatusCode.is1xxInformational() || httpStatusCode.is2xxSuccessful()
+                    || httpStatusCode.is3xxRedirection()) {
                     log.info("{} request completed successfully.", type);
                 } else {
                     log.debug("{} request completed.", type);

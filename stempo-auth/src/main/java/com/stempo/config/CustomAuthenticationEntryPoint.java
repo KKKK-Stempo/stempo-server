@@ -1,5 +1,6 @@
 package com.stempo.config;
 
+import com.stempo.constants.MdcConstants;
 import com.stempo.util.ResponseUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,12 +22,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         int httpStatus = HttpServletResponse.SC_UNAUTHORIZED;
 
         // MDC에 예외 관련 정보 기록
-        MDC.put("exceptionClass", authException.getClass().getName());
-        MDC.put("exceptionMessage", message);
+        MDC.put(MdcConstants.EXCEPTION_CLASS, authException.getClass().getName());
+        MDC.put(MdcConstants.EXCEPTION_MESSAGE, message);
         if (authException.getStackTrace().length > 0) {
-            MDC.put("exceptionAt", authException.getStackTrace()[0].toString());
+            MDC.put(MdcConstants.EXCEPTION_AT, authException.getStackTrace()[0].toString());
         }
-        MDC.put("httpStatus", String.valueOf(httpStatus));
+        MDC.put(MdcConstants.HTTP_STATUS, String.valueOf(httpStatus));
 
         // 로그 기록
         log.warn(authException.getMessage());

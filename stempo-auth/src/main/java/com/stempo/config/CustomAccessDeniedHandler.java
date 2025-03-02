@@ -1,5 +1,6 @@
 package com.stempo.config;
 
+import com.stempo.constants.MdcConstants;
 import com.stempo.util.ResponseUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,12 +22,12 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         int httpStatus = HttpServletResponse.SC_FORBIDDEN;
 
         // MDC에 예외 관련 정보 기록
-        MDC.put("exceptionClass", accessDeniedException.getClass().getName());
-        MDC.put("exceptionMessage", message);
+        MDC.put(MdcConstants.EXCEPTION_CLASS, accessDeniedException.getClass().getName());
+        MDC.put(MdcConstants.EXCEPTION_MESSAGE, message);
         if (accessDeniedException.getStackTrace().length > 0) {
-            MDC.put("exceptionAt", accessDeniedException.getStackTrace()[0].toString());
+            MDC.put(MdcConstants.EXCEPTION_AT, accessDeniedException.getStackTrace()[0].toString());
         }
-        MDC.put("httpStatus", String.valueOf(httpStatus));
+        MDC.put(MdcConstants.HTTP_STATUS, String.valueOf(httpStatus));
 
         // 로그 기록
         log.warn(accessDeniedException.getMessage());

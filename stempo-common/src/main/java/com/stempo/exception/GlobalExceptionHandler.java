@@ -1,5 +1,6 @@
 package com.stempo.exception;
 
+import com.stempo.constants.MdcConstants;
 import com.stempo.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,13 +18,13 @@ public class GlobalExceptionHandler {
         int httpStatus = ex.getErrorCode().getStatus().value();
         response.setStatus(httpStatus);
 
-        MDC.put("exceptionClass", ex.getClass().getName());
-        MDC.put("ErrorCode", ex.getErrorCode().name());
-        MDC.put("exceptionMessage", ex.getMessage());
+        MDC.put(MdcConstants.EXCEPTION_CLASS, ex.getClass().getName());
+        MDC.put(MdcConstants.ERROR_CODE, ex.getErrorCode().name());
+        MDC.put(MdcConstants.EXCEPTION_MESSAGE, ex.getMessage());
         if (ex.getStackTrace().length > 0) {
-            MDC.put("exceptionAt", ex.getStackTrace()[0].toString());
+            MDC.put(MdcConstants.EXCEPTION_AT, ex.getStackTrace()[0].toString());
         }
-        MDC.put("httpStatus", String.valueOf(httpStatus));
+        MDC.put(MdcConstants.HTTP_STATUS, String.valueOf(httpStatus));
 
         return ErrorResponse.failure(ex);
     }
@@ -35,13 +36,13 @@ public class GlobalExceptionHandler {
         int httpStatus = errorCode.getStatus().value();
         response.setStatus(httpStatus);
 
-        MDC.put("exceptionClass", ex.getClass().getName());
-        MDC.put("ErrorCode", errorCode.name());
-        MDC.put("exceptionMessage", errorCode.getDefaultMessage());
+        MDC.put(MdcConstants.EXCEPTION_CLASS, ex.getClass().getName());
+        MDC.put(MdcConstants.ERROR_CODE, errorCode.name());
+        MDC.put(MdcConstants.EXCEPTION_MESSAGE, errorCode.getDefaultMessage());
         if (ex.getStackTrace().length > 0) {
-            MDC.put("exceptionAt", ex.getStackTrace()[0].toString());
+            MDC.put(MdcConstants.EXCEPTION_AT, ex.getStackTrace()[0].toString());
         }
-        MDC.put("httpStatus", String.valueOf(httpStatus));
+        MDC.put(MdcConstants.HTTP_STATUS, String.valueOf(httpStatus));
 
         return ErrorResponse.failure(new BaseException(errorCode, ex.getMessage()));
     }

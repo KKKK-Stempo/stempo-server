@@ -1,5 +1,6 @@
 package com.stempo.aspect;
 
+import com.stempo.constants.MdcConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -19,7 +20,7 @@ public class RepositoryLoggingAspect {
             return joinPoint.proceed();
         } finally {
             long duration = System.currentTimeMillis() - start;
-            MDC.put("repositoryExecutionTime", String.valueOf(duration));
+            MDC.put(MdcConstants.REPOSITORY_EXECUTION_TIME_MS, String.valueOf(duration));
         }
     }
 }

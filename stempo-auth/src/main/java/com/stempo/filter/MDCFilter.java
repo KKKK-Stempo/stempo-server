@@ -1,5 +1,6 @@
 package com.stempo.filter;
 
+import com.stempo.constants.MdcConstants;
 import com.stempo.util.HttpReqResUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,8 +21,10 @@ public class MDCFilter extends OncePerRequestFilter {
 
     private static final String HEADER_REQUEST_ID = "X-Request-Id";
     private static final String HEADER_TRANSACTION_ID = "X-Transaction-Id";
+    private static final String HEADER_USER_AGENT = "User-Agent";
     private static final String SERVICE_NAME = "stempo-core";
     private static final String ENV_PROPERTY = "spring.profiles.active";
+    private static final String ENV_PROPERTY_DEFAULT = "default";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -44,10 +47,10 @@ public class MDCFilter extends OncePerRequestFilter {
             chain.doFilter(wrappedRequest, wrappedResponse);
         } catch (Exception ex) {
             // 예외 발생 시 기본 MDC 정보는 그대로 두고, 글로벌 예외 핸들러에서 추가 MDC를 설정하도록 함
-            MDC.put("exceptionClass", ex.getClass().getName());
-            MDC.put("exceptionMessage", ex.getMessage());
+            MDC.put(MdcConstants.EXCEPTION_CLASS, ex.getClass().getName());
+            MDC.put(MdcConstants.EXCEPTION_MESSAGE, ex.getMessage());
             if (ex.getStackTrace().length > 0) {
-                MDC.put("exceptionAt", ex.getStackTrace()[0].toString());
+                MDC.put(MdcConstants.EXCEPTION_AT, ex.getStackTrace()[0].toString());
             }
             throw ex;
         } finally {
@@ -64,17 +67,17 @@ public class MDCFilter extends OncePerRequestFilter {
         if (requestId == null || requestId.isEmpty()) {
             requestId = UUID.randomUUID().toString();
         }
-        MDC.put("requestId", requestId);
+        MDC.put(MdcConstants.REQUEST_ID, requestId);
 
         // 트랜잭션 ID 설정 (없으면 생성)
         String transactionId = request.getHeader(HEADER_TRANSACTION_ID);
         if (transactionId == null || transactionId.isEmpty()) {
             transactionId = UUID.randomUUID().toString();
         }
-        MDC.put("transactionId", transactionId);
+        MDC.put(MdcConstants.TRANSACTION_ID, transactionId);
 
         // 클라이언트 IP 설정
-        MDC.put("clientIp", HttpReqResUtils.getClientIpAddressIfServletRequestExist());
+        MDC.put(MdcConstants.CLIENT_IP, HttpReqResUtils.getClientIpAddressIfServletRequestExist());
 
         // 요청 URL 설정 (쿼리스트링 포함)
         String requestUrl = request.getRequestURI();
@@ -82,21 +85,21 @@ public class MDCFilter extends OncePerRequestFilter {
         if (queryString != null) {
             requestUrl += "?" + queryString;
         }
-        MDC.put("requestUrl", requestUrl);
+        MDC.put(MdcConstants.REQUEST_URL, requestUrl);
 
         // HTTP 메소드 설정
-        MDC.put("httpMethod", request.getMethod());
+        MDC.put(MdcConstants.HTTP_METHOD, request.getMethod());
 
         // User-Agent 설정
-        String userAgent = request.getHeader("User-Agent");
+        String userAgent = request.getHeader(HEADER_USER_AGENT);
         if (userAgent != null) {
-            MDC.put("userAgent", userAgent);
+            MDC.put(MdcConstants.USER_AGENT, userAgent);
         }
 
         // 서비스 이름 설정
-        MDC.put("serviceName", SERVICE_NAME);
+        MDC.put(MdcConstants.SERVICE_NAME, SERVICE_NAME);
 
         // 환경 설정
-        MDC.put("env", System.getProperty(ENV_PROPERTY, "default"));
+        MDC.put(MdcConstants.ENV, System.getProperty(ENV_PROPERTY, ENV_PROPERTY_DEFAULT));
     }
 }
