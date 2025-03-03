@@ -1,11 +1,23 @@
+import logging
 import math
+import os
 from fastapi import FastAPI, Body, Response, HTTPException
 from io import BytesIO
+from mdc_middleware import MDCMiddleware
 from pydantic import BaseModel, Field
 from pydub import AudioSegment
 from pydub.generators import Sine
 
+from logging_config import setup_logging
+
+# 환경 변수 또는 기본값 설정
+ENV = os.getenv("ENV", "dev")
+LOG_PATH = os.getenv("LOG_PATH", None)  # prod 환경일 때 사용
+
+setup_logging(env=ENV, log_path=LOG_PATH, max_file_size="10MB", max_history=30)
+
 app = FastAPI()
+app.add_middleware(MDCMiddleware)
 
 
 def create_metronome_bpm(
@@ -100,4 +112,5 @@ def health() -> dict:
     Returns:
         dict: 서비스 상태.
     """
+    logging.getLogger(__name__).info("Health check accessed")
     return {"status": "UP"}
