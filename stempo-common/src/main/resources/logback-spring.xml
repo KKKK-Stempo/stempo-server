@@ -34,9 +34,10 @@
   ]>
 <configuration>
   <!-- 공통 변수 설정 -->
-  <property name="LOG_PATH" value="logs"/>
-  <property name="MAX_FILE_SIZE" value="10MB"/>
-  <property name="MAX_HISTORY" value="30"/>
+  <property name="LOG_PATH" value="${LOG_PATH:-logs}"/>
+  <property name="LOG_FILE" value="${LOG_FILE:-stempo-core.log}"/>
+  <property name="MAX_FILE_SIZE" value="${MAX_FILE_SIZE:-10MB}"/>
+  <property name="MAX_HISTORY" value="${MAX_HISTORY:-30}"/>
 
   <!-- DEV 환경: 콘솔 출력, INFO 레벨, 비동기 로깅 적용 -->
   <springProfile name="dev">
@@ -71,11 +72,12 @@
   <!-- PROD 환경: 파일 출력 (롤링 설정 포함), INFO 레벨, 비동기 로깅 적용 -->
   <springProfile name="prod">
     <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="ROLLING_FILE">
-      <file>${LOG_PATH}/app.log</file>
+      <!-- 로그 파일은 외부 주입받은 LOG_PATH와 LOG_FILE을 사용 -->
+      <file>${LOG_PATH}/${LOG_FILE}</file>
       &jsonEncoder;
       <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
         <!-- 일별 파일 분할 및 파일 크기 제한 -->
-        <fileNamePattern>${LOG_PATH}/archived/app.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        <fileNamePattern>${LOG_PATH}/archived/${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
         <maxHistory>${MAX_HISTORY}</maxHistory>
         <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
           <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>

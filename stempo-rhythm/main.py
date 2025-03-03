@@ -13,8 +13,9 @@ from logging_config import setup_logging
 # 환경 변수 또는 기본값 설정
 ENV = os.getenv("ENV", "dev")
 LOG_PATH = os.getenv("LOG_PATH", None)  # prod 환경일 때 사용
+LOG_FILE = os.getenv("LOG_FILE", "stempo-rhythm.log")
 
-setup_logging(env=ENV, log_path=LOG_PATH, max_file_size="10MB", max_history=30)
+setup_logging(env=ENV, log_path=LOG_PATH, log_file=LOG_FILE, max_file_size="10MB", max_history=30)
 
 app = FastAPI()
 app.add_middleware(MDCMiddleware)
