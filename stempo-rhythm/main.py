@@ -14,9 +14,11 @@ from mdc_middleware import MDCMiddleware, request_id_ctx, transaction_id_ctx, cl
 ENV = os.getenv("ENV", "dev")
 LOG_PATH = os.getenv("LOG_PATH", None)
 LOG_FILE = os.getenv("LOG_FILE", "stempo-rhythm.log")
+MAX_FILE_SIZE = os.getenv("LOG_MAX_FILE_SIZE", "10MB")
+MAX_HISTORY = os.getenv("LOG_MAX_HISTORY", 30)
 
 # 초기 로깅 설정
-setup_logging(env=ENV, log_path=LOG_PATH, log_file=LOG_FILE, max_file_size="10MB", max_history=30)
+setup_logging(env=ENV, log_path=LOG_PATH, log_file=LOG_FILE, max_file_size=MAX_FILE_SIZE, max_history=MAX_HISTORY)
 
 app = FastAPI()
 app.add_middleware(MDCMiddleware)

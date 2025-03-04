@@ -14,11 +14,14 @@ COPY stempo-rhythm/requirements.txt /app/
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# 소스 복사
-COPY stempo-rhythm/main.py /app/
+# .env 파일 복사 복사
+COPY stempo-rhythm/.env /app/
+
+# 소스 코드 복사
+COPY stempo-rhythm/. /app/
 
 # FastAPI 서버를 위한 포트 노출
 EXPOSE 5000
 
 # Uvicorn으로 FastAPI 서버 실행
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000", "--env-file", ".env", "--no-access-log"]
