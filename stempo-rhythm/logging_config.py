@@ -95,7 +95,7 @@ def setup_logging(env: str = "default", log_path: str = None, log_file: str = No
         handler = logging.StreamHandler()
 
     formatter = jsonlogger.JsonFormatter(
-            '%(asctime)s %(levelname)s %(name)s %(message)s %(request_id)s %(transaction_id)s %(client_ip)s'
+            '%(asctime)s %(levelname)s %(name)s %(message)s %(requestId)s %(transactionId)s %(clientIp)s'
     )
     handler.setFormatter(formatter)
 
