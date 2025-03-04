@@ -75,13 +75,11 @@
       <!-- 로그 파일은 외부 주입받은 LOG_PATH와 LOG_FILE을 사용 -->
       <file>${LOG_PATH}/${LOG_FILE}</file>
       &jsonEncoder;
-      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
         <!-- 일별 파일 분할 및 파일 크기 제한 -->
         <fileNamePattern>${LOG_PATH}/archived/${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
         <maxHistory>${MAX_HISTORY}</maxHistory>
-        <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-          <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
-        </timeBasedFileNamingAndTriggeringPolicy>
+        <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
         <totalSizeCap>100MB</totalSizeCap>
       </rollingPolicy>
     </appender>
