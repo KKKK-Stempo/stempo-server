@@ -4,7 +4,7 @@ from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from contextvars import ContextVar
 
-# 컨텍스트 변수 정의 (MDC와 유사한 역할)
+# 컨텍스트 변수 정의
 request_id_ctx: ContextVar[str] = ContextVar("request_id", default="anonymous")
 transaction_id_ctx: ContextVar[str] = ContextVar("transaction_id", default="")
 client_ip_ctx: ContextVar[str] = ContextVar("client_ip", default="")
@@ -17,6 +17,11 @@ class ContextFilter(logging.Filter):
         record.client_ip = client_ip_ctx.get()
         return True
 
+# 필터를 전역적으로 한 번만 추가
+logger = logging.getLogger()
+if not any(isinstance(f, ContextFilter) for f in logger.filters):
+    logger.addFilter(ContextFilter())
+
 # 미들웨어 정의
 class MDCMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -24,12 +29,10 @@ class MDCMiddleware(BaseHTTPMiddleware):
         trans_id = request.headers.get("X-Transaction-Id", str(uuid.uuid4()))
         client_ip = request.client.host if request.client else "unknown"
 
+        # 컨텍스트 변수 설정
         request_id_ctx.set(req_id)
         transaction_id_ctx.set(trans_id)
         client_ip_ctx.set(client_ip)
-
-        logger = logging.getLogger()
-        logger.addFilter(ContextFilter())
 
         response = await call_next(request)
         return response

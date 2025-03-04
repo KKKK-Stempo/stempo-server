@@ -3,22 +3,29 @@ import math
 import os
 from fastapi import FastAPI, Body, Response, HTTPException
 from io import BytesIO
-from mdc_middleware import MDCMiddleware
 from pydantic import BaseModel, Field
 from pydub import AudioSegment
 from pydub.generators import Sine
 
 from logging_config import setup_logging
+from mdc_middleware import MDCMiddleware
 
 # 환경 변수 또는 기본값 설정
 ENV = os.getenv("ENV", "dev")
-LOG_PATH = os.getenv("LOG_PATH", None)  # prod 환경일 때 사용
+LOG_PATH = os.getenv("LOG_PATH", None)
 LOG_FILE = os.getenv("LOG_FILE", "stempo-rhythm.log")
 
+# 초기 로깅 설정
 setup_logging(env=ENV, log_path=LOG_PATH, log_file=LOG_FILE, max_file_size="10MB", max_history=30)
 
 app = FastAPI()
 app.add_middleware(MDCMiddleware)
+
+
+@app.on_event("startup")
+async def startup_event():
+    logger = logging.getLogger(__name__)
+    logger.info("Application started with custom logging configuration.")
 
 
 def create_metronome_bpm(
@@ -91,11 +98,15 @@ def create_rhythm(request: RhythmRequest = Body(...)) -> Response:
     Returns:
         Response: 생성된 WAV 오디오 파일의 바이너리 데이터.
     """
+    logger = logging.getLogger(__name__)
     try:
         rhythm = create_metronome_bpm(bpm=request.bpm, bit=request.bit)
+        logger.info("Rhythm generated successfully")
     except ValueError as e:
+        logger.error(f"Invalid input: {str(e)}")
         raise HTTPException(status_code=400, detail=f"잘못된 입력입니다: {str(e)}")
     except Exception as e:
+        logger.error(f"Failed to generate rhythm: {str(e)}")
         raise HTTPException(status_code=500, detail=f"리듬 생성에 실패했습니다: {str(e)}")
 
     output_buffer = BytesIO()
@@ -113,5 +124,6 @@ def health() -> dict:
     Returns:
         dict: 서비스 상태.
     """
-    logging.getLogger(__name__).info("Health check accessed")
+    logger = logging.getLogger(__name__)
+    logger.info("Health check accessed")
     return {"status": "UP"}

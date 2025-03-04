@@ -5,6 +5,8 @@ import time
 from logging.handlers import TimedRotatingFileHandler
 from pythonjsonlogger import jsonlogger
 
+from mdc_middleware import ContextFilter
+
 
 class ArchivedTimedRotatingFileHandler(TimedRotatingFileHandler):
     """
@@ -12,7 +14,8 @@ class ArchivedTimedRotatingFileHandler(TimedRotatingFileHandler):
     외부 주입받은 로그 파일명에 따라 stempo-rhythm.%Y-%m-%d.%i.log 형식으로 파일명을 변경합니다.
     """
 
-    def __init__(self, filename, archive_path, when='midnight', interval=1, backupCount=30, encoding=None, delay=False, utc=False):
+    def __init__(self, filename, archive_path, when='midnight', interval=1, backupCount=30, encoding=None, delay=False,
+            utc=False):
         self.archive_path = archive_path
         os.makedirs(self.archive_path, exist_ok=True)
         # 외부에서 주입받은 파일명에서 확장자를 제거하여 기본 이름으로 사용
@@ -58,7 +61,8 @@ class ArchivedTimedRotatingFileHandler(TimedRotatingFileHandler):
         self.rolloverAt = newRolloverAt
 
 
-def setup_logging(env: str = "default", log_path: str = None, log_file: str = None, max_file_size: str = "10MB", max_history: int = 30):
+def setup_logging(env: str = "default", log_path: str = None, log_file: str = None, max_file_size: str = "10MB",
+        max_history: int = 30):
     """
     env: 'dev', 'test', 'prod', 또는 'default'
     log_path: 로그 파일 저장 경로 (prod 환경에서 사용됨)
@@ -100,4 +104,8 @@ def setup_logging(env: str = "default", log_path: str = None, log_file: str = No
     root_logger = logging.getLogger()
     root_logger.handlers = []  # 기존 핸들러 제거
     root_logger.addHandler(handler)
+
+    # ContextFilter가 없으면 추가 (중복 방지)
+    if not any(isinstance(f, ContextFilter) for f in root_logger.filters):
+        root_logger.addFilter(ContextFilter())
     root_logger.setLevel(log_level)
