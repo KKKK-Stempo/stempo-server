@@ -1,14 +1,14 @@
 import logging
 import math
 import os
-from fastapi import FastAPI, Body, Response, HTTPException
+from fastapi import FastAPI, Body, Response, HTTPException, Request
 from io import BytesIO
 from pydantic import BaseModel, Field
 from pydub import AudioSegment
 from pydub.generators import Sine
 
 from logging_config import setup_logging
-from mdc_middleware import MDCMiddleware
+from mdc_middleware import MDCMiddleware, request_id_ctx, transaction_id_ctx, client_ip_ctx
 
 # 환경 변수 또는 기본값 설정
 ENV = os.getenv("ENV", "dev")
@@ -25,7 +25,12 @@ app.add_middleware(MDCMiddleware)
 @app.on_event("startup")
 async def startup_event():
     logger = logging.getLogger(__name__)
-    logger.info("Application started with custom logging configuration.")
+    extra = {
+        "request_id": request_id_ctx.get(),
+        "transaction_id": transaction_id_ctx.get(),
+        "client_ip": client_ip_ctx.get()
+    }
+    logger.info("Application started with custom logging configuration.", extra=extra)
 
 
 def create_metronome_bpm(
@@ -99,14 +104,19 @@ def create_rhythm(request: RhythmRequest = Body(...)) -> Response:
         Response: 생성된 WAV 오디오 파일의 바이너리 데이터.
     """
     logger = logging.getLogger(__name__)
+    extra = {
+        "request_id": request_id_ctx.get(),
+        "transaction_id": transaction_id_ctx.get(),
+        "client_ip": client_ip_ctx.get()
+    }
     try:
         rhythm = create_metronome_bpm(bpm=request.bpm, bit=request.bit)
-        logger.info("Rhythm generated successfully")
+        logger.info("Rhythm generated successfully", extra=extra)
     except ValueError as e:
-        logger.error(f"Invalid input: {str(e)}")
+        logger.error(f"Invalid input: {str(e)}", extra=extra)
         raise HTTPException(status_code=400, detail=f"잘못된 입력입니다: {str(e)}")
     except Exception as e:
-        logger.error(f"Failed to generate rhythm: {str(e)}")
+        logger.error(f"Failed to generate rhythm: {str(e)}", extra=extra)
         raise HTTPException(status_code=500, detail=f"리듬 생성에 실패했습니다: {str(e)}")
 
     output_buffer = BytesIO()
@@ -118,12 +128,11 @@ def create_rhythm(request: RhythmRequest = Body(...)) -> Response:
 
 @app.get("/health", response_model=dict)
 def health() -> dict:
-    """
-    서비스의 상태를 확인하는 헬스 체크 엔드포인트입니다.
-
-    Returns:
-        dict: 서비스 상태.
-    """
     logger = logging.getLogger(__name__)
-    logger.info("Health check accessed")
+    extra = {
+        "request_id": request_id_ctx.get(),
+        "transaction_id": transaction_id_ctx.get(),
+        "client_ip": client_ip_ctx.get()
+    }
+    logger.info("Health check accessed", extra=extra)
     return {"status": "UP"}

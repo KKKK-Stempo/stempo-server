@@ -5,8 +5,6 @@ import time
 from logging.handlers import TimedRotatingFileHandler
 from pythonjsonlogger import jsonlogger
 
-from mdc_middleware import ContextFilter
-
 
 class ArchivedTimedRotatingFileHandler(TimedRotatingFileHandler):
     """
@@ -104,8 +102,4 @@ def setup_logging(env: str = "default", log_path: str = None, log_file: str = No
     root_logger = logging.getLogger()
     root_logger.handlers = []  # 기존 핸들러 제거
     root_logger.addHandler(handler)
-
-    # ContextFilter가 없으면 추가 (중복 방지)
-    if not any(isinstance(f, ContextFilter) for f in root_logger.filters):
-        root_logger.addFilter(ContextFilter())
     root_logger.setLevel(log_level)
