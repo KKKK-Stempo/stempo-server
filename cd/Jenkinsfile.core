@@ -45,7 +45,6 @@ pipeline {
                             [yamlPath: "spring.profile", targetKey: "PROFILE", required: true],
                             [yamlPath: "spring.port-a", targetKey: "PORT_A", required: true],
                             [yamlPath: "spring.port-b", targetKey: "PORT_B", required: true],
-                            [yamlPath: "spring.logback.log-path", targetKey: "LOG_PATH", required: true],
                             [yamlPath: "spring.logback.log-file", targetKey: "LOG_FILE", required: true],
                             [yamlPath: "spring.logback.max-file-size", targetKey: "MAX_FILE_SIZE", required: true],
                             [yamlPath: "spring.logback.max-history", targetKey: "MAX_HISTORY", required: true],
@@ -164,7 +163,7 @@ pipeline {
                         ],
                         envVars: [
                             "SPRING_PROFILES_ACTIVE=${vars.PROFILE}",
-                            "LOG_PATH=${vars.LOG_PATH}",
+                            "LOG_PATH=${vars.CONTAINER_LOGS_PATH}",
                             "LOG_FILE=${vars.LOG_FILE}",
                             "MAX_FILE_SIZE=${vars.MAX_FILE_SIZE}",
                             "MAX_HISTORY=${vars.MAX_HISTORY}"
