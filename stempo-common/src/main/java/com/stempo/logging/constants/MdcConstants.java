@@ -2,6 +2,10 @@ package com.stempo.logging.constants;
 
 public final class MdcConstants {
 
+    public static final String HEADER_REQUEST_ID = "X-Request-Id";
+    public static final String HEADER_TRANSACTION_ID = "X-Transaction-Id";
+    public static final String HEADER_USER_AGENT = "User-Agent";
+
     public static final String REQUEST_ID = "requestId";
     public static final String TRANSACTION_ID = "transactionId";
     public static final String CLIENT_IP = "clientIp";

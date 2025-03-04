@@ -19,9 +19,6 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Slf4j
 public class MdcFilter extends OncePerRequestFilter {
 
-    private static final String HEADER_REQUEST_ID = "X-Request-Id";
-    private static final String HEADER_TRANSACTION_ID = "X-Transaction-Id";
-    private static final String HEADER_USER_AGENT = "User-Agent";
     private static final String SERVICE_NAME = "stempo-core";
     private static final String ENV_PROPERTY = "spring.profiles.active";
     private static final String ENV_PROPERTY_DEFAULT = "default";
@@ -63,14 +60,14 @@ public class MdcFilter extends OncePerRequestFilter {
     // 요청 초기 MDC 정보를 설정 (필터 레벨)
     private void setInitialMDC(ContentCachingRequestWrapper request) {
         // 요청 ID 설정 (없으면 생성)
-        String requestId = request.getHeader(HEADER_REQUEST_ID);
+        String requestId = request.getHeader(MdcConstants.HEADER_REQUEST_ID);
         if (requestId == null || requestId.isEmpty()) {
             requestId = UUID.randomUUID().toString();
         }
         MDC.put(MdcConstants.REQUEST_ID, requestId);
 
         // 트랜잭션 ID 설정 (없으면 생성)
-        String transactionId = request.getHeader(HEADER_TRANSACTION_ID);
+        String transactionId = request.getHeader(MdcConstants.HEADER_TRANSACTION_ID);
         if (transactionId == null || transactionId.isEmpty()) {
             transactionId = UUID.randomUUID().toString();
         }
@@ -91,7 +88,7 @@ public class MdcFilter extends OncePerRequestFilter {
         MDC.put(MdcConstants.HTTP_METHOD, request.getMethod());
 
         // User-Agent 설정
-        String userAgent = request.getHeader(HEADER_USER_AGENT);
+        String userAgent = request.getHeader(MdcConstants.HEADER_USER_AGENT);
         if (userAgent != null) {
             MDC.put(MdcConstants.USER_AGENT, userAgent);
         }
