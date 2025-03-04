@@ -22,12 +22,12 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         int httpStatus = HttpServletResponse.SC_FORBIDDEN;
 
         // MDC에 예외 관련 정보 기록
-        MDC.put(MdcConstants.EXCEPTION_CLASS, accessDeniedException.getClass().getName());
-        MDC.put(MdcConstants.EXCEPTION_MESSAGE, message);
+        MDC.put(MdcConstants.MDC_EXCEPTION_CLASS.getKey(), accessDeniedException.getClass().getName());
+        MDC.put(MdcConstants.MDC_EXCEPTION_MESSAGE.getKey(), message);
         if (accessDeniedException.getStackTrace().length > 0) {
-            MDC.put(MdcConstants.EXCEPTION_AT, accessDeniedException.getStackTrace()[0].toString());
+            MDC.put(MdcConstants.MDC_EXCEPTION_AT.getKey(), accessDeniedException.getStackTrace()[0].toString());
         }
-        MDC.put(MdcConstants.HTTP_STATUS, String.valueOf(httpStatus));
+        MDC.put(MdcConstants.MDC_HTTP_STATUS.getKey(), String.valueOf(httpStatus));
 
         // 로그 기록
         log.warn(accessDeniedException.getMessage());

@@ -22,12 +22,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         int httpStatus = HttpServletResponse.SC_UNAUTHORIZED;
 
         // MDC에 예외 관련 정보 기록
-        MDC.put(MdcConstants.EXCEPTION_CLASS, authException.getClass().getName());
-        MDC.put(MdcConstants.EXCEPTION_MESSAGE, message);
+        MDC.put(MdcConstants.MDC_EXCEPTION_CLASS.getKey(), authException.getClass().getName());
+        MDC.put(MdcConstants.MDC_EXCEPTION_MESSAGE.getKey(), message);
         if (authException.getStackTrace().length > 0) {
-            MDC.put(MdcConstants.EXCEPTION_AT, authException.getStackTrace()[0].toString());
+            MDC.put(MdcConstants.MDC_EXCEPTION_AT.getKey(), authException.getStackTrace()[0].toString());
         }
-        MDC.put(MdcConstants.HTTP_STATUS, String.valueOf(httpStatus));
+        MDC.put(MdcConstants.MDC_HTTP_STATUS.getKey(), String.valueOf(httpStatus));
 
         // 로그 기록
         log.warn(authException.getMessage());

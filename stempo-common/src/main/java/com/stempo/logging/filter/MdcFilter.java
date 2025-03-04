@@ -44,10 +44,10 @@ public class MdcFilter extends OncePerRequestFilter {
             chain.doFilter(wrappedRequest, wrappedResponse);
         } catch (Exception ex) {
             // 예외 발생 시 기본 MDC 정보는 그대로 두고, 글로벌 예외 핸들러에서 추가 MDC를 설정하도록 함
-            MDC.put(MdcConstants.EXCEPTION_CLASS, ex.getClass().getName());
-            MDC.put(MdcConstants.EXCEPTION_MESSAGE, ex.getMessage());
+            MDC.put(MdcConstants.MDC_EXCEPTION_CLASS.getKey(), ex.getClass().getName());
+            MDC.put(MdcConstants.MDC_EXCEPTION_MESSAGE.getKey(), ex.getMessage());
             if (ex.getStackTrace().length > 0) {
-                MDC.put(MdcConstants.EXCEPTION_AT, ex.getStackTrace()[0].toString());
+                MDC.put(MdcConstants.MDC_EXCEPTION_AT.getKey(), ex.getStackTrace()[0].toString());
             }
             throw ex;
         } finally {
@@ -60,21 +60,21 @@ public class MdcFilter extends OncePerRequestFilter {
     // 요청 초기 MDC 정보를 설정 (필터 레벨)
     private void setInitialMDC(ContentCachingRequestWrapper request) {
         // 요청 ID 설정 (없으면 생성)
-        String requestId = request.getHeader(MdcConstants.HEADER_REQUEST_ID);
+        String requestId = request.getHeader(MdcConstants.HEADER_REQUEST_ID.getKey());
         if (requestId == null || requestId.isEmpty()) {
             requestId = UUID.randomUUID().toString();
         }
-        MDC.put(MdcConstants.REQUEST_ID, requestId);
+        MDC.put(MdcConstants.MDC_REQUEST_ID.getKey(), requestId);
 
         // 트랜잭션 ID 설정 (없으면 생성)
-        String transactionId = request.getHeader(MdcConstants.HEADER_TRANSACTION_ID);
+        String transactionId = request.getHeader(MdcConstants.HEADER_TRANSACTION_ID.getKey());
         if (transactionId == null || transactionId.isEmpty()) {
             transactionId = UUID.randomUUID().toString();
         }
-        MDC.put(MdcConstants.TRANSACTION_ID, transactionId);
+        MDC.put(MdcConstants.MDC_TRANSACTION_ID.getKey(), transactionId);
 
         // 클라이언트 IP 설정
-        MDC.put(MdcConstants.CLIENT_IP, HttpReqResUtils.getClientIpAddressIfServletRequestExist());
+        MDC.put(MdcConstants.MDC_CLIENT_IP.getKey(), HttpReqResUtils.getClientIpAddressIfServletRequestExist());
 
         // 요청 URL 설정 (쿼리스트링 포함)
         String requestUrl = request.getRequestURI();
@@ -82,21 +82,21 @@ public class MdcFilter extends OncePerRequestFilter {
         if (queryString != null) {
             requestUrl += "?" + queryString;
         }
-        MDC.put(MdcConstants.REQUEST_URL, requestUrl);
+        MDC.put(MdcConstants.MDC_REQUEST_URL.getKey(), requestUrl);
 
         // HTTP 메소드 설정
-        MDC.put(MdcConstants.HTTP_METHOD, request.getMethod());
+        MDC.put(MdcConstants.MDC_HTTP_METHOD.getKey(), request.getMethod());
 
         // User-Agent 설정
-        String userAgent = request.getHeader(MdcConstants.HEADER_USER_AGENT);
+        String userAgent = request.getHeader(MdcConstants.HEADER_USER_AGENT.getKey());
         if (userAgent != null) {
-            MDC.put(MdcConstants.USER_AGENT, userAgent);
+            MDC.put(MdcConstants.MDC_USER_AGENT.getKey(), userAgent);
         }
 
         // 서비스 이름 설정
-        MDC.put(MdcConstants.SERVICE_NAME, SERVICE_NAME);
+        MDC.put(MdcConstants.MDC_SERVICE_NAME.getKey(), SERVICE_NAME);
 
         // 환경 설정
-        MDC.put(MdcConstants.ENV, System.getProperty(ENV_PROPERTY, ENV_PROPERTY_DEFAULT));
+        MDC.put(MdcConstants.MDC_ENV.getKey(), System.getProperty(ENV_PROPERTY, ENV_PROPERTY_DEFAULT));
     }
 }

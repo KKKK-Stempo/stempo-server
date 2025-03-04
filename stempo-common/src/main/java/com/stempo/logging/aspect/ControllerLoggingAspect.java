@@ -46,7 +46,7 @@ public class ControllerLoggingAspect {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId =
             (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
-        MDC.put(MdcConstants.USER_ID, userId);
+        MDC.put(MdcConstants.MDC_USER_ID.getKey(), userId);
 
         try {
             result = joinPoint.proceed();
@@ -57,14 +57,14 @@ public class ControllerLoggingAspect {
         } finally {
             // (2) 요청 처리 종료 시 처리 시간 및 httpStatus 설정
             long duration = System.currentTimeMillis() - startTime;
-            MDC.put(MdcConstants.DURATION_MS, String.valueOf(duration));
+            MDC.put(MdcConstants.MDC_DURATION_MS.getKey(), String.valueOf(duration));
             int statusCode = 0;
             RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
             if (requestAttributes instanceof ServletRequestAttributes sra) {
                 HttpServletResponse response = sra.getResponse();
                 if (response != null) {
                     statusCode = response.getStatus();
-                    MDC.put(MdcConstants.HTTP_STATUS, String.valueOf(statusCode));
+                    MDC.put(MdcConstants.MDC_HTTP_STATUS.getKey(), String.valueOf(statusCode));
                 }
             }
             // (3) 예외가 발생한 경우에는 글로벌 예외 핸들러에서 로그를 남기므로 여기서는 로그를 남기지 않음

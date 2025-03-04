@@ -18,13 +18,13 @@ public class GlobalExceptionHandler {
         int httpStatus = ex.getErrorCode().getStatus().value();
         response.setStatus(httpStatus);
 
-        MDC.put(MdcConstants.EXCEPTION_CLASS, ex.getClass().getName());
-        MDC.put(MdcConstants.ERROR_CODE, ex.getErrorCode().name());
-        MDC.put(MdcConstants.EXCEPTION_MESSAGE, ex.getMessage());
+        MDC.put(MdcConstants.MDC_EXCEPTION_CLASS.getKey(), ex.getClass().getName());
+        MDC.put(MdcConstants.MDC_ERROR_CODE.getKey(), ex.getErrorCode().name());
+        MDC.put(MdcConstants.MDC_EXCEPTION_MESSAGE.getKey(), ex.getMessage());
         if (ex.getStackTrace().length > 0) {
-            MDC.put(MdcConstants.EXCEPTION_AT, ex.getStackTrace()[0].toString());
+            MDC.put(MdcConstants.MDC_EXCEPTION_AT.getKey(), ex.getStackTrace()[0].toString());
         }
-        MDC.put(MdcConstants.HTTP_STATUS, String.valueOf(httpStatus));
+        MDC.put(MdcConstants.MDC_HTTP_STATUS.getKey(), String.valueOf(httpStatus));
 
         return ErrorResponse.failure(ex);
     }
@@ -36,13 +36,13 @@ public class GlobalExceptionHandler {
         int httpStatus = errorCode.getStatus().value();
         response.setStatus(httpStatus);
 
-        MDC.put(MdcConstants.EXCEPTION_CLASS, ex.getClass().getName());
-        MDC.put(MdcConstants.ERROR_CODE, errorCode.name());
-        MDC.put(MdcConstants.EXCEPTION_MESSAGE, errorCode.getDefaultMessage());
+        MDC.put(MdcConstants.MDC_EXCEPTION_CLASS.getKey(), ex.getClass().getName());
+        MDC.put(MdcConstants.MDC_ERROR_CODE.getKey(), errorCode.name());
+        MDC.put(MdcConstants.MDC_EXCEPTION_MESSAGE.getKey(), errorCode.getDefaultMessage());
         if (ex.getStackTrace().length > 0) {
-            MDC.put(MdcConstants.EXCEPTION_AT, ex.getStackTrace()[0].toString());
+            MDC.put(MdcConstants.MDC_EXCEPTION_AT.getKey(), ex.getStackTrace()[0].toString());
         }
-        MDC.put(MdcConstants.HTTP_STATUS, String.valueOf(httpStatus));
+        MDC.put(MdcConstants.MDC_HTTP_STATUS.getKey(), String.valueOf(httpStatus));
 
         return ErrorResponse.failure(new BaseException(errorCode, ex.getMessage()));
     }

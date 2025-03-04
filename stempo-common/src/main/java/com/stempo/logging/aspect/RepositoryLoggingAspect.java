@@ -14,7 +14,7 @@ public class RepositoryLoggingAspect extends AbstractExecutionTimeAspect {
 
     @Override
     protected String getMdcKey() {
-        return MdcConstants.REPOSITORY_EXECUTION_TIME_MS;
+        return MdcConstants.MDC_REPOSITORY_EXECUTION_TIME_MS.getKey();
     }
 
     @Around("execution(* com.stempo.repository..*(..))")

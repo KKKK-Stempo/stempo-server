@@ -14,7 +14,7 @@ public class ServiceLoggingAspect extends AbstractExecutionTimeAspect {
 
     @Override
     protected String getMdcKey() {
-        return MdcConstants.SERVICE_EXECUTION_TIME_MS;
+        return MdcConstants.MDC_SERVICE_EXECUTION_TIME_MS.getKey();
     }
 
     @Around("execution(* com.stempo.service..*(..))")
