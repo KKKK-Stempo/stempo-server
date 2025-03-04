@@ -15,11 +15,17 @@ public class MdcPropagationInterceptor implements ClientHttpRequestInterceptor {
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
         throws IOException {
-        // MDC에서 transactionId 값을 가져와 헤더에 추가
+        // MDC에서 필요한 값들을 가져와 헤더에 추가
         String transactionId = MDC.get(MdcConstants.TRANSACTION_ID);
+        String clientIp = MDC.get(MdcConstants.CLIENT_IP);
+
         if (transactionId != null) {
             request.getHeaders().add(MdcConstants.HEADER_TRANSACTION_ID, transactionId);
         }
+        if (clientIp != null) {
+            request.getHeaders().add(MdcConstants.HEADER_CLIENT_IP, clientIp);
+        }
+
         return execution.execute(request, body);
     }
 }
