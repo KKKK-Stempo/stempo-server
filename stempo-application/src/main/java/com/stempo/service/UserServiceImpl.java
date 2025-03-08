@@ -5,7 +5,6 @@ import com.stempo.exception.BaseException;
 import com.stempo.exception.ErrorCode;
 import com.stempo.model.User;
 import com.stempo.repository.UserRepository;
-import com.stempo.util.AuthUtils;
 import com.stempo.util.EncryptionUtils;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -57,13 +56,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String getCurrentDeviceTag() {
-        return AuthUtils.getAuthenticationInfoDeviceTag();
-    }
-
-    @Override
     public User getCurrentUser() {
-        String deviceTag = getCurrentDeviceTag();
+        String deviceTag = "getCurrentDeviceTag()";
         return repository.findByIdOrThrow(deviceTag);
     }
 

@@ -55,7 +55,7 @@ class RecordControllerTest {
 
         String expectedDeviceTag = "device123";
 
-        when(recordService.recordTrainingData(any(RecordRequestDto.class)))
+        when(recordService.recordTrainingData(any(String.class), any(RecordRequestDto.class)))
             .thenReturn(expectedDeviceTag);
 
         // when
@@ -104,9 +104,10 @@ class RecordControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(username = "device123", roles = "USER")
     void 정상적으로_보행_훈련_기록을_조회한다() throws Exception {
         // given
+        String deviceTag = "device123";
         LocalDate startDate = LocalDate.of(2024, 10, 1);
         LocalDate endDate = LocalDate.of(2024, 10, 31);
 
@@ -132,7 +133,7 @@ class RecordControllerTest {
             .records(recordItems)
             .build();
 
-        when(recordService.getRecordsByDateRange(startDate, endDate))
+        when(recordService.getRecordsByDateRange(deviceTag, startDate, endDate))
             .thenReturn(responseDto);
 
         // when
@@ -166,16 +167,17 @@ class RecordControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(username = "device123", roles = "USER")
     void 정상적으로_보행_훈련_기록_통계를_조회한다() throws Exception {
         // given
+        String deviceTag = "device123";
         RecordStatisticsResponseDto expectedStatistics = RecordStatisticsResponseDto.builder()
             .todayWalkTrainingCount(10)
             .weeklyWalkTrainingCount(50)
             .consecutiveWalkTrainingDays(5)
             .build();
 
-        when(recordService.getRecordStatistics())
+        when(recordService.getRecordStatistics(deviceTag))
             .thenReturn(expectedStatistics);
 
         // when

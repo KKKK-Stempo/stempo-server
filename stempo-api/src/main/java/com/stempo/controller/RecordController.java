@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,9 +32,10 @@ public class RecordController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/api/v1/records")
     public ApiResponse<String> recordTrainingData(
+        @AuthenticationPrincipal User user,
         @Valid @RequestBody RecordRequestDto requestDto
     ) {
-        String deviceTag = recordService.recordTrainingData(requestDto);
+        String deviceTag = recordService.recordTrainingData(user.getUsername(), requestDto);
         return ApiResponse.success(deviceTag);
     }
 
@@ -44,18 +47,22 @@ public class RecordController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/api/v1/records")
     public ApiResponse<RecordResponseDto> getRecords(
+        @AuthenticationPrincipal User user,
         @RequestParam(name = "startDate") LocalDate startDate,
         @RequestParam(name = "endDate") LocalDate endDate
     ) {
-        RecordResponseDto recordsByDateRange = recordService.getRecordsByDateRange(startDate, endDate);
+        RecordResponseDto recordsByDateRange =
+            recordService.getRecordsByDateRange(user.getUsername(), startDate, endDate);
         return ApiResponse.success(recordsByDateRange);
     }
 
     @Operation(summary = "[U] 내 보행 훈련 기록 통계", description = "ROLE_USER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/api/v1/records/statistics")
-    public ApiResponse<RecordStatisticsResponseDto> getRecordStatistics() {
-        RecordStatisticsResponseDto statistics = recordService.getRecordStatistics();
+    public ApiResponse<RecordStatisticsResponseDto> getRecordStatistics(
+        @AuthenticationPrincipal User user
+    ) {
+        RecordStatisticsResponseDto statistics = recordService.getRecordStatistics(user.getUsername());
         return ApiResponse.success(statistics);
     }
 }

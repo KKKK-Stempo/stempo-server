@@ -10,9 +10,9 @@ import org.springframework.data.domain.Pageable;
 
 public interface HomeworkService {
 
-    Long addHomework(HomeworkRequestDto requestDto);
+    Long addHomework(String deviceTag, HomeworkRequestDto requestDto);
 
-    PagedResponseDto<HomeworkResponseDto> getHomeworks(Boolean completed, Pageable pageable);
+    PagedResponseDto<HomeworkResponseDto> getHomeworks(String deviceTag, Boolean completed, Pageable pageable);
 
     List<DecryptedHomework> getByDeviceTags(List<String> deviceTags);
 

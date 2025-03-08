@@ -30,6 +30,7 @@ tasks.named<ProcessAot>("processAot") {
 dependencies {
     // Project dependencies
     implementation(project(Modules.application))
+    implementation(project(Modules.auth))
     implementation(project(Modules.common))
     implementation(project(Modules.domain))
 

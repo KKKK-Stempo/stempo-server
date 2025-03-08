@@ -32,8 +32,7 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     @Transactional
-    public String recordTrainingData(RecordRequestDto requestDto) {
-        String deviceTag = userService.getCurrentDeviceTag();
+    public String recordTrainingData(String deviceTag, RecordRequestDto requestDto) {
         String encryptedAccuracy = encryptionUtils.encrypt(requestDto.getAccuracy().toString());
         String encryptedDuration = encryptionUtils.encrypt(requestDto.getDuration().toString());
         String encryptedSteps = encryptionUtils.encrypt(requestDto.getSteps().toString());
@@ -50,8 +49,7 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     @Transactional(readOnly = true)
-    public RecordResponseDto getRecordsByDateRange(LocalDate startDate, LocalDate endDate) {
-        String deviceTag = userService.getCurrentDeviceTag();
+    public RecordResponseDto getRecordsByDateRange(String deviceTag, LocalDate startDate, LocalDate endDate) {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atStartOfDay().plusDays(1);
 
@@ -83,9 +81,7 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     @Transactional(readOnly = true)
-    public RecordStatisticsResponseDto getRecordStatistics() {
-        String deviceTag = userService.getCurrentDeviceTag();
-
+    public RecordStatisticsResponseDto getRecordStatistics(String deviceTag) {
         LocalDateTime todayStartDateTime = LocalDate.now().atStartOfDay();
         LocalDateTime todayEndDateTime = todayStartDateTime.plusDays(1);
         LocalDateTime weekStartDateTime = LocalDate.now()

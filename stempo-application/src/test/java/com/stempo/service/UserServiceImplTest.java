@@ -138,21 +138,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    void 현재_디바이스태그를_가져온다() {
-        // given
-        try (MockedStatic<AuthUtils> mockedAuthUtils = mockStatic(AuthUtils.class)) {
-            mockedAuthUtils.when(AuthUtils::getAuthenticationInfoDeviceTag).thenReturn("test-device-tag");
-
-            // when
-            String deviceTag = userService.getCurrentDeviceTag();
-
-            // then
-            assertThat(deviceTag).isEqualTo("test-device-tag");
-            mockedAuthUtils.verify(AuthUtils::getAuthenticationInfoDeviceTag);
-        }
-    }
-
-    @Test
     void 현재_사용자를_가져온다() {
         // given
         try (MockedStatic<AuthUtils> mockedAuthUtils = mockStatic(AuthUtils.class)) {

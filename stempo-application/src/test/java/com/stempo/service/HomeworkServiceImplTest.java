@@ -84,12 +84,11 @@ class HomeworkServiceImplTest {
         String deviceTag = "encrypted-device-tag";
         String encryptedDescription = "encrypted-description";
 
-        when(userService.getCurrentDeviceTag()).thenReturn(deviceTag);
         when(encryptionUtils.encrypt(anyString())).thenReturn(encryptedDescription);
         when(repository.save(any(Homework.class))).thenReturn(homework);
 
         // when
-        Long resultId = homeworkService.addHomework(homeworkRequestDto);
+        Long resultId = homeworkService.addHomework(deviceTag, homeworkRequestDto);
 
         // then
         assertThat(resultId).isEqualTo(homework.getId());
@@ -128,8 +127,6 @@ class HomeworkServiceImplTest {
             .updatedAt(LocalDateTime.now())
             .build();
 
-        when(userService.getCurrentDeviceTag()).thenReturn(deviceTag);
-
         when(repository.findByDeviceTagAndCompleted(deviceTag, completed, pageable))
             .thenReturn(new PageImpl<>(homeworkList, pageable, homeworkList.size()));
         when(homeworkDecryptionService.decryptHomework(any(Homework.class))).thenReturn(decryptedHomework);
@@ -144,18 +141,16 @@ class HomeworkServiceImplTest {
                 .thenReturn(List.of(responseDto));
 
             // when
-            PagedResponseDto<HomeworkResponseDto> result = homeworkService.getHomeworks(completed, pageable);
+            PagedResponseDto<HomeworkResponseDto> result = homeworkService.getHomeworks(deviceTag, completed, pageable);
 
             // then
             assertThat(result.getItems()).hasSize(1);
             assertThat(result.getItems().getFirst().getDescription()).isEqualTo("Decrypted Description");
-            verify(userService).getCurrentDeviceTag();
             verify(repository).findByDeviceTagAndCompleted(deviceTag, completed, pageable);
             verify(homeworkDecryptionService).decryptHomework(any(Homework.class));
             verify(mapper).toDto(decryptedHomework);
         }
     }
-
 
     @Test
     void 과제를_수정한다() {

@@ -46,15 +46,16 @@ class HomeworkControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(username = "device123", roles = "USER")
     void 정상적으로_과제를_추가한다() throws Exception {
         // given
+        String deviceTag = "device123";
         HomeworkRequestDto requestDto = new HomeworkRequestDto();
         requestDto.setDescription("매일 스트레칭 운동 진행");
 
         Long expectedHomeworkId = 1L;
 
-        when(homeworkService.addHomework(any(HomeworkRequestDto.class)))
+        when(homeworkService.addHomework(eq(deviceTag), any(HomeworkRequestDto.class)))
             .thenReturn(expectedHomeworkId);
 
         // when
@@ -122,6 +123,7 @@ class HomeworkControllerTest {
         );
 
         when(homeworkService.getHomeworks(
+            any(String.class),
             eq(null),
             any(Pageable.class)))
             .thenReturn(expectedPagedResponse);
