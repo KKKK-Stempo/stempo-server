@@ -1,0 +1,105 @@
+<!DOCTYPE configuration [
+  <!ENTITY jsonEncoder '
+    <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+      <providers>
+        <timestamp>
+          <fieldName>timestamp</fieldName>
+          <timeZone>UTC</timeZone>
+        </timestamp>
+        <loggerName>
+          <fieldName>loggerName</fieldName>
+        </loggerName>
+        <threadName>
+          <fieldName>threadName</fieldName>
+        </threadName>
+        <logLevel>
+          <fieldName>logLevel</fieldName>
+        </logLevel>
+        <message>
+          <fieldName>message</fieldName>
+        </message>
+        <mdc>
+          <fieldName>mdc</fieldName>
+        </mdc>
+        <stackTrace>
+          <fieldName>stackTrace</fieldName>
+          <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+            <maxDepthPerThrowable>30</maxDepthPerThrowable>
+            <rootCauseFirst>true</rootCauseFirst>
+          </throwableConverter>
+        </stackTrace>
+      </providers>
+    </encoder>
+  '>
+  ]>
+<configuration>
+  <!-- 공통 변수 설정 -->
+  <property name="LOG_PATH" value="${LOG_PATH:-logs}"/>
+  <property name="LOG_FILE" value="${LOG_FILE:-stempo-core.log}"/>
+  <property name="MAX_FILE_SIZE" value="${MAX_FILE_SIZE:-10MB}"/>
+  <property name="MAX_HISTORY" value="${MAX_HISTORY:-30}"/>
+
+  <!-- DEV 환경: 콘솔 출력, INFO 레벨, 비동기 로깅 적용 -->
+  <springProfile name="dev">
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="DEV_CONSOLE">
+      &jsonEncoder;
+    </appender>
+    <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_DEV">
+      <appender-ref ref="DEV_CONSOLE"/>
+      <discardingThreshold>0</discardingThreshold>
+      <queueSize>512</queueSize>
+    </appender>
+    <root level="INFO">
+      <appender-ref ref="ASYNC_DEV"/>
+    </root>
+  </springProfile>
+
+  <!-- TEST 환경: 콘솔 출력, DEBUG 레벨, 비동기 로깅 적용 -->
+  <springProfile name="test">
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="TEST_CONSOLE">
+      &jsonEncoder;
+    </appender>
+    <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_TEST">
+      <appender-ref ref="TEST_CONSOLE"/>
+      <discardingThreshold>0</discardingThreshold>
+      <queueSize>512</queueSize>
+    </appender>
+    <root level="DEBUG">
+      <appender-ref ref="ASYNC_TEST"/>
+    </root>
+  </springProfile>
+
+  <!-- PROD 환경: 파일 출력 (롤링 설정 포함), INFO 레벨, 비동기 로깅 적용 -->
+  <springProfile name="prod">
+    <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="ROLLING_FILE">
+      <!-- 로그 파일은 외부 주입받은 LOG_PATH와 LOG_FILE을 사용 -->
+      <file>${LOG_PATH}/${LOG_FILE}</file>
+      &jsonEncoder;
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <!-- 일별 파일 분할 및 파일 크기 제한 -->
+        <fileNamePattern>${LOG_PATH}/archived/${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        <maxHistory>${MAX_HISTORY}</maxHistory>
+        <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+        <totalSizeCap>100MB</totalSizeCap>
+      </rollingPolicy>
+    </appender>
+    <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_PROD">
+      <appender-ref ref="ROLLING_FILE"/>
+      <discardingThreshold>0</discardingThreshold>
+      <queueSize>1024</queueSize>
+    </appender>
+    <root level="INFO">
+      <appender-ref ref="ASYNC_PROD"/>
+    </root>
+  </springProfile>
+
+  <!-- 기본 환경 (프로파일이 지정되지 않은 경우) -->
+  <springProfile name="default">
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="DEFAULT_CONSOLE">
+      &jsonEncoder;
+    </appender>
+    <root level="INFO">
+      <appender-ref ref="DEFAULT_CONSOLE"/>
+    </root>
+  </springProfile>
+</configuration>

@@ -124,6 +124,7 @@ allprojects {
 
                 excludes = listOf(
                     "com.stempo.**.*Test*",
+                    "com.stempo.**.*Constants*",
                     "com.stempo.**.*Dto*",
                     "com.stempo.**.*Entity*",
                     "com.stempo.**.*Service.*",

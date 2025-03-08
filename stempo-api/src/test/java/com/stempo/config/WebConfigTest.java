@@ -1,29 +1,25 @@
 package com.stempo.config;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import com.stempo.interceptor.ApiLoggingInterceptor;
 import jakarta.servlet.ServletContext;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
@@ -36,9 +32,6 @@ class WebConfigTest {
 
     @InjectMocks
     private WebConfig webConfig;
-
-    @Mock
-    private ApiLoggingInterceptor apiLoggingInterceptor;
 
     @Mock
     private ApplicationContext applicationContext;
@@ -74,18 +67,6 @@ class WebConfigTest {
         assertThat(locations).isNotEmpty()
             .hasSize(1);
         assertThat(locations.getFirst().getURI().toString()).contains(filePath);
-    }
-
-    @Test
-    void 인터셉터가_정상적으로_등록되는지_확인한다() {
-        // given
-        InterceptorRegistry interceptorRegistry = spy(new InterceptorRegistry());
-
-        // when
-        webConfig.addInterceptors(interceptorRegistry);
-
-        // then
-        verify(interceptorRegistry).addInterceptor(apiLoggingInterceptor);
     }
 
     @Test

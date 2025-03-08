@@ -17,4 +17,6 @@ object Versions {
     const val apacheHttpClient = "5.2.3"
     const val mockWebServer = "4.12.0"
     const val querydsl = "5.1.0:jakarta"
+    const val logback = "1.5.17"
+    const val logstashLogbackEncoder = "8.0"
 }

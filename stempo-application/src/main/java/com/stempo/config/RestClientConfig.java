@@ -1,5 +1,6 @@
 package com.stempo.config;
 
+import com.stempo.logging.interceptor.MdcPropagationInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ public class RestClientConfig {
         return RestClient.builder()
             .baseUrl(rhythmGeneratorUrl)
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .requestInterceptor(new MdcPropagationInterceptor())
             .build();
     }
 }
