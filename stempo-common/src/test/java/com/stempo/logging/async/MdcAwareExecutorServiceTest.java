@@ -118,6 +118,7 @@ class MdcAwareExecutorServiceTest {
     private static class SynchronousExecutorService implements ExecutorService {
 
         private boolean shutdown = false;
+        private boolean terminated = false;
 
         @Override
         public void execute(Runnable command) {
@@ -146,14 +147,16 @@ class MdcAwareExecutorServiceTest {
         }
 
         @Override
-        public List<Runnable> shutdownNow() {
+        public void shutdown() {
             shutdown = true;
-            return List.of();
+            terminated = true;
         }
 
         @Override
-        public void shutdown() {
+        public List<Runnable> shutdownNow() {
             shutdown = true;
+            terminated = true;
+            return List.of();
         }
 
         @Override
@@ -163,7 +166,7 @@ class MdcAwareExecutorServiceTest {
 
         @Override
         public boolean isTerminated() {
-            return shutdown;
+            return terminated;
         }
 
         @Override
