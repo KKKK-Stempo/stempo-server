@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface RecordService {
 
-    String recordTrainingData(RecordRequestDto requestDto);
+    String recordTrainingData(String deviceTag, RecordRequestDto requestDto);
 
-    RecordResponseDto getRecordsByDateRange(LocalDate startDate, LocalDate endDate);
+    RecordResponseDto getRecordsByDateRange(String deviceTag, LocalDate startDate, LocalDate endDate);
 
-    RecordStatisticsResponseDto getRecordStatistics();
+    RecordStatisticsResponseDto getRecordStatistics(String deviceTag);
 
     List<DecryptedRecord> getByDeviceTags(List<String> deviceTags);
 

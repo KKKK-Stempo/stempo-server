@@ -9,11 +9,11 @@ import org.springframework.data.domain.Pageable;
 
 public interface BoardService {
 
-    Long registerBoard(BoardRequestDto requestDto);
+    Long registerBoard(String deviceTag, BoardRequestDto requestDto);
 
-    PagedResponseDto<BoardResponseDto> getBoardsByCategory(BoardCategory category, Pageable pageable);
+    PagedResponseDto<BoardResponseDto> getBoardsByCategory(String deviceTag, BoardCategory category, Pageable pageable);
 
-    Long updateBoard(Long boardId, BoardUpdateRequestDto requestDto);
+    Long updateBoard(String deviceTag, Long boardId, BoardUpdateRequestDto requestDto);
 
-    Long deleteBoard(Long boardId);
+    Long deleteBoard(String deviceTag, Long boardId);
 }

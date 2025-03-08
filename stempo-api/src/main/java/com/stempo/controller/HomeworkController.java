@@ -15,6 +15,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -36,9 +38,10 @@ public class HomeworkController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/api/v1/homeworks")
     public ApiResponse<Long> addHomework(
-            @Valid @RequestBody HomeworkRequestDto requestDto
+        @AuthenticationPrincipal UserDetails user,
+        @Valid @RequestBody HomeworkRequestDto requestDto
     ) {
-        Long id = homeworkService.addHomework(requestDto);
+        Long id = homeworkService.addHomework(user.getUsername(), requestDto);
         return ApiResponse.success(id);
     }
 
@@ -49,14 +52,16 @@ public class HomeworkController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping(value = "/api/v1/homeworks")
     public ApiResponse<PagedResponseDto<HomeworkResponseDto>> getHomeworks(
-            @RequestParam(name = "completed", required = false) Boolean completed,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "completed, id") List<String> sortBy,
-            @RequestParam(name = "sortDirection", defaultValue = "asc, asc") List<String> sortDirection
+        @AuthenticationPrincipal UserDetails user,
+        @RequestParam(name = "completed", required = false) Boolean completed,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size,
+        @RequestParam(name = "sortBy", defaultValue = "completed, id") List<String> sortBy,
+        @RequestParam(name = "sortDirection", defaultValue = "asc, asc") List<String> sortDirection
     ) {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, HomeworkResponseDto.class);
-        PagedResponseDto<HomeworkResponseDto> homeworks = homeworkService.getHomeworks(completed, pageable);
+        PagedResponseDto<HomeworkResponseDto> homeworks =
+            homeworkService.getHomeworks(user.getUsername(), completed, pageable);
         return ApiResponse.success(homeworks);
     }
 
@@ -65,8 +70,8 @@ public class HomeworkController {
     @PreAuthorize("hasRole('USER')")
     @PatchMapping(value = "/api/v1/homeworks/{homeworkId}")
     public ApiResponse<Long> updateHomework(
-            @PathVariable(name = "homeworkId") Long homeworkId,
-            @Valid @RequestBody HomeworkUpdateRequestDto requestDto
+        @PathVariable(name = "homeworkId") Long homeworkId,
+        @Valid @RequestBody HomeworkUpdateRequestDto requestDto
     ) {
         Long id = homeworkService.updateHomework(homeworkId, requestDto);
         return ApiResponse.success(id);
@@ -77,7 +82,7 @@ public class HomeworkController {
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping(value = "/api/v1/homeworks/{homeworkId}")
     public ApiResponse<Long> deleteHomework(
-            @PathVariable(name = "homeworkId") Long homeworkId
+        @PathVariable(name = "homeworkId") Long homeworkId
     ) {
         Long id = homeworkService.deleteHomework(homeworkId);
         return ApiResponse.success(id);

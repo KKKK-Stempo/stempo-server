@@ -9,7 +9,7 @@ public interface AuthService {
 
     TokenInfo registerUser(AuthRequestDto requestDto);
 
-    String unregisterUser();
+    String unregisterUser(String deviceTag);
 
     Object login(AuthRequestDto requestDto);
 

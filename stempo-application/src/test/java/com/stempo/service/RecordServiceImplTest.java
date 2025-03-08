@@ -84,16 +84,14 @@ class RecordServiceImplTest {
     @Test
     void 레코드를_저장한다() {
         // given
-        when(userService.getCurrentDeviceTag()).thenReturn(deviceTag);
         when(encryptionUtils.encrypt(anyString())).thenReturn("encrypted-value");
         when(recordRepository.save(any(Record.class))).thenReturn(trainingRecord);
 
         // when
-        String result = recordService.recordTrainingData(recordRequestDto);
+        String result = recordService.recordTrainingData(deviceTag, recordRequestDto);
 
         // then
         assertThat(result).isEqualTo(deviceTag);
-        verify(userService).getCurrentDeviceTag();
         verify(encryptionUtils, times(7)).encrypt(anyString());
         verify(recordRepository).save(any(Record.class));
     }
@@ -126,7 +124,6 @@ class RecordServiceImplTest {
             .createdAt(startDateTime.minusDays(1))
             .build();
 
-        when(userService.getCurrentDeviceTag()).thenReturn(deviceTag);
         when(recordRepository.findLatestBeforeStartDate(deviceTag, startDateTime))
             .thenReturn(Optional.of(latestRecord));
         when(recordRepository.findByDateBetween(deviceTag, startDateTime, endDateTime))
@@ -155,12 +152,11 @@ class RecordServiceImplTest {
         when(mapper.toDto(anyInt(), any(List.class))).thenReturn(expectedResponse);
 
         // when
-        RecordResponseDto result = recordService.getRecordsByDateRange(startDate, endDate);
+        RecordResponseDto result = recordService.getRecordsByDateRange(deviceTag, startDate, endDate);
 
         // then
         assertThat(result.getAccuracyAverage()).isEqualTo(96);
         assertThat(result.getRecords()).hasSize(2);
-        verify(userService).getCurrentDeviceTag();
         verify(recordRepository).findLatestBeforeStartDate(deviceTag, startDateTime);
         verify(recordRepository).findByDateBetween(deviceTag, startDateTime, endDateTime);
         verify(recordDecryptionService).decryptToRecordItemDto(latestRecord);
@@ -177,7 +173,6 @@ class RecordServiceImplTest {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
 
-        when(userService.getCurrentDeviceTag()).thenReturn(deviceTag);
         when(recordRepository.findLatestBeforeStartDate(deviceTag, startDateTime))
             .thenReturn(Optional.empty());
         when(recordRepository.findByDateBetween(deviceTag, startDateTime, endDateTime))
@@ -201,7 +196,7 @@ class RecordServiceImplTest {
                 .build());
 
         // when
-        RecordResponseDto result = recordService.getRecordsByDateRange(startDate, endDate);
+        RecordResponseDto result = recordService.getRecordsByDateRange(deviceTag, startDate, endDate);
 
         // then
         assertThat(result.getAccuracyAverage()).isZero();
@@ -209,7 +204,6 @@ class RecordServiceImplTest {
         assertThat(result.getRecords().getFirst().getAccuracy()).isEqualTo(0.0);
         assertThat(result.getRecords().getFirst().getDuration()).isZero();
         assertThat(result.getRecords().getFirst().getSteps()).isZero();
-        verify(userService).getCurrentDeviceTag();
         verify(recordRepository).findLatestBeforeStartDate(deviceTag, startDateTime);
         verify(recordRepository).findByDateBetween(deviceTag, startDateTime, endDateTime);
         verify(mapper).toDto(anyDouble(), anyInt(), anyInt(), eq(startDate.minusDays(1)));
@@ -219,7 +213,6 @@ class RecordServiceImplTest {
     @Test
     void 통계정보를_조회한다() {
         // given
-        when(userService.getCurrentDeviceTag()).thenReturn(deviceTag);
         when(recordRepository.countByDeviceTagAndCreatedAtBetween(anyString(), any(LocalDateTime.class),
             any(LocalDateTime.class)))
             .thenReturn(2, 5); // todayWalkTrainingCount, weeklyWalkTrainingCount
@@ -234,13 +227,12 @@ class RecordServiceImplTest {
             );
 
         // when
-        RecordStatisticsResponseDto result = recordService.getRecordStatistics();
+        RecordStatisticsResponseDto result = recordService.getRecordStatistics(deviceTag);
 
         // then
         assertThat(result.getTodayWalkTrainingCount()).isEqualTo(2);
         assertThat(result.getWeeklyWalkTrainingCount()).isEqualTo(5);
         assertThat(result.getConsecutiveWalkTrainingDays()).isEqualTo(3);
-        verify(userService).getCurrentDeviceTag();
         verify(recordRepository, times(2))
             .countByDeviceTagAndCreatedAtBetween(anyString(), any(LocalDateTime.class), any(LocalDateTime.class));
         verify(recordRepository).findCreatedAtByDeviceTagOrderByCreatedAtDesc(deviceTag);

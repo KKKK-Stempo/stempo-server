@@ -16,6 +16,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -38,9 +40,10 @@ public class BoardController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/api/v1/boards")
     public ApiResponse<Long> registerBoard(
+        @AuthenticationPrincipal UserDetails user,
         @Valid @RequestBody BoardRequestDto requestDto
     ) {
-        Long id = boardService.registerBoard(requestDto);
+        Long id = boardService.registerBoard(user.getUsername(), requestDto);
         return ApiResponse.success(id);
     }
 
@@ -50,6 +53,7 @@ public class BoardController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/api/v1/boards")
     public ApiResponse<PagedResponseDto<BoardResponseDto>> getBoardsByCategory(
+        @AuthenticationPrincipal UserDetails user,
         @RequestParam(name = "category") BoardCategory category,
         @RequestParam(name = "page", defaultValue = "0") int page,
         @RequestParam(name = "size", defaultValue = "20") int size,
@@ -57,7 +61,8 @@ public class BoardController {
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BoardResponseDto.class);
-        PagedResponseDto<BoardResponseDto> boards = boardService.getBoardsByCategory(category, pageable);
+        PagedResponseDto<BoardResponseDto> boards =
+            boardService.getBoardsByCategory(user.getUsername(), category, pageable);
         return ApiResponse.success(boards);
     }
 
@@ -67,10 +72,11 @@ public class BoardController {
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("/api/v1/boards/{boardId}")
     public ApiResponse<Long> updateBoard(
+        @AuthenticationPrincipal UserDetails user,
         @PathVariable(name = "boardId") Long boardId,
         @Valid @RequestBody BoardUpdateRequestDto requestDto
     ) {
-        Long id = boardService.updateBoard(boardId, requestDto);
+        Long id = boardService.updateBoard(user.getUsername(), boardId, requestDto);
         return ApiResponse.success(id);
     }
 
@@ -80,9 +86,10 @@ public class BoardController {
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/api/v1/boards/{boardId}")
     public ApiResponse<Long> deleteBoard(
+        @AuthenticationPrincipal UserDetails user,
         @PathVariable(name = "boardId") Long boardId
     ) {
-        Long id = boardService.deleteBoard(boardId);
+        Long id = boardService.deleteBoard(user.getUsername(), boardId);
         return ApiResponse.success(id);
     }
 }

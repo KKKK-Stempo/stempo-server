@@ -29,8 +29,7 @@ public class HomeworkServiceImpl implements HomeworkService {
 
     @Override
     @Transactional
-    public Long addHomework(HomeworkRequestDto requestDto) {
-        String deviceTag = userService.getCurrentDeviceTag();
+    public Long addHomework(String deviceTag, HomeworkRequestDto requestDto) {
         String encryptedDescription = encryptionUtils.encrypt(requestDto.getDescription());
         Homework homework = Homework.create(deviceTag, encryptedDescription);
         return repository.save(homework).getId();
@@ -38,8 +37,7 @@ public class HomeworkServiceImpl implements HomeworkService {
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponseDto<HomeworkResponseDto> getHomeworks(Boolean completed, Pageable pageable) {
-        String deviceTag = userService.getCurrentDeviceTag();
+    public PagedResponseDto<HomeworkResponseDto> getHomeworks(String deviceTag, Boolean completed, Pageable pageable) {
         Page<Homework> homeworksPage = repository.findByDeviceTagAndCompleted(deviceTag, completed, pageable);
 
         List<HomeworkResponseDto> responseDtos = homeworksPage.getContent().stream()

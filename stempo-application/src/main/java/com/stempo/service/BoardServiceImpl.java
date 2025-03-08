@@ -28,8 +28,8 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public Long registerBoard(BoardRequestDto requestDto) {
-        User user = userService.getCurrentUser();
+    public Long registerBoard(String deviceTag, BoardRequestDto requestDto) {
+        User user = userService.getById(deviceTag);
         uploadedFileService.verifyFilesExist(requestDto.getFileUrls());
         Board board = mapper.toDomain(requestDto, user.getDeviceTag());
         board.validateAccessPermissionForNotice(user);
@@ -38,16 +38,20 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponseDto<BoardResponseDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
-        validateAccessPermissionForSuggestion(category);
+    public PagedResponseDto<BoardResponseDto> getBoardsByCategory(
+        String deviceTag,
+        BoardCategory category,
+        Pageable pageable
+    ) {
+        validateAccessPermissionForSuggestion(deviceTag, category);
         Page<Board> boards = repository.findByCategory(category, pageable);
         return new PagedResponseDto<>(boards.map(mapper::toDto));
     }
 
     @Override
     @Transactional
-    public Long updateBoard(Long boardId, BoardUpdateRequestDto requestDto) {
-        User user = userService.getCurrentUser();
+    public Long updateBoard(String deviceTag, Long boardId, BoardUpdateRequestDto requestDto) {
+        User user = userService.getById(deviceTag);
         Board board = repository.findByIdOrThrow(boardId);
 
         uploadedFileService.verifyFilesExist(requestDto.getFileUrls());
@@ -60,16 +64,16 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public Long deleteBoard(Long boardId) {
-        User user = userService.getCurrentUser();
+    public Long deleteBoard(String deviceTag, Long boardId) {
+        User user = userService.getById(deviceTag);
         Board board = repository.findByIdOrThrow(boardId);
         board.validateAccessPermission(user);
         repository.delete(board);
         return board.getId();
     }
 
-    private void validateAccessPermissionForSuggestion(BoardCategory category) {
-        User user = userService.getCurrentUser();
+    private void validateAccessPermissionForSuggestion(String deviceTag, BoardCategory category) {
+        User user = userService.getById(deviceTag);
         if (category.equals(BoardCategory.SUGGESTION) && !user.isAdmin()) {
             throw new BaseException(ErrorCode.PERMISSION_DENIED, "건의하기는 관리자만 조회할 수 있습니다.");
         }
