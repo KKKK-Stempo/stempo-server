@@ -15,8 +15,8 @@ public class UserEventService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public String unregisterUser() {
-        User user = userService.getCurrentUser();
+    public String unregisterUser(String deviceTag) {
+        User user = userService.getById(deviceTag);
         userService.delete(user);
         eventPublisher.publishEvent(new UserDeletedEvent(this, user.getDeviceTag()));
         return user.getDeviceTag();

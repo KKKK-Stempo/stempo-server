@@ -1,6 +1,7 @@
 package com.stempo.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -105,7 +106,7 @@ class AuthControllerTest {
         // given
         String deviceTag = "490154203237518";
 
-        when(authService.unregisterUser())
+        when(authService.unregisterUser(anyString()))
             .thenReturn(deviceTag);
 
         // when

@@ -49,9 +49,10 @@ class BoardControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(username = "deviceTag123", roles = "USER")
     void 정상적으로_게시글을_등록한다() throws Exception {
         // given
+        String deviceTag = "deviceTag123";
         BoardRequestDto requestDto = new BoardRequestDto();
         requestDto.setCategory(BoardCategory.NOTICE);
         requestDto.setTitle("청각 자극을 통한 뇌성마비 환자 보행 패턴 개선 서비스, Stempo.");
@@ -63,7 +64,7 @@ class BoardControllerTest {
 
         Long expectedBoardId = 1L;
 
-        when(boardService.registerBoard(any(BoardRequestDto.class)))
+        when(boardService.registerBoard(eq(deviceTag), any(BoardRequestDto.class)))
             .thenReturn(expectedBoardId);
 
         // when
@@ -77,7 +78,7 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(username = "deviceTag123", roles = "USER")
     void 유효하지_않은_입력값으로_게시글을_등록시_예외가_발생한다() throws Exception {
         // given
         BoardRequestDto requestDto = new BoardRequestDto();
@@ -116,9 +117,10 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(username = "deviceTag123", roles = "USER")
     void 정상적으로_카테고리별_게시글을_조회한다() throws Exception {
         // given
+        String deviceTag = "deviceTag123";
         BoardCategory category = BoardCategory.NOTICE;
         Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
 
@@ -150,7 +152,7 @@ class BoardControllerTest {
             new PageImpl<>(boardList, pageable, boardList.size())
         );
 
-        Mockito.when(boardService.getBoardsByCategory(category, pageable))
+        Mockito.when(boardService.getBoardsByCategory(deviceTag, category, pageable))
             .thenReturn(expectedPagedResponse);
 
         // when
@@ -207,9 +209,10 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(username = "deviceTag123", roles = "USER")
     void 정상적으로_게시글을_수정한다() throws Exception {
         // given
+        String deviceTag = "deviceTag123";
         final Long boardId = 1L;
         BoardUpdateRequestDto updateRequestDto = new BoardUpdateRequestDto();
         updateRequestDto.setCategory(BoardCategory.NOTICE);
@@ -221,7 +224,7 @@ class BoardControllerTest {
 
         Long expectedBoardId = 1L;
 
-        when(boardService.updateBoard(eq(boardId), any(BoardUpdateRequestDto.class)))
+        when(boardService.updateBoard(eq(deviceTag), eq(boardId), any(BoardUpdateRequestDto.class)))
             .thenReturn(expectedBoardId);
 
         // when
@@ -255,12 +258,13 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(username = "deviceTag123", roles = "USER")
     void 정상적으로_게시글을_삭제한다() throws Exception {
         // given
+        String deviceTag = "deviceTag123";
         Long boardId = 1L;
 
-        when(boardService.deleteBoard(boardId))
+        when(boardService.deleteBoard(deviceTag, boardId))
             .thenReturn(boardId);
 
         // when

@@ -18,8 +18,6 @@ public interface UserService {
 
     void delete(User user);
 
-    User getCurrentUser();
-
     void handleAccountLock(String deviceTag);
 
     void handleFailedLogin(String deviceTag);

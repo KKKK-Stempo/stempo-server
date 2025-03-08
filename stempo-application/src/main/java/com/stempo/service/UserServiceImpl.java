@@ -56,12 +56,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getCurrentUser() {
-        String deviceTag = "getCurrentDeviceTag()";
-        return repository.findByIdOrThrow(deviceTag);
-    }
-
-    @Override
     @Transactional
     public void handleAccountLock(String deviceTag) {
         User user = getUserById(deviceTag);

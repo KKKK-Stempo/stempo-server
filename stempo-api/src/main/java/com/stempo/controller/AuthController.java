@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,8 +45,10 @@ public class AuthController {
     @SuccessApiResponse(data = "deviceTag", dataType = String.class, dataDescription = "사용자의 디바이스 식별자")
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/api/v1/auth/unregister")
-    public ApiResponse<String> unregisterUser() {
-        String deviceTag = authService.unregisterUser();
+    public ApiResponse<String> unregisterUser(
+        @AuthenticationPrincipal User user
+    ) {
+        String deviceTag = authService.unregisterUser(user.getUsername());
         return ApiResponse.success(deviceTag);
     }
 

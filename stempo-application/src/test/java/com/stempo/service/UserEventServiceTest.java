@@ -1,6 +1,7 @@
 package com.stempo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,10 +38,10 @@ class UserEventServiceTest {
     @Test
     void 사용자가_성공적으로_탈퇴하면_이벤트가_발행된다() {
         // given
-        when(userService.getCurrentUser()).thenReturn(user);
+        when(userService.getById(anyString())).thenReturn(user);
 
         // when
-        String deviceTag = userEventService.unregisterUser();
+        String deviceTag = userEventService.unregisterUser(user.getDeviceTag());
 
         // then
         assertThat(deviceTag).isEqualTo("test-device");

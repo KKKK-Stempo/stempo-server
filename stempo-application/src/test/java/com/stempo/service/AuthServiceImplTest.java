@@ -67,7 +67,7 @@ class AuthServiceImplTest {
         // given
         TokenInfo expectedTokenInfo = TokenInfo.create("access-token", "refresh-token");
         when(userRegistrationService.registerUser(any(AuthRequestDto.class), any(JwtTokenService.class)))
-                .thenReturn(expectedTokenInfo);
+            .thenReturn(expectedTokenInfo);
 
         // when
         TokenInfo result = authServiceImpl.registerUser(authRequestDto);
@@ -81,14 +81,14 @@ class AuthServiceImplTest {
     void 사용자_탈퇴시_deviceTag를_반환한다() {
         // given
         String expectedDeviceTag = "test-device";
-        when(userEventService.unregisterUser()).thenReturn(expectedDeviceTag);
+        when(userEventService.unregisterUser(anyString())).thenReturn(expectedDeviceTag);
 
         // when
-        String result = authServiceImpl.unregisterUser();
+        String result = authServiceImpl.unregisterUser(expectedDeviceTag);
 
         // then
         assertThat(result).isEqualTo(expectedDeviceTag);
-        verify(userEventService).unregisterUser();
+        verify(userEventService).unregisterUser(expectedDeviceTag);
     }
 
     @Test
@@ -96,8 +96,8 @@ class AuthServiceImplTest {
         // given
         TokenInfo expectedTokenInfo = TokenInfo.create("access-token", "refresh-token");
         when(authenticationService.login(any(AuthRequestDto.class), any(JwtTokenService.class),
-                any(TotpAuthenticatorService.class)))
-                .thenReturn(expectedTokenInfo);
+            any(TotpAuthenticatorService.class)))
+            .thenReturn(expectedTokenInfo);
 
         // when
         Object result = authServiceImpl.login(authRequestDto);
@@ -105,22 +105,22 @@ class AuthServiceImplTest {
         // then
         assertThat(result).isEqualTo(expectedTokenInfo);
         verify(authenticationService).login(any(AuthRequestDto.class), any(JwtTokenService.class),
-                any(TotpAuthenticatorService.class));
+            any(TotpAuthenticatorService.class));
     }
 
     @Test
     void 로그인_실패시_BadCredentialsException을_발생시킨다() {
         // given
         when(authenticationService.login(any(AuthRequestDto.class), any(JwtTokenService.class),
-                any(TotpAuthenticatorService.class)))
-                .thenThrow(new BadCredentialsException("Invalid credentials"));
+            any(TotpAuthenticatorService.class)))
+            .thenThrow(new BadCredentialsException("Invalid credentials"));
 
         // when, then
         assertThatThrownBy(() -> authServiceImpl.login(authRequestDto))
-                .isInstanceOf(BadCredentialsException.class)
-                .hasMessage("Invalid credentials");
+            .isInstanceOf(BadCredentialsException.class)
+            .hasMessage("Invalid credentials");
         verify(authenticationService).login(any(AuthRequestDto.class), any(JwtTokenService.class),
-                any(TotpAuthenticatorService.class));
+            any(TotpAuthenticatorService.class));
     }
 
     @Test
@@ -143,7 +143,7 @@ class AuthServiceImplTest {
         // given
         TokenInfo expectedTokenInfo = TokenInfo.create("access-token", "refresh-token");
         when(totpService.authenticate(any(TwoFactorAuthenticationRequestDto.class), any(JwtTokenService.class)))
-                .thenReturn(expectedTokenInfo);
+            .thenReturn(expectedTokenInfo);
 
         // when
         TokenInfo result = authServiceImpl.authenticate(twoFactorAuthenticationRequestDto);
@@ -157,12 +157,12 @@ class AuthServiceImplTest {
     void _2단계_인증_실패시_BadCredentialsException을_발생시킨다() {
         // given
         when(totpService.authenticate(any(TwoFactorAuthenticationRequestDto.class), any(JwtTokenService.class)))
-                .thenThrow(new BadCredentialsException("Invalid credentials"));
+            .thenThrow(new BadCredentialsException("Invalid credentials"));
 
         // when, then
         assertThatThrownBy(() -> authServiceImpl.authenticate(twoFactorAuthenticationRequestDto))
-                .isInstanceOf(BadCredentialsException.class)
-                .hasMessage("Invalid credentials");
+            .isInstanceOf(BadCredentialsException.class)
+            .hasMessage("Invalid credentials");
         verify(totpService).authenticate(any(TwoFactorAuthenticationRequestDto.class), any(JwtTokenService.class));
     }
 

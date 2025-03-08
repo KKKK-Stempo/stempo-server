@@ -31,8 +31,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public String unregisterUser() {
-        return userEventService.unregisterUser();
+    public String unregisterUser(String deviceTag) {
+        return userEventService.unregisterUser(deviceTag);
     }
 
     @Override

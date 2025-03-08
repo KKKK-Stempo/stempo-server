@@ -1,7 +1,7 @@
 package com.stempo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -21,6 +21,7 @@ import com.stempo.model.User;
 import com.stempo.repository.BoardRepository;
 import java.util.Arrays;
 import java.util.List;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,13 +62,13 @@ class BoardServiceImplTest {
 
         user = User.create("test-device", "test-password");
         board = Board.builder()
-                .id(1L)
-                .deviceTag("test-device")
-                .category(BoardCategory.SUGGESTION)
-                .title("test-title")
-                .content("test-content")
-                .fileUrls(List.of("test-file"))
-                .build();
+            .id(1L)
+            .deviceTag("test-device")
+            .category(BoardCategory.SUGGESTION)
+            .title("test-title")
+            .content("test-content")
+            .fileUrls(List.of("test-file"))
+            .build();
 
         boardRequestDto.setFileUrls(Arrays.asList("file1.jpg", "file2.jpg"));
         boardUpdateRequestDto.setFileUrls(List.of("file1_updated.jpg"));
@@ -76,12 +77,13 @@ class BoardServiceImplTest {
     @Test
     void 게시글을_등록한다() {
         // given
-        when(userService.getCurrentUser()).thenReturn(user);
+        String deviceTag = "deviceTag123";
+        when(userService.getById(anyString())).thenReturn(user);
         when(mapper.toDomain(any(BoardRequestDto.class), anyString())).thenReturn(board);
         when(repository.save(any(Board.class))).thenReturn(board);
 
         // when
-        Long result = boardService.registerBoard(boardRequestDto);
+        Long result = boardService.registerBoard(deviceTag, boardRequestDto);
 
         // then
         assertThat(result).isEqualTo(board.getId());
@@ -92,12 +94,19 @@ class BoardServiceImplTest {
     @Test
     void 권한이_없는_사용자가_건의하기_게시글을_조회하면_예외가_발생한다() {
         // given
-        when(userService.getCurrentUser()).thenReturn(user);
+        String deviceTag = "deviceTag123";
+        when(userService.getById(anyString())).thenReturn(user);
 
-        // when & then
-        assertThatThrownBy(() -> boardService.getBoardsByCategory(BoardCategory.SUGGESTION, Pageable.unpaged()))
-                .isInstanceOf(BaseException.class)
-                .hasMessage("건의하기는 관리자만 조회할 수 있습니다.");
+        ThrowingCallable action = () -> boardService.getBoardsByCategory(
+            deviceTag,
+            BoardCategory.SUGGESTION,
+            Pageable.unpaged()
+        );
+
+        // then
+        assertThatExceptionOfType(BaseException.class)
+            .isThrownBy(action)
+            .withMessage("건의하기는 관리자만 조회할 수 있습니다.");
     }
 
     @Test
@@ -108,8 +117,8 @@ class BoardServiceImplTest {
         when(mapper.toDto(any(Board.class))).thenReturn(BoardResponseDto.builder().build());
 
         // when
-        PagedResponseDto<BoardResponseDto> result = boardService.getBoardsByCategory(BoardCategory.NOTICE,
-                Pageable.unpaged());
+        PagedResponseDto<BoardResponseDto> result =
+            boardService.getBoardsByCategory(any(String.class), BoardCategory.NOTICE, Pageable.unpaged());
 
         // then
         assertThat(result.getItems()).hasSize(1);
@@ -119,13 +128,14 @@ class BoardServiceImplTest {
     @Test
     void 게시글을_수정한다() {
         // given
-        when(userService.getCurrentUser()).thenReturn(user);
+        String deviceTag = "deviceTag123";
+        when(userService.getById(anyString())).thenReturn(user);
         when(repository.findByIdOrThrow(anyLong())).thenReturn(board);
         when(mapper.toDomain(any(BoardUpdateRequestDto.class))).thenReturn(board);
         when(repository.save(any(Board.class))).thenReturn(board);
 
         // when
-        Long result = boardService.updateBoard(1L, boardUpdateRequestDto);
+        Long result = boardService.updateBoard(deviceTag, 1L, boardUpdateRequestDto);
 
         // then
         assertThat(result).isEqualTo(board.getId());
@@ -136,11 +146,12 @@ class BoardServiceImplTest {
     @Test
     void 게시글을_삭제한다() {
         // given
-        when(userService.getCurrentUser()).thenReturn(user);
+        String deviceTag = "deviceTag123";
+        when(userService.getById(anyString())).thenReturn(user);
         when(repository.findByIdOrThrow(anyLong())).thenReturn(board);
 
         // when
-        Long result = boardService.deleteBoard(1L);
+        Long result = boardService.deleteBoard(deviceTag, 1L);
 
         // then
         assertThat(result).isEqualTo(board.getId());

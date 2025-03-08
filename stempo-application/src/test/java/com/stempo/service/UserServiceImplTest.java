@@ -2,7 +2,6 @@ package com.stempo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,7 +11,6 @@ import com.stempo.exception.BaseException;
 import com.stempo.exception.ErrorCode;
 import com.stempo.model.User;
 import com.stempo.repository.UserRepository;
-import com.stempo.util.AuthUtils;
 import com.stempo.util.EncryptionUtils;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -135,23 +132,6 @@ class UserServiceImplTest {
 
         // then
         verify(repository).delete(user);
-    }
-
-    @Test
-    void 현재_사용자를_가져온다() {
-        // given
-        try (MockedStatic<AuthUtils> mockedAuthUtils = mockStatic(AuthUtils.class)) {
-            mockedAuthUtils.when(AuthUtils::getAuthenticationInfoDeviceTag).thenReturn("test-device-tag");
-            when(repository.findByIdOrThrow("test-device-tag")).thenReturn(user);
-
-            // when
-            User result = userService.getCurrentUser();
-
-            // then
-            assertThat(result).isEqualTo(user);
-            mockedAuthUtils.verify(AuthUtils::getAuthenticationInfoDeviceTag);
-            verify(repository).findByIdOrThrow("test-device-tag");
-        }
     }
 
     @Test
