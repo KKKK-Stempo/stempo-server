@@ -14,14 +14,14 @@ jobs:
       - name: Setup Java and Gradlew
         uses: ./.github/actions/setup-java-and-gradlew
         with:
-          java-distribution: 'liberica'
-          java-version: '21'
-          java-package: 'jdk'
-
-      - name: Write Application Configuration
-        run: |
-          mkdir -p config
-          echo "${{ secrets.APPLICATION_YAML }}" | base64 --decode > config/application.yml
+          java-distribution: "liberica"
+          java-version: "21"
+          java-package: "jdk"
 
       - name: Build with Gradle
         run: ./gradlew assemble --info --parallel
+        env:
+          CONFIG_SERVER_URI: ${{ secrets.CONFIG_SERVER_URI }}
+          CONFIG_SERVER_USERNAME: ${{ secrets.CONFIG_SERVER_USERNAME }}
+          CONFIG_SERVER_PASSWORD: ${{ secrets.CONFIG_SERVER_PASSWORD }}
+          SPRING_PROFILES_ACTIVE: ci
