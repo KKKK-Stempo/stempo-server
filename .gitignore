@@ -44,8 +44,7 @@ out/
 .env
 
 ### Config ###
-/config/secrets.yml
-!/config/applicaiton.yml
+!/config/bootstrap.yml
 
 ### Groovy ###
 lib/
