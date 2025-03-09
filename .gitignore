@@ -46,3 +46,6 @@ out/
 ### Config ###
 /config/secrets.yml
 !/config/applicaiton.yml
+
+### Groovy ###
+lib/
