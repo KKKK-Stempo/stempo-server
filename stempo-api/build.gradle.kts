@@ -40,6 +40,10 @@ dependencies {
     implementation(Dependencies.springBootStarterSecurity)
     implementation(Dependencies.springDataCommons)
 
+    // Spring Cloud Config
+    implementation(Dependencies.springCloudConfigClient)
+    implementation(Dependencies.springCloudBootstrapStarter)
+
     // Util
     implementation(Dependencies.jakartaValidationApi)
     implementation(Dependencies.swagger)

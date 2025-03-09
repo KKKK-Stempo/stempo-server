@@ -7,6 +7,8 @@ object Dependencies {
     const val springBootStarterDataJpa = "org.springframework.boot:spring-boot-starter-data-jpa"
     const val springAop = "org.springframework.boot:spring-boot-starter-aop"
     const val springDataCommons = "org.springframework.data:spring-data-commons"
+    const val springCloudConfigClient = "org.springframework.cloud:spring-cloud-starter-config"
+    const val springCloudBootstrapStarter = "org.springframework.cloud:spring-cloud-starter-bootstrap"
     const val jakartaValidationApi = "jakarta.validation:jakarta.validation-api:${Versions.jakartaValidationApi}"
     const val hibernateValidator = "org.hibernate.validator:hibernate-validator:${Versions.hibernateValidator}"
     const val swagger = "org.springdoc:springdoc-openapi-starter-webmvc-ui:${Versions.swagger}"

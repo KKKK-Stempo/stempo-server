@@ -43,6 +43,7 @@ allprojects {
     apply(plugin = "jacoco")
 
     ext["springConfigLocation"] = "${rootProject.projectDir}/config/"
+    ext["spring-cloud.version"] = Versions.springCloud
 
     java {
         toolchain {
@@ -195,5 +196,11 @@ allprojects {
 
     tasks.named("checkstyleMain") {
         dependsOn("compileTestJava")
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("spring-cloud.version")}")
+        }
     }
 }
